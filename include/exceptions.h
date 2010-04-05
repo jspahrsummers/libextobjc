@@ -16,6 +16,7 @@
 #include <setjmp.h>
 #include <stdbool.h>
 #include <stddef.h>
+#include "blocks.h"
 
 /**
  * Represents an exception.
@@ -105,8 +106,9 @@ bool exception_is_a (const exception *ex, const struct exception_type_info *type
  * This can only be called from within a catch block.
  */
 #define throw \
-    if ((ex_propagation_.line = __LINE__, exception_uncaught_ = true,   \
-        ex_propagation_.propagate = true))                              \
+    if (exprify(exception_propagation_.line = __LINE__,                     \
+        exception_uncaught_ = true, exception_propagation_.propagate =      \
+        true))                                                              \
         break
 
 /**
@@ -127,32 +129,68 @@ bool exception_is_a (const exception *ex, const struct exception_type_info *type
  *        is to use 'volatile' with any such variables.
  */
 #define try \
-    struct exception_data_ *exception_current_data_ = exception_block_push_();  \
-    struct exception_propagation_ ex_propagation_ = { .propagate = false };     \
-    volatile int exception_unhandled_ = setjmp(exception_current_data_->        \
-        context);                                                               \
-                                                                                \
-    for (volatile bool exception_uncaught_ = true, finalizer_run_ = false,      \
-        loop2_done_; (loop2_done_ = false, !finalizer_run_); finalizer_run_ &&  \
-        ((exception_uncaught_ &&                                                \
-        ((ex_propagation_.propagate && (exception_raise_(                       \
-        &exception_current_data_->exception_obj, exception_current_data_->      \
-        exception_obj.type, exception_current_data_->exception_obj.data,        \
-        __func__, __FILE__, ex_propagation_.line), 1)) ||                       \
-        (exception_raise_up_block_(exception_current_data_), 1))) ||            \
-        (extc_free(exception_current_data_), 1)))                               \
-        switch (exception_unhandled_)                                           \
-            for (; !loop2_done_; loop2_done_ = true)                            \
-                default:                                                        \
-                    if (exception_unhandled_ == 2) {                            \
-                        finalizer_run_ = true;                                  \
-                        break;                                                  \
-                    } else if (exception_unhandled_ == 0)
+    /* the next few loops initialize variables without naming conflicts */  \
+    for (volatile bool loop_done_ = false; !loop_done_; loop_done_ = true)  \
+    for (struct exception_data_ *exception_current_data_ =                  \
+        exception_block_push_(); !loop_done_; loop_done_ = true)            \
+    for (struct exception_propagation_ exception_propagation_ = {           \
+        .propagate = false }; !loop_done_; loop_done_ = true)               \
+                                                                            \
+    /* exception_unhandled_ takes on a few different meanings:              \
+        0 = no exceptions thrown yet, execute 'try' block                   \
+        1 = exception thrown, find a suitable 'catch' block                 \
+        2 = handling finished, execute 'finally' block */                   \
+                                                                            \
+    for (int exception_unhandled_ = setjmp(exception_current_data_->        \
+        context); !loop_done_; loop_done_ = true)                           \
+    for (volatile bool exception_uncaught_ = (exception_unhandled_ == 1),   \
+        finalizer_run_ = false; !finalizer_run_;                            \
+        /* if the 'finally' block has been executed... */                   \
+        (finalizer_run_ && (                                                \
+            /* if an exception wasn't fully handled... */                   \
+            (exception_uncaught_ && (                                       \
+                /* if the exception was rethrown with 'throw'... */         \
+                (exception_propagation_.propagate &&                        \
+                    /* push to a handler further up, saving a backtrace */  \
+                    exprify(exception_rethrow_from_(                        \
+                        &exception_current_data_->exception_obj,            \
+                        exception_propagation_.line))                       \
+                ) ||                                                        \
+                /* ... or it was just not caught... */                      \
+                /* push to a handler further up without a backtrace */      \
+                exprify(exception_raise_up_block_(exception_current_data_)) \
+            )) ||                                                           \
+            /* ... or the exception WAS handled cleanly... */               \
+            exprify(extc_free(exception_current_data_))                     \
+        )) ||                                                               \
+        /* ... or if there were no 'catch' blocks found at all... */        \
+        (exception_unhandled_ == 0 &&                                       \
+            /* go back in and execute the 'finally' block */                \
+            exprify(exception_block_pop_(), exception_unhandled_ = 2)       \
+        ))                                                                  \
+                                                                            \
+        /* this Duff's device ripoff allows us to circumvent syntax */      \
+        /* see the 'finally' macro to really understand why */              \
+        switch (exception_unhandled_)                                       \
+            /* creates a new scope, no braces necessary */                  \
+            for (bool loop2_done_ = false; !loop2_done_; loop2_done_ =      \
+                true)                                                       \
+                /* jumps here if exception_unhandled_ is 0 or 1 OR there    \
+                   is no finally block further down */                      \
+                default:                                                    \
+                    if (exception_unhandled_ == 2) {                        \
+                        /* no finally block, so just say we're done */      \
+                        finalizer_run_ = true;                              \
+                        break;                                              \
+                    } else if (exception_unhandled_ == 0)                   \
+                        /* try block begins with user code */
 
 /**
  * Begins a block of code that is only executed if an exception of class TYPE
  * (or one of its subclasses) is thrown. VAR is the name of a variable that will
  * be defined to hold the exception.
+ *
+ * This must appear immediately after a try or catch block.
  *
  * If an exception is caught by this block, no following catch blocks will be
  * executed.
@@ -166,18 +204,19 @@ bool exception_is_a (const exception *ex, const struct exception_type_info *type
  *        enclosing a catch block and within the block itself.
  */
 #define catch(TYPE, VAR) \
-                    else if (exception_is_a(&exception_current_data_->          \
-                        exception_obj, TYPE) && (exception_uncaught_ = false,   \
-                        exception_block_pop_(), exception_unhandled_ = 2))      \
-                        for (bool oneLoop_ = false; !oneLoop_; oneLoop_ = true) \
-                            for (const exception *VAR =                         \
-                                &exception_current_data_->exception_obj;        \
-                                !oneLoop_; oneLoop_ = true)
+                    /* if the exception type matches, mark it as caught */  \
+                    else if_then (exception_is_a(&exception_current_data_-> \
+                        exception_obj, TYPE), exception_uncaught_ = false,  \
+                        exception_block_pop_(), exception_unhandled_ = 2)   \
+                        with (const exception *VAR =                        \
+                            &exception_current_data_->exception_obj)        \
+                            /* catch block begins with user code */
 
 /**
  * Begins a block of code that catches any and all exceptions. VAR is the name
  * of a variable that will be defined to hold the exception.
  *
+ * This must appear immediately after a try or catch block.
  * No following catch blocks will be executed.
  *
  * Some notes for usage:
@@ -189,17 +228,17 @@ bool exception_is_a (const exception *ex, const struct exception_type_info *type
  *        enclosing a catch_all block and within the block itself.
  */
 #define catch_all(VAR) \
-                    else if ((exception_uncaught_ = false,                      \
-                        exception_block_pop_(), exception_unhandled_ = 2))      \
-                        for (bool oneLoop_ = false; !oneLoop_; oneLoop_ = true) \
-                            for (const exception *VAR =                         \
-                                &exception_current_data_->exception_obj;        \
-                                !oneLoop_; oneLoop_ = true)
+                    /* mark the exception as caught */                      \
+                    else if ((exception_uncaught_ = false,                  \
+                        exception_block_pop_(), exception_unhandled_ = 2))  \
+                        with (const exception *VAR =                        \
+                            &exception_current_data_->exception_obj)        \
+                            /* catch_all block begins with user code */
 
 /**
  * Begins a block of code that is executed regardless of any exceptions.
- * This must appear after any try, catch, or catch_all blocks, and is always
- * executed after said blocks.
+ * This must appear immediately after any try, catch, or catch_all blocks, and
+ * is always executed after said blocks.
  *
  * Some notes for usage:
  *      - 'break' is legal within a finally block.
@@ -209,10 +248,17 @@ bool exception_is_a (const exception *ex, const struct exception_type_info *type
  *        enclosing a finally block and within the block itself.
  */
 #define finally \
+                    /* this part right here is just amazing...                  \
+                       one of the conditions above will ALWAYS match, so the    \
+                       'else' means that this code is basically ignored... */   \
                     else                                                        \
+                        /* UNLESS exception_unhandled_ was 2 at the start, in   \
+                           which case the switch() jumps in here */             \
                         case 2:                                                 \
+                            /* meaningless loop to allow the use of 'break' */  \
                             for (; !finalizer_run_; finalizer_run_ = true)      \
-                                for (; !finalizer_run_; finalizer_run_ = true)
+                                for (; !finalizer_run_; finalizer_run_ = true)  \
+                                    /* finally block begins with user code */
 
 /**
  * Root class for all exceptions thrown by ExtendedC modules.
@@ -220,7 +266,8 @@ bool exception_is_a (const exception *ex, const struct exception_type_info *type
  */
 exception_declaration(Exception);
 
-// memory.h depends on some definitions in here
+// we use the memory macros and functions from memory.h
+// this include is here because memory.h depends on some definitions in here
 #include "memory.h"
 
 // IMPLEMENTATION DETAILS FOLLOW!
@@ -247,6 +294,8 @@ void exception_block_pop_ (void);
 struct exception_data_ *exception_block_push_ (void);
 void exception_raise_ (const exception *backtrace, const struct exception_type_info *type, const void *data, const char *function, const char *file, unsigned long line);
 void exception_raise_up_block_ (struct exception_data_ *currentBlock);
+#define exception_rethrow_from_(EX, LINE) \
+    exception_raise_((EX), (EX)->type, (EX)->data, __func__, __FILE__, (LINE))
 void exception_test (void);
 
 #endif

@@ -17,6 +17,10 @@ exception_subclass(Exception, TestException);
 void exceptions_test (void) {
     int caught = 0;
     bool executed_finally = false;
+    
+    try {
+        assert(caught == 0);
+    }
 
     try {
         exception_test_nested();
@@ -30,6 +34,16 @@ void exceptions_test (void) {
         }
     } finally {
         assert(caught == 2);
+        executed_finally = true;
+    }
+    
+    assert(executed_finally);
+    executed_finally = false;
+    
+    try {
+        ++caught;
+    } finally {
+        assert(caught == 3);
         executed_finally = true;
     }
     

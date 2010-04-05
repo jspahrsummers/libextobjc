@@ -178,7 +178,7 @@ target_alias = @target_alias@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 lib_LTLIBRARIES = libextc.la
-libextc_la_CPPFLAGS = -pedantic -Wall -Wextra -I../include -I$(pkgincludedir)
+libextc_la_CPPFLAGS = -pedantic -Wall -Wextra -Werror -I../include
 libextc_la_SOURCES = exceptions.c memory.c refcounted.c vector.c
 all: all-am
 
