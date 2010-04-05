@@ -26,6 +26,7 @@ typedef unsigned long refcount_t;
 #define refcounted(T) \
     struct {                    \
         refcount_t refcount_;   \
+        size_t structSize_;     \
         T value;                \
     }
 
@@ -46,19 +47,20 @@ typedef void *refcounted_ptr;
  * Releases variable REF from the caller's ownership and sets it to NULL.
  */
 #define release(REF) \
-    ((void)(--(REF)->refcount_, (REF) = NULL))
+    ((void)(refcounted_release_(REF), (REF) = NULL))
 
 /**
  * Retains object REF for the caller's use.
  * Every retain() must be met with a matching release().
  *
- * Returns REF.
+ * Returns the value held in REF.
  */
 #define retain(REF) \
-    (++(REF)->refcount_, (REF))
+    (++(REF)->refcount_, (REF)->value)
 
 // IMPLEMENTATION DETAILS FOLLOW!
 // Do not write code that depends on anything below this line.
 refcounted_ptr refcounted_new_ (size_t structSize);
+void refcounted_release_ (refcounted_ptr ptr);
 
 #endif
