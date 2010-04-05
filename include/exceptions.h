@@ -120,6 +120,11 @@ bool exception_is_a (const exception *ex, const struct exception_type_info *type
  *      - This macro uses some pretty extreme sorcery involving, at times,
  *        absurd 'if' statements. To avoid issues, braces should ALWAYS be used
  *        enclosing a try block and within the block itself.
+ *      - Any variables with automatic storage duration (i.e., defined in
+ *        function scope) that are modified INSIDE the try block and NOT
+ *        qualified 'volatile' are indeterminate if an exception is caught. This
+ *        is a restriction imposed by setjmp() and longjmp(). The easy solution
+ *        is to use 'volatile' with any such variables.
  */
 #define try \
     struct exception_data_ *exception_current_data_ = exception_block_push_();  \

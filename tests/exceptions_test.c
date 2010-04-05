@@ -15,24 +15,29 @@ static void exception_test_nested2 (void);
 exception_subclass(Exception, TestException);
 
 void exceptions_test (void) {
-    volatile int caught = 0;
+    int caught = 0;
+    bool executed_finally = false;
 
     try {
         exception_test_nested();
     } catch (TestException, ex) {
+        ++caught;
+            
         try {
-            ++caught;
             raise(Exception, NULL);
         } catch (Exception, ex) {
             ++caught;
         }
     } finally {
         assert(caught == 2);
+        executed_finally = true;
     }
+    
+    assert(executed_finally);
 }
 
 static void exception_test_nested (void) {
-    volatile bool caught = false;
+    bool caught = false;
     
     try {
         exception_test_nested2();
@@ -45,7 +50,7 @@ static void exception_test_nested (void) {
 }
 
 static void exception_test_nested2 (void) {
-    volatile bool caught = false;
+    bool caught = false;
 
     try {
         raise(TestException, NULL);

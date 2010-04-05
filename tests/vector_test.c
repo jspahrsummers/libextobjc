@@ -51,6 +51,16 @@ void vector_test (void) {
             break;
         }
     }
+    
+    vector_remove(vf, 1);
+    assert(vf->count == 2);
+    
+    vector_remove(vs, 2);
+    vector_remove(vs, 1);
+    assert(vs->count == 1);
+    
+    vector_remove(vs, 0);
+    assert(vs->count == 0);
         
     vector_delete(vf);
     vector_delete(vs);
