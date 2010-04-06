@@ -158,6 +158,8 @@ bool exception_is_a (const exception *ex, const struct exception_type_info *type
                 ) ||                                                        \
                 /* ... or it was just not caught... */                      \
                 /* push to a handler further up without a backtrace */      \
+                /******* TODO: THIS LEAKS! *******/                         \
+                /* exception_current_data_ is never freed! */               \
                 exprify(exception_raise_up_block_(exception_current_data_)) \
             )) ||                                                           \
             /* ... or the exception WAS handled cleanly... */               \
