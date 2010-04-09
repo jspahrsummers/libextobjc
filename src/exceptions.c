@@ -10,6 +10,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "exceptions.h"
+#include "memory.h"
 
 /*** Exception types ***/
 exception_class(Exception);
@@ -21,6 +22,18 @@ struct exception_data_ *exception_current_block_;
 static
 void exception_print_trace (const exception *ex);
 
+void exception_block_free_ (struct exception_data_ *block) {
+    if (block->exception_obj.backtrace_) {
+        exception_block_free_(block->exception_obj.backtrace_);
+        
+        #ifdef DEBUG
+        block->exception_obj.backtrace_ = NULL;
+        #endif
+    }
+    
+    extc_free(block);
+}
+
 void exception_block_pop_ (void) {
     struct exception_data_ *currentBlock = exception_current_block_;
     assert(currentBlock != NULL);
@@ -29,10 +42,11 @@ void exception_block_pop_ (void) {
 
 struct exception_data_ *exception_block_push_ (void) {
     struct exception_data_ *ret = extc_malloc(sizeof(*ret));
-    ret->parent = exception_current_block_;
-    exception_current_block_ = ret;
     
-    return ret;
+    ret->parent = exception_current_block_;
+    ret->exception_obj.backtrace_ = NULL;
+    
+    return exception_current_block_ = ret;
 }
 
 bool exception_is_a (const exception *ex, const struct exception_type_info *type) {
@@ -53,11 +67,13 @@ void exception_print_trace (const exception *ex) {
     assert(ex != NULL);
     
     fprintf(stderr, "*** Uncaught %s raised in function %s() at %s:%lu\n", ex->type->name, ex->function, ex->file, ex->line);
-    while ((ex = ex->backtrace_))
+    while (ex->backtrace_) {
+        ex = &ex->backtrace_->exception_obj;
         fprintf(stderr, "*** Previously raised in function %s() at %s:%lu\n", ex->function, ex->file, ex->line);
+    }
 }
 
-void exception_raise_ (const exception *backtrace, const struct exception_type_info *type, const void *data, const char *function, const char *file, unsigned long line) {
+void exception_raise_ (struct exception_data_ *backtrace, const struct exception_type_info *type, const void *data, const char *function, const char *file, unsigned long line) {
     struct exception_data_ *currentBlock = exception_current_block_;
     
     if (currentBlock) {
@@ -78,17 +94,5 @@ void exception_raise_ (const exception *backtrace, const struct exception_type_i
         .line       = line
     });
     
-    exit(EXIT_FAILURE);
-}
-
-void exception_raise_up_block_ (struct exception_data_ *currentBlock) {
-    if (exception_current_block_) {
-        exception_current_block_->exception_obj = currentBlock->exception_obj;
-        
-        extc_free(currentBlock);
-        longjmp(exception_current_block_->context, 1);
-    }
-    
-    exception_print_trace(&currentBlock->exception_obj);
     exit(EXIT_FAILURE);
 }

@@ -18,12 +18,14 @@
 #include <stddef.h>
 #include "blocks.h"
 
+struct exception_data_;
+
 /**
  * Represents an exception.
  * Do not manually create objects of this type.
  */
 typedef struct exception_ {
-    const struct exception_ *backtrace_;
+    struct exception_data_ *backtrace_;
     
     /**
      * This exception's type.
@@ -106,9 +108,8 @@ bool exception_is_a (const exception *ex, const struct exception_type_info *type
  * This can only be called from within a catch block.
  */
 #define throw \
-    if (exprify(exception_propagation_.line = __LINE__,                     \
-        exception_uncaught_ = true, exception_propagation_.propagate =      \
-        true))                                                              \
+    if (exprify(exception_propagate_line_ = __LINE__,   \
+        exception_uncaught_ = true))                    \
         break
 
 /**
@@ -133,8 +134,8 @@ bool exception_is_a (const exception *ex, const struct exception_type_info *type
     for (volatile bool loop_done_ = false; !loop_done_; loop_done_ = true)  \
     for (struct exception_data_ *exception_current_data_ =                  \
         exception_block_push_(); !loop_done_; loop_done_ = true)            \
-    for (struct exception_propagation_ exception_propagation_ = {           \
-        .propagate = false }; !loop_done_; loop_done_ = true)               \
+    for (volatile unsigned long exception_propagate_line_ = __LINE__;       \
+        !loop_done_; loop_done_ = true)                                     \
                                                                             \
     /* exception_unhandled_ takes on a few different meanings:              \
         0 = no exceptions thrown yet, execute 'try' block                   \
@@ -148,24 +149,16 @@ bool exception_is_a (const exception *ex, const struct exception_type_info *type
         /* if the 'finally' block has been executed... */                   \
         (finalizer_run_ && (                                                \
             /* if an exception wasn't fully handled... */                   \
-            (exception_uncaught_ && (                                       \
-                /* if the exception was rethrown with 'throw'... */         \
-                (exception_propagation_.propagate &&                        \
-                    /* push to a handler further up, saving a backtrace */  \
-                    exprify(exception_rethrow_from_(                        \
+            (exception_uncaught_ &&                                         \
+                /* push to a handler further up, saving a backtrace */      \
+                exprify(exception_rethrow_from_(exception_current_data_,    \
                         &exception_current_data_->exception_obj,            \
-                        exception_propagation_.line))                       \
-                ) ||                                                        \
-                /* ... or it was just not caught... */                      \
-                /* push to a handler further up without a backtrace */      \
-                /******* TODO: THIS LEAKS! *******/                         \
-                /* exception_current_data_ is never freed! */               \
-                exprify(exception_raise_up_block_(exception_current_data_)) \
-            )) ||                                                           \
+                        exception_propagate_line_))                         \
+            ) ||                                                            \
             /* ... or the exception WAS handled cleanly... */               \
-            exprify(extc_free(exception_current_data_))                     \
+            exprify(exception_block_free_(exception_current_data_))         \
         )) ||                                                               \
-        /* ... or if there were no 'catch' blocks found at all... */        \
+        /* ... or if there were no exceptions thrown... */                  \
         (exception_unhandled_ == 0 &&                                       \
             /* go back in and execute the 'finally' block */                \
             exprify(exception_block_pop_(), exception_unhandled_ = 2)       \
@@ -268,10 +261,6 @@ bool exception_is_a (const exception *ex, const struct exception_type_info *type
  */
 exception_declaration(Exception);
 
-// we use the memory macros and functions from memory.h
-// this include is here because memory.h depends on some definitions in here
-#include "memory.h"
-
 // IMPLEMENTATION DETAILS FOLLOW!
 // Do not write code that depends on anything below this line.
 #define exception_type_definition_(PARENT, TYPE) \
@@ -285,19 +274,15 @@ struct exception_data_ {
     exception exception_obj;
 };
 
-struct exception_propagation_ {
-    bool propagate;
-    unsigned long line;
-};
-
 extern struct exception_data_ *exception_current_block_;
 
+void exception_block_free_ (struct exception_data_ *block);
 void exception_block_pop_ (void);
 struct exception_data_ *exception_block_push_ (void);
-void exception_raise_ (const exception *backtrace, const struct exception_type_info *type, const void *data, const char *function, const char *file, unsigned long line);
+void exception_raise_ (struct exception_data_ *backtrace, const struct exception_type_info *type, const void *data, const char *function, const char *file, unsigned long line);
 void exception_raise_up_block_ (struct exception_data_ *currentBlock);
-#define exception_rethrow_from_(EX, LINE) \
-    exception_raise_((EX), (EX)->type, (EX)->data, __func__, __FILE__, (LINE))
+#define exception_rethrow_from_(BLOCK, EX, LINE) \
+    exception_raise_((BLOCK), (EX)->type, (EX)->data, __func__, __FILE__, (LINE))
 void exception_test (void);
 
 #endif
