@@ -3,8 +3,8 @@
  * ExtendedC
  *
  * Although convenient, use of this header file is discouraged for namespace
- * pollution reasons. (Of course, that being said, several modules depend on
- * each other anyways.)
+ * pollution reasons. (Of course, that being said, some modules depend on each
+ * other anyways.)
  *
  * by Justin Spahr-Summers
  * Copyright (C) 2010

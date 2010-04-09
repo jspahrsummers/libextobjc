@@ -13,6 +13,8 @@
 #include "config.h"
 #endif
 
+#include "exceptions.h"
+
 /*
  * N1256 6.2.6:
  * "All pointers to union types shall have the same representation and alignment
@@ -31,5 +33,12 @@
         unsigned char unused_;  \
         T value;                \
     }
+
+/**
+ * Exception thrown by ExtendedC templates when a given index is out-of-bounds.
+ *
+ * The 'data' field is set to the templated container.
+ */
+exception_declaration(IndexOutOfBoundsException);
 
 #endif

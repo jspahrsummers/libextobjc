@@ -15,6 +15,8 @@
 
 #include <stdbool.h>
 #include <stddef.h>
+#include <string.h>
+#include "blocks.h"
 #include "template.h"
 
 /**
@@ -52,15 +54,27 @@ void vector_delete (vector_ptr vec);
  * Adds VAL to the end of VEC.
  */
 #define vector_add(VEC, VAL) \
-        vector_insert(VEC, VAL, (VEC)->count)
+        vector_insert((VEC), (VAL), (VEC)->count)
+
+/**
+ * Adds COUNT items from ARR to the end of VEC.
+ */
+#define vector_add_array(VEC, COUNT, ARR) \
+        vector_insert_array((VEC), (COUNT), (ARR), (VEC)->count)
 
 /**
  * References the item at INDEX in VEC.
- * If INDEX is out of bounds, behavior is undefined.
  * Assignment is allowed as long as VEC is not qualified 'const'.
  */
 #define vector_at(VEC, INDEX) \
-    ((VEC)->items[(INDEX)].value)
+    ((VEC)->items[vector_bounds_check((VEC), (INDEX))].value)
+
+/**
+ * Ensures that INDEX is within the bounds of VEC.
+ * Returns INDEX if in bounds, throws an OutOfBoundsException otherwise.
+ */
+#define vector_bounds_check(VEC, INDEX) \
+        vector_bounds_check_((VEC), (INDEX), 0)
 
 /**
  * Loops through VEC, assigning each item to VAR and executing the body of the loop.
@@ -100,32 +114,66 @@ void vector_delete (vector_ptr vec);
 
 /**
  * Inserts VAL into vector VEC before index INDEX.
- * If INDEX is greater than the highest-numbered index plus one, behavior is undefined.
+ * If INDEX is greater than the highest-numbered index plus one, throws an IndexOutOfBoundsException.
  */
 #define vector_insert(VEC, VAL, INDEX) \
-    do {                                                            \
-        size_t index_ = vector_prepare_for_insert_((VEC), (INDEX)); \
-        vector_at((VEC), index_) = (VAL);                           \
+    do {                                                        \
+        size_t index_ = vector_prepare_for_insert_((VEC), 1,    \
+            vector_bounds_check_((VEC), (INDEX), 1));           \
+        vector_at((VEC), index_) = (VAL);                       \
+    } while (0)
+
+/**
+ * Inserts the COUNT items in ARR into vector VEC before index INDEX.
+ * If INDEX is greater than the highest-numbered index plus one, behavior is undefined.
+ *
+ * The type of items in ARR need not be the same as the type of items in VEC as
+ * long as they are implicitly convertible.
+ */
+#define vector_insert_array(VEC, COUNT, ARR, INDEX) \
+    do {                                                                    \
+        if (!(COUNT))                                                       \
+            break;                                                          \
+                                                                            \
+        size_t start_ = vector_prepare_for_insert_((VEC), (COUNT),          \
+            vector_bounds_check_((VEC), (INDEX), (COUNT)));                 \
+        /* memcpy() cannot be used because 'items' might have padding */    \
+        for (size_t index_ = 0; index_ < (COUNT); ++index_)                 \
+            vector_at((VEC), index_ + start_) = (ARR)[index_];              \
     } while (0)
 
 /**
  * Removes the item at INDEX in VEC.
- * If INDEX is out of bounds, behavior is undefined.
  */
-void vector_remove (vector_ptr vec, size_t index);
+#define vector_remove(VEC, INDEX) \
+        vector_remove_range((VEC), (INDEX), 1)
+
+/**
+ * Removes the LENGTH items starting at INDEX in VEC.
+ */
+#define vector_remove_range(VEC, INDEX, LENGTH) \
+        vector_remove_range_((VEC), vector_bounds_check_((VEC), (INDEX), (LENGTH)), (LENGTH))
 
 // IMPLEMENTATION DETAILS FOLLOW!
 // Do not write code that depends on anything below this line.
 #define vector_(C, T) \
-    struct {                            \
-        C size_t itemSize_;             \
-        C size_t count;                 \
-        C size_t capacity;              \
-        template_type(T) * C items;     \
+    struct {                                    \
+        C size_t itemSize_;                     \
+        C size_t count;                         \
+        C size_t capacity;                      \
+        int (*compare)(const T a, const T b);   \
+        template_type(T) * C items;             \
     }
 
 vector_ptr vector_new_ (size_t itemSize);
-size_t vector_prepare_for_insert_ (vector_ptr vec, size_t index);
-void vector_test (void);
+
+#define vector_bounds_check_(VEC, INDEX, TOLERANCE) \
+        vector_bounds_check_or_raise_((VEC), (VEC)->count + (TOLERANCE), (INDEX), __func__, __FILE__, __LINE__)
+
+size_t vector_bounds_check_or_raise_ (vector_const_ptr vec, size_t countToUse, size_t index, const char *func, const char *file, unsigned long line);
+
+size_t vector_prepare_for_insert_ (vector_ptr vec, size_t count, size_t index);
+
+void vector_remove_range_ (vector_ptr vec, size_t start, size_t length);
 
 #endif

@@ -180,6 +180,8 @@ bool exception_is_a (const exception *ex, const struct exception_type_info *type
                     } else if (exception_unhandled_ == 0)                   \
                         /* try block begins with user code */
 
+/* exception_block_pop_() needs to go somewhere in the try block */
+
 /**
  * Begins a block of code that is only executed if an exception of class TYPE
  * (or one of its subclasses) is thrown. VAR is the name of a variable that will
@@ -283,6 +285,5 @@ void exception_raise_ (struct exception_data_ *backtrace, const struct exception
 void exception_raise_up_block_ (struct exception_data_ *currentBlock);
 #define exception_rethrow_from_(BLOCK, EX, LINE) \
     exception_raise_((BLOCK), (EX)->type, (EX)->data, __func__, __FILE__, (LINE))
-void exception_test (void);
 
 #endif

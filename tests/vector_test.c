@@ -7,8 +7,9 @@
  */
 
 #include <assert.h>
-#include <stdio.h>
+#include <stdbool.h>
 #include <string.h>
+#include "exceptions.h"
 #include "vector_test.h"
 
 void vector_test (void) {
@@ -17,16 +18,13 @@ void vector_test (void) {
     vector(const char *) *vs = vector_new(const char *);
     
     vector_add(v, 10);
-    vector_add(vf, 6.7);
-    vector_add(vs, "hello");
-    
-    vector_add(v, 55);
-    vector_add(vf, 3.14);
-    vector_add(vs, "world");
-    
     vector_add(v, 1337);
-    vector_add(vf, 365.25);
+    vector_insert(v, 55, 1);
+    
     vector_add(vs, "foobar");
+    
+    vector_add_array(vf, 3, ((const double[]){ 6.7, 3.14, 365.25 }));
+    vector_insert_array(vs, 2, ((const char *[]){ "hello", "world" }), 0);
     
     vector_foreach_index (i, int val, v) {
         assert(i < 3);
@@ -51,6 +49,17 @@ void vector_test (void) {
             break;
         }
     }
+    
+    bool out_of_bounds = false;
+    volatile int i = 0;
+    try {
+        i = vector_at(v, 10);
+    }/* catch (IndexOutOfBoundsException, ex) {
+        out_of_bounds = true;
+    } finally {
+        assert(out_of_bounds);
+        assert(i == 0);
+    }*/
     
     vector_remove(vf, 1);
     assert(vf->count == 2);

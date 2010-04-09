@@ -47,7 +47,7 @@ typedef void *refcounted_ptr;
  * Releases variable REF from the caller's ownership and sets it to NULL.
  */
 #define release(REF) \
-    ((void)(refcounted_release_(REF), (REF) = NULL))
+    ((void)(refcounted_release_((REF)), (REF) = NULL))
 
 /**
  * Retains object REF for the caller's use.

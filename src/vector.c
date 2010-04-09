@@ -8,7 +8,6 @@
 
 #include <assert.h>
 #include <stdio.h>
-#include <string.h>
 #include "memory.h"
 #include "vector.h"
 
@@ -24,6 +23,7 @@ vector_ptr vector_new_ (size_t itemSize) {
     vector_t *ptr = extc_calloc(1, sizeof(*ptr));
     ptr->itemSize_ = itemSize;
     ptr->items = NULL;
+    ptr->compare = NULL;
     return ptr;
 }
 
@@ -46,35 +46,48 @@ void vector_delete (vector_ptr vec) {
     }
 }
 
-size_t vector_prepare_for_insert_ (vector_ptr vec, size_t index) {
+size_t vector_bounds_check_or_raise_ (vector_const_ptr vec, size_t countToUse, size_t index, const char *func, const char *file, unsigned long line) {
+    assert(vec != NULL);
+
+    if (index >= countToUse)
+        exception_raise_(NULL, IndexOutOfBoundsException, vec, func, file, line);
+    
+    return index;
+}
+
+size_t vector_prepare_for_insert_ (vector_ptr vec, size_t count, size_t index) {
     vector_t *ptr = vec;
     assert(ptr != NULL);
     
-    if (ptr->capacity <= ptr->count) {
+    if (ptr->capacity < ptr->count + count) {
         size_t newCapacity = (ptr->capacity ? ptr->capacity * VECTOR_RESIZE_FACTOR : 1);
+        while (newCapacity < ptr->count + count)
+            // this isn't shorthanded so that VECTOR_RESIZE_FACTOR can be something like 3 / 2
+            newCapacity = newCapacity * VECTOR_RESIZE_FACTOR;
+        
         ptr->items = extc_realloc(ptr->items, ptr->itemSize_ * newCapacity);
         ptr->capacity = newCapacity;
     }
     
     if (index < ptr->count) {
         unsigned char *itemsPtr = (void *)ptr->items;
-        memmove(itemsPtr + ptr->itemSize_ * (index + 1),
-                itemsPtr + ptr->itemSize_ *  index     , ptr->itemSize_);
+        memmove(itemsPtr + ptr->itemSize_ * (index + count),
+                itemsPtr + ptr->itemSize_ *  index         , ptr->itemSize_ * count);
     }
     
-    ++ptr->count;
+    ptr->count += count;
     return index;
 }
 
-void vector_remove (vector_ptr vec, size_t index) {
+void vector_remove_range_ (vector_ptr vec, size_t start, size_t length) {
     vector_t *ptr = vec;
     assert(ptr != NULL);
     
-    if (index + 1 < ptr->count) {
+    if (start + length < ptr->count) {
         unsigned char *itemsPtr = (void *)ptr->items;
-        memmove(itemsPtr + ptr->itemSize_ * index,
-                itemsPtr + ptr->itemSize_ * (index + 1), ptr->itemSize_);
+        memmove(itemsPtr + ptr->itemSize_ *  start,
+                itemsPtr + ptr->itemSize_ * (start + length), ptr->itemSize_);
     }
     
-    --ptr->count;
+    ptr->count -= length;
 }

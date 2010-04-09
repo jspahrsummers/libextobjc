@@ -38,7 +38,7 @@ void *extc_calloc (size_t count, size_t size);
  * Convenience macro for free() for uniformity with the other functions here.
  * This may be updated later to do something amazing.
  */
-#define extc_free(p) free(p)
+#define extc_free(p) free((p))
 
 /**
  * Allocates 'size' bytes of memory and returns a pointer to it.

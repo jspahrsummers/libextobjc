@@ -72,7 +72,8 @@ am__installdirs = "$(DESTDIR)$(libdir)"
 LTLIBRARIES = $(lib_LTLIBRARIES)
 libextc_la_LIBADD =
 am_libextc_la_OBJECTS = libextc_la-exceptions.lo libextc_la-memory.lo \
-	libextc_la-refcounted.lo libextc_la-vector.lo
+	libextc_la-refcounted.lo libextc_la-template.lo \
+	libextc_la-vector.lo
 libextc_la_OBJECTS = $(am_libextc_la_OBJECTS)
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
@@ -204,7 +205,7 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 lib_LTLIBRARIES = libextc.la
 libextc_la_CPPFLAGS = -pedantic -Wall -Wextra -Werror -I../include
-libextc_la_SOURCES = exceptions.c memory.c refcounted.c vector.c
+libextc_la_SOURCES = exceptions.c memory.c refcounted.c template.c vector.c
 all: all-am
 
 .SUFFIXES:
@@ -282,6 +283,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libextc_la-exceptions.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libextc_la-memory.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libextc_la-refcounted.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libextc_la-template.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libextc_la-vector.Plo@am__quote@
 
 .c.o:
@@ -325,6 +327,13 @@ libextc_la-refcounted.lo: refcounted.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='refcounted.c' object='libextc_la-refcounted.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libextc_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libextc_la-refcounted.lo `test -f 'refcounted.c' || echo '$(srcdir)/'`refcounted.c
+
+libextc_la-template.lo: template.c
+@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libextc_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libextc_la-template.lo -MD -MP -MF $(DEPDIR)/libextc_la-template.Tpo -c -o libextc_la-template.lo `test -f 'template.c' || echo '$(srcdir)/'`template.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libextc_la-template.Tpo $(DEPDIR)/libextc_la-template.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='template.c' object='libextc_la-template.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libextc_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libextc_la-template.lo `test -f 'template.c' || echo '$(srcdir)/'`template.c
 
 libextc_la-vector.lo: vector.c
 @am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libextc_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libextc_la-vector.lo -MD -MP -MF $(DEPDIR)/libextc_la-vector.Tpo -c -o libextc_la-vector.lo `test -f 'vector.c' || echo '$(srcdir)/'`vector.c
