@@ -21,11 +21,25 @@ void exceptions_test (void) {
     try {
         assert(caught == 0);
     }
+    
+    try {
+        try {
+            raise(Exception, NULL);
+        }
+    } catch (Exception, ex) {
+        caught = 1;
+    } finally {
+        assert(caught == 1);
+        executed_finally = true;
+    }
+    
+    assert(executed_finally);
+    executed_finally = false;
 
     try {
         exception_test_nested();
     } catch (TestException, ex) {
-        ++caught;
+        caught = 5;
             
         try {
             raise(Exception, NULL);
@@ -33,7 +47,7 @@ void exceptions_test (void) {
             ++caught;
         }
     } finally {
-        assert(caught == 2);
+        assert(caught == 6);
         executed_finally = true;
     }
     
@@ -41,9 +55,9 @@ void exceptions_test (void) {
     executed_finally = false;
     
     try {
-        ++caught;
+        caught = 10;
     } finally {
-        assert(caught == 3);
+        assert(caught == 10);
         executed_finally = true;
     }
     
@@ -68,7 +82,7 @@ static void exception_test_nested2 (void) {
 
     try {
         raise(TestException, NULL);
-    } catch (TestException, ex) {
+    } catch_all (ex) {
         caught = true;
         throw;
     } finally {

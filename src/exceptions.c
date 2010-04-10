@@ -35,9 +35,8 @@ void exception_block_free_ (struct exception_data_ *block) {
 }
 
 void exception_block_pop_ (void) {
-    struct exception_data_ *currentBlock = exception_current_block_;
-    assert(currentBlock != NULL);
-    exception_current_block_ = currentBlock->parent;
+    assert(exception_current_block_ != NULL);
+    exception_current_block_ = exception_current_block_->parent;
 }
 
 struct exception_data_ *exception_block_push_ (void) {
@@ -45,7 +44,6 @@ struct exception_data_ *exception_block_push_ (void) {
     
     ret->parent = exception_current_block_;
     ret->exception_obj.backtrace_ = NULL;
-    
     return exception_current_block_ = ret;
 }
 
@@ -94,5 +92,20 @@ void exception_raise_ (struct exception_data_ *backtrace, const struct exception
         .line       = line
     });
     
+    exit(EXIT_FAILURE);
+}
+
+void exception_raise_up_block_ (struct exception_data_ *currentBlock) {
+    exception exception_copy = currentBlock->exception_obj;
+    
+    // don't use block_free_() because we need the backtrace
+    extc_free(currentBlock);
+    
+    if (exception_current_block_) {
+        exception_current_block_->exception_obj = exception_copy;
+        longjmp(exception_current_block_->context, 1);
+    }
+    
+    exception_print_trace(&exception_copy);
     exit(EXIT_FAILURE);
 }

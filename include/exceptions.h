@@ -108,8 +108,9 @@ bool exception_is_a (const exception *ex, const struct exception_type_info *type
  * This can only be called from within a catch block.
  */
 #define throw \
-    if (exprify(exception_propagate_line_ = __LINE__,   \
-        exception_uncaught_ = true))                    \
+    if (exprify(exception_propagation_.line = __LINE__,                     \
+        exception_uncaught_ = true, exception_propagation_.propagate =      \
+        true))                                                              \
         break
 
 /**
@@ -134,32 +135,40 @@ bool exception_is_a (const exception *ex, const struct exception_type_info *type
     for (volatile bool loop_done_ = false; !loop_done_; loop_done_ = true)  \
     for (struct exception_data_ *exception_current_data_ =                  \
         exception_block_push_(); !loop_done_; loop_done_ = true)            \
-    for (volatile unsigned long exception_propagate_line_ = __LINE__;       \
-        !loop_done_; loop_done_ = true)                                     \
+    for (struct exception_propagation_ exception_propagation_ = {           \
+        .propagate = false }; !loop_done_; loop_done_ = true)               \
                                                                             \
     /* exception_unhandled_ takes on a few different meanings:              \
         0 = no exceptions thrown yet, execute 'try' block                   \
         1 = exception thrown, find a suitable 'catch' block                 \
         2 = handling finished, execute 'finally' block */                   \
                                                                             \
-    for (int exception_unhandled_ = setjmp(exception_current_data_->        \
-        context); !loop_done_; loop_done_ = true)                           \
+    for (volatile int exception_unhandled_ = setjmp(                        \
+        exception_current_data_->context); !loop_done_; loop_done_ = true)  \
     for (volatile bool exception_uncaught_ = (exception_unhandled_ == 1),   \
         finalizer_run_ = false; !finalizer_run_;                            \
         /* if the 'finally' block has been executed... */                   \
         (finalizer_run_ && (                                                \
-            /* if an exception wasn't fully handled... */                   \
-            (exception_uncaught_ &&                                         \
-                /* push to a handler further up, saving a backtrace */      \
-                exprify(exception_rethrow_from_(exception_current_data_,    \
+            /* if an exception was rethrown... */                           \
+            (exception_uncaught_ && (                                       \
+                /* if the exception was rethrown with 'throw'... */         \
+                (exception_propagation_.propagate &&                        \
+                    /* push to a handler further up, saving a backtrace */  \
+                    exprify(exception_rethrow_from_(                        \
+                        exception_current_data_,                            \
                         &exception_current_data_->exception_obj,            \
-                        exception_propagate_line_))                         \
-            ) ||                                                            \
+                        exception_propagation_.line))                       \
+                ) ||                                                        \
+                /* ... or it was just not caught... */                      \
+                /* push to a handler further up without a backtrace */      \
+                exprify(exception_raise_up_block_(exception_current_data_)) \
+            )) ||                                                           \
             /* ... or the exception WAS handled cleanly... */               \
             exprify(exception_block_free_(exception_current_data_))         \
         )) ||                                                               \
-        /* ... or if there were no exceptions thrown... */                  \
-        (exception_unhandled_ == 0 &&                                       \
+        /* ... or if there were no exceptions thrown and/or caught... */    \
+        ((exception_unhandled_ == 0 || (exception_uncaught_ &&              \
+            !exception_propagation_.propagate)) &&                          \
             /* go back in and execute the 'finally' block */                \
             exprify(exception_block_pop_(), exception_unhandled_ = 2)       \
         ))                                                                  \
@@ -274,6 +283,11 @@ struct exception_data_ {
     struct exception_data_ *parent;
     jmp_buf context;
     exception exception_obj;
+};
+
+struct exception_propagation_ {
+    bool propagate;
+    unsigned long line;
 };
 
 extern struct exception_data_ *exception_current_block_;

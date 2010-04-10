@@ -54,12 +54,12 @@ void vector_test (void) {
     volatile int i = 0;
     try {
         i = vector_at(v, 10);
-    }/* catch (IndexOutOfBoundsException, ex) {
+    } catch (IndexOutOfBoundsException, ex) {
         out_of_bounds = true;
     } finally {
         assert(out_of_bounds);
         assert(i == 0);
-    }*/
+    }
     
     vector_remove(vf, 1);
     assert(vf->count == 2);
