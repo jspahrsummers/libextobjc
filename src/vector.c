@@ -59,6 +59,32 @@ size_t vector_bounds_check_or_raise_ (vector_const_ptr restrict vec, size_t coun
     return index;
 }
 
+vector_ptr vector_copy (vector_const_ptr vec) {
+    const vector_t *ptr = vec;
+    assert(ptr != NULL);
+
+    vector_t *ret = extc_calloc(1, sizeof(*ret));
+    ret->itemSize_  = ptr->itemSize_ ;
+    ret->valueSize_ = ptr->valueSize_;
+    ret->compare    = ptr->compare   ;
+    ret->count      = ptr->count     ;
+    
+    try {
+        ret->items = extc_malloc(ptr->count * ptr->itemSize_);
+    } catch_all (ex) {
+        // suppress warnings about not using 'ex'
+        (void)ex;
+    
+        // free 'ret' to avoid memory leaks
+        extc_free(ret);
+        throw;
+    }
+    
+    ret->capacity = ret->count;
+    memcpy(ret->items, ptr->items, ptr->itemSize_ * ptr->count);
+    return ret;
+}
+
 size_t vector_prepare_for_insert_ (vector_ptr vec, size_t count, size_t index) {
     vector_t *ptr = vec;
     assert(ptr != NULL);

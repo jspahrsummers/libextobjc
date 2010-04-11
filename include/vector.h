@@ -104,6 +104,12 @@ void vector_delete (vector_ptr vec);
         vector_bounds_check_((VEC), (INDEX), 0)
 
 /**
+ * Creates and returns a copy of 'vec' and its contents.
+ * If 'vec' contains pointers, they are not deep copied.
+ */
+vector_ptr vector_copy (vector_const_ptr vec);
+
+/**
  * Loops through VEC, assigning each item to VAR and executing the body of the loop.
  * 'break' and 'continue' work normally.
  *
@@ -236,6 +242,8 @@ bool vector_search (vector_const_ptr vec, const void *item, size_t *index);
 
 /**
  * Sorts 'vec' without maintaining the relative ordering of equal items.
+ *
+ * Uses algorithm_introsort().
  */
 void vector_unstable_sort (vector_ptr vec);
 
