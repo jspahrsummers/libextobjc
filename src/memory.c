@@ -23,6 +23,10 @@ void *extc_calloc (size_t count, size_t size) {
     return ptr;
 }
 
+void extc_free (void *ptr) {
+    free(ptr);
+}
+
 void *extc_malloc (size_t size) {
     void *ptr = malloc(size);
     if (!ptr)

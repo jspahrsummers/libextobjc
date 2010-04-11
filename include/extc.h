@@ -13,8 +13,9 @@
 #ifndef EXTC_EXTC_H
 #define EXTC_EXTC_H
 
+#include "algorithm.h"
 #include "blocks.h"
-#include "exceptions.h"
+#include "exception.h"
 #include "memory.h"
 #include "refcounted.h"
 #include "static_assert.h"

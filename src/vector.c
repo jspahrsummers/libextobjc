@@ -8,6 +8,7 @@
 
 #include <assert.h>
 #include <stdio.h>
+#include "algorithm.h"
 #include "memory.h"
 #include "vector.h"
 
@@ -19,11 +20,14 @@
 // used for accessing the fields in the structure
 typedef vector_(, unsigned char) vector_t;
 
-vector_ptr vector_new_ (size_t itemSize) {
+vector_ptr vector_new_ (size_t valueSize, size_t itemSize) {
+    // calloc is used to not only initialize some fields
+    // but also to make sure any padding bits are set to 0 for bit comparisons
     vector_t *ptr = extc_calloc(1, sizeof(*ptr));
     ptr->itemSize_ = itemSize;
+    ptr->valueSize_ = valueSize;
     ptr->items = NULL;
-    ptr->compare = NULL;
+    ptr->compare = &memcmp;
     return ptr;
 }
 
@@ -46,7 +50,7 @@ void vector_delete (vector_ptr vec) {
     }
 }
 
-size_t vector_bounds_check_or_raise_ (vector_const_ptr vec, size_t countToUse, size_t index, const char *func, const char *file, unsigned long line) {
+size_t vector_bounds_check_or_raise_ (vector_const_ptr restrict vec, size_t countToUse, size_t index, const char *func, const char *file, unsigned long line) {
     assert(vec != NULL);
 
     if (index >= countToUse)
@@ -90,4 +94,29 @@ void vector_remove_range_ (vector_ptr vec, size_t start, size_t length) {
     }
     
     ptr->count -= length;
+}
+
+bool vector_search (vector_const_ptr vec, const void *item, size_t *index) {
+    const vector_t *ptr = vec;
+    assert(ptr != NULL);
+    assert(ptr->compare != NULL);
+    
+    for (size_t i = 0;i < ptr->count;++i) {
+        // valueSize_ is needed here to prevent possible padding from being considered
+        if (ptr->compare(item, ptr->items + i, ptr->valueSize_) == 0) {
+            if (index)
+                *index = i;
+            
+            return true;
+        }
+    }
+    
+    return false;
+}
+
+void vector_unstable_sort (vector_ptr vec) {
+    vector_t *ptr = vec;
+    assert(ptr != NULL);
+    
+    algorithm_introsort(ptr->items, ptr->count, ptr->itemSize_, ptr->valueSize_, ptr->compare);
 }

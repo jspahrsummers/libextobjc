@@ -21,6 +21,21 @@
 
 /**
  * Refers to a vector (dynamic array) containing items of type T.
+ * The vector structure provides a few public fields:
+ *
+ *  const size_t capacity
+ *      the total number of slots available in the vector
+ *
+ *  const size_t count
+ *      the total number of items in the vector
+ *
+ *  template_type(T) * const items
+ *      an array of template_type(T) structures that can be used to access the
+ *      vector's contents without bounds checking
+ *
+ *  template_compare_function compare
+ *      a pointer to a generalized function for comparing data, used for sorting
+ *      and finding algorithms; set to memcmp() by default
  */
 #define vector(T) \
         vector_(const, T)
@@ -42,10 +57,10 @@ typedef const void *vector_const_ptr;
  * This vector must be freed with vector_delete() when finished.
  */
 #define vector_new(T) \
-        vector_new_(sizeof(template_type(T)))
+        vector_new_(sizeof(T), sizeof(template_type(T)))
 
 /**
- * Deletes the given vector.
+ * Deletes the given vector if 'vec' is not NULL.
  * The caller is responsible for the lifecycle of pointer items in the vector.
  */
 void vector_delete (vector_ptr vec);
@@ -54,13 +69,25 @@ void vector_delete (vector_ptr vec);
  * Adds VAL to the end of VEC.
  */
 #define vector_add(VEC, VAL) \
-        vector_insert((VEC), (VAL), (VEC)->count)
+    do {                                                                    \
+        size_t index_ = vector_prepare_for_insert_((VEC), 1, (VEC)->count); \
+        (VEC)->items[index_].value = (VAL);                                 \
+    } while (0)
 
 /**
  * Adds COUNT items from ARR to the end of VEC.
  */
 #define vector_add_array(VEC, COUNT, ARR) \
-        vector_insert_array((VEC), (COUNT), (ARR), (VEC)->count)
+    do {                                                                    \
+        if (!(COUNT))                                                       \
+            break;                                                          \
+                                                                            \
+        size_t start_ = vector_prepare_for_insert_((VEC), (COUNT),          \
+            (VEC)->count);                                                  \
+        /* memcpy() cannot be used because 'items' might have padding */    \
+        for (size_t index_ = 0; index_ < (COUNT); ++index_)                 \
+            (VEC)->items[index_ + start_].value = (ARR)[index_];            \
+    } while (0)
 
 /**
  * References the item at INDEX in VEC.
@@ -90,9 +117,11 @@ void vector_delete (vector_ptr vec);
  * ---
  */
 #define vector_foreach(VAR, VEC) \
-    for (bool done_ = false, oneLoop_; !done_; done_ = true) \
-        for (size_t vec_index_ = 0; oneLoop_ = true, !done_ && vec_index_ < (VEC)->count; ++vec_index_) \
-            for (VAR = vector_at((VEC), vec_index_); oneLoop_ && (done_ = true); oneLoop_ = false, done_ = false)
+    for (bool done_ = false, oneLoop_; !done_; done_ = true)                \
+        for (size_t vec_index_ = 0; oneLoop_ = true, !done_ && vec_index_   \
+            < (VEC)->count; ++vec_index_)                                   \
+            for (VAR = (VEC)->items[vec_index_].value; oneLoop_ && (done_ = \
+                true); oneLoop_ = false, done_ = false)
 
 /**
  * Loops through VEC, assigning each item to VAR and executing the body of the loop.
@@ -108,9 +137,51 @@ void vector_delete (vector_ptr vec);
  * ---
  */
 #define vector_foreach_index(IND, VAR, VEC) \
-    for (bool done_ = false, oneLoop_; !done_; done_ = true) \
-        for (size_t IND, vec_index_ = 0; oneLoop_ = true, !done_ && vec_index_ < (VEC)->count; ++vec_index_) \
-            for (VAR = vector_at((VEC), (IND = vec_index_)); oneLoop_ && (done_ = true); oneLoop_ = false, done_ = false)
+    for (bool done_ = false, oneLoop_; !done_; done_ = true)                \
+        for (size_t IND, vec_index_ = 0; oneLoop_ = true, !done_ &&         \
+            vec_index_ < (VEC)->count; ++vec_index_)                        \
+            for (VAR = (VEC)->items[(IND = vec_index_)].value; oneLoop_ &&  \
+                (done_ = true); oneLoop_ = false, done_ = false)
+
+/**
+ * Loops through VEC, assigning a pointer to each item to VAR and executing the body of the loop.
+ * 'break' and 'continue' work normally.
+ *
+ * ---
+ * vector(double) *v = vector_new(double);
+ * // put some items in 'v'
+ *
+ * vector_foreach_ref (double *val, v) {
+ *      printf("%f\n", *val);
+ * }
+ * ---
+ */
+#define vector_foreach_ref(VAR, VEC) \
+    for (bool done_ = false, oneLoop_; !done_; done_ = true)                \
+        for (size_t vec_index_ = 0; oneLoop_ = true, !done_ && vec_index_   \
+            < (VEC)->count; ++vec_index_)                                   \
+            for (VAR = &(VEC)->items[vec_index_].value; oneLoop_ && (done_  \
+                = true); oneLoop_ = false, done_ = false)
+
+/**
+ * Loops through VEC, assigning a pointer to each item to VAR and executing the body of the loop.
+ * The index of each item is assigned to a new size_t variable named by IND.
+ *
+ * ---
+ * vector(double) *v = vector_new(double);
+ * // put some items in 'v'
+ *
+ * vector_foreach_ref_index (index, double *val, v) {
+ *      printf("v[%zu] = %f\n", index, *val);
+ * }
+ * ---
+ */
+#define vector_foreach_ref_index(IND, VAR, VEC) \
+    for (bool done_ = false, oneLoop_; !done_; done_ = true)                \
+        for (size_t IND, vec_index_ = 0; oneLoop_ = true, !done_ &&         \
+            vec_index_ < (VEC)->count; ++vec_index_)                        \
+            for (VAR = &(VEC)->items[(IND = vec_index_)].value; oneLoop_ && \
+                (done_ = true); oneLoop_ = false, done_ = false)
 
 /**
  * Inserts VAL into vector VEC before index INDEX.
@@ -120,7 +191,7 @@ void vector_delete (vector_ptr vec);
     do {                                                        \
         size_t index_ = vector_prepare_for_insert_((VEC), 1,    \
             vector_bounds_check_((VEC), (INDEX), 1));           \
-        vector_at((VEC), index_) = (VAL);                       \
+        (VEC)->items[index_].value = (VAL);                     \
     } while (0)
 
 /**
@@ -139,7 +210,7 @@ void vector_delete (vector_ptr vec);
             vector_bounds_check_((VEC), (INDEX), (COUNT)));                 \
         /* memcpy() cannot be used because 'items' might have padding */    \
         for (size_t index_ = 0; index_ < (COUNT); ++index_)                 \
-            vector_at((VEC), index_ + start_) = (ARR)[index_];              \
+            (VEC)->items[index_ + start_].value = (ARR)[index_];            \
     } while (0)
 
 /**
@@ -154,23 +225,38 @@ void vector_delete (vector_ptr vec);
 #define vector_remove_range(VEC, INDEX, LENGTH) \
         vector_remove_range_((VEC), vector_bounds_check_((VEC), (INDEX), (LENGTH)), (LENGTH))
 
+/**
+ * Searches 'vec' for the value pointed to by 'item', returning true if found,
+ * or false otherwise.
+ *
+ * If 'index' is provided and the item was found, it is set to its location in
+ * the vector.
+ */
+bool vector_search (vector_const_ptr vec, const void *item, size_t *index);
+
+/**
+ * Sorts 'vec' without maintaining the relative ordering of equal items.
+ */
+void vector_unstable_sort (vector_ptr vec);
+
 // IMPLEMENTATION DETAILS FOLLOW!
 // Do not write code that depends on anything below this line.
 #define vector_(C, T) \
-    struct {                                    \
-        C size_t itemSize_;                     \
-        C size_t count;                         \
-        C size_t capacity;                      \
-        int (*compare)(const T a, const T b);   \
-        template_type(T) * C items;             \
+    struct {                                \
+        C size_t itemSize_;                 \
+        C size_t valueSize_;                \
+        C size_t count;                     \
+        C size_t capacity;                  \
+        template_compare_function compare;  \
+        template_type(T) * C items;         \
     }
 
-vector_ptr vector_new_ (size_t itemSize);
+vector_ptr vector_new_ (size_t valueSize, size_t itemSize);
 
 #define vector_bounds_check_(VEC, INDEX, TOLERANCE) \
         vector_bounds_check_or_raise_((VEC), (VEC)->count + (TOLERANCE), (INDEX), __func__, __FILE__, __LINE__)
 
-size_t vector_bounds_check_or_raise_ (vector_const_ptr vec, size_t countToUse, size_t index, const char *func, const char *file, unsigned long line);
+size_t vector_bounds_check_or_raise_ (vector_const_ptr restrict vec, size_t countToUse, size_t index, const char *func, const char *file, unsigned long line);
 
 size_t vector_prepare_for_insert_ (vector_ptr vec, size_t count, size_t index);
 

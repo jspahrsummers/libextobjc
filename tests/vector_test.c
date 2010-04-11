@@ -9,7 +9,7 @@
 #include <assert.h>
 #include <stdbool.h>
 #include <string.h>
-#include "exceptions.h"
+#include "exception.h"
 #include "vector_test.h"
 
 void vector_test (void) {
@@ -61,11 +61,11 @@ void vector_test (void) {
         assert(i == 0);
     }
     
-    vector_remove(vf, 1);
-    assert(vf->count == 2);
+    vector_remove_range(vf, 1, 2);
+    assert(vf->count == 1);
     
     vector_remove(vs, 2);
-    vector_remove(vs, 1);
+    vector_remove(vs, 0);
     assert(vs->count == 1);
     
     vector_remove(vs, 0);

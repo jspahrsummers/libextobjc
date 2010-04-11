@@ -1,22 +1,22 @@
 /**
- * libextc exceptions testcase
+ * libextc exception testcase
  * ExtendedC
  *
  * by Justin Spahr-Summers
  * Copyright (C) 2010
  */
 
-#ifndef EXTC_TEST_EXCEPTIONS_H
-#define EXTC_TEST_EXCEPTIONS_H
+#ifndef EXTC_TEST_EXCEPTION_H
+#define EXTC_TEST_EXCEPTION_H
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
 
-#include "exceptions.h"
+#include "exception.h"
 
 exception_declaration(TestException);
 
-void exceptions_test (void);
+void exception_test (void);
 
 #endif

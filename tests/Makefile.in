@@ -47,7 +47,8 @@ mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = $(top_builddir)/config.h
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
-am_test_OBJECTS = test-exceptions_test.$(OBJEXT) test-main.$(OBJEXT) \
+am_test_OBJECTS = test-algorithm_test.$(OBJEXT) \
+	test-exception_test.$(OBJEXT) test-main.$(OBJEXT) \
 	test-memory_test.$(OBJEXT) test-refcounted_test.$(OBJEXT) \
 	test-vector_test.$(OBJEXT)
 test_OBJECTS = $(am_test_OBJECTS)
@@ -183,7 +184,7 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 TESTS = $(check_PROGRAMS)
-test_SOURCES = exceptions_test.c main.c memory_test.c refcounted_test.c vector_test.c
+test_SOURCES = algorithm_test.c exception_test.c main.c memory_test.c refcounted_test.c vector_test.c
 test_CPPFLAGS = -pedantic -Wall -Wextra -I../include -I$(pkgincludedir)
 test_LDADD = ../src/libextc.la
 all: all-am
@@ -239,7 +240,8 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-exceptions_test.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-algorithm_test.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-exception_test.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-main.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-memory_test.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-refcounted_test.Po@am__quote@
@@ -266,19 +268,33 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LTCOMPILE) -c -o $@ $<
 
-test-exceptions_test.o: exceptions_test.c
-@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT test-exceptions_test.o -MD -MP -MF $(DEPDIR)/test-exceptions_test.Tpo -c -o test-exceptions_test.o `test -f 'exceptions_test.c' || echo '$(srcdir)/'`exceptions_test.c
-@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/test-exceptions_test.Tpo $(DEPDIR)/test-exceptions_test.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='exceptions_test.c' object='test-exceptions_test.o' libtool=no @AMDEPBACKSLASH@
+test-algorithm_test.o: algorithm_test.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT test-algorithm_test.o -MD -MP -MF $(DEPDIR)/test-algorithm_test.Tpo -c -o test-algorithm_test.o `test -f 'algorithm_test.c' || echo '$(srcdir)/'`algorithm_test.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/test-algorithm_test.Tpo $(DEPDIR)/test-algorithm_test.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='algorithm_test.c' object='test-algorithm_test.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o test-exceptions_test.o `test -f 'exceptions_test.c' || echo '$(srcdir)/'`exceptions_test.c
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o test-algorithm_test.o `test -f 'algorithm_test.c' || echo '$(srcdir)/'`algorithm_test.c
 
-test-exceptions_test.obj: exceptions_test.c
-@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT test-exceptions_test.obj -MD -MP -MF $(DEPDIR)/test-exceptions_test.Tpo -c -o test-exceptions_test.obj `if test -f 'exceptions_test.c'; then $(CYGPATH_W) 'exceptions_test.c'; else $(CYGPATH_W) '$(srcdir)/exceptions_test.c'; fi`
-@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/test-exceptions_test.Tpo $(DEPDIR)/test-exceptions_test.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='exceptions_test.c' object='test-exceptions_test.obj' libtool=no @AMDEPBACKSLASH@
+test-algorithm_test.obj: algorithm_test.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT test-algorithm_test.obj -MD -MP -MF $(DEPDIR)/test-algorithm_test.Tpo -c -o test-algorithm_test.obj `if test -f 'algorithm_test.c'; then $(CYGPATH_W) 'algorithm_test.c'; else $(CYGPATH_W) '$(srcdir)/algorithm_test.c'; fi`
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/test-algorithm_test.Tpo $(DEPDIR)/test-algorithm_test.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='algorithm_test.c' object='test-algorithm_test.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o test-exceptions_test.obj `if test -f 'exceptions_test.c'; then $(CYGPATH_W) 'exceptions_test.c'; else $(CYGPATH_W) '$(srcdir)/exceptions_test.c'; fi`
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o test-algorithm_test.obj `if test -f 'algorithm_test.c'; then $(CYGPATH_W) 'algorithm_test.c'; else $(CYGPATH_W) '$(srcdir)/algorithm_test.c'; fi`
+
+test-exception_test.o: exception_test.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT test-exception_test.o -MD -MP -MF $(DEPDIR)/test-exception_test.Tpo -c -o test-exception_test.o `test -f 'exception_test.c' || echo '$(srcdir)/'`exception_test.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/test-exception_test.Tpo $(DEPDIR)/test-exception_test.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='exception_test.c' object='test-exception_test.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o test-exception_test.o `test -f 'exception_test.c' || echo '$(srcdir)/'`exception_test.c
+
+test-exception_test.obj: exception_test.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT test-exception_test.obj -MD -MP -MF $(DEPDIR)/test-exception_test.Tpo -c -o test-exception_test.obj `if test -f 'exception_test.c'; then $(CYGPATH_W) 'exception_test.c'; else $(CYGPATH_W) '$(srcdir)/exception_test.c'; fi`
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/test-exception_test.Tpo $(DEPDIR)/test-exception_test.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='exception_test.c' object='test-exception_test.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o test-exception_test.obj `if test -f 'exception_test.c'; then $(CYGPATH_W) 'exception_test.c'; else $(CYGPATH_W) '$(srcdir)/exception_test.c'; fi`
 
 test-main.o: main.c
 @am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT test-main.o -MD -MP -MF $(DEPDIR)/test-main.Tpo -c -o test-main.o `test -f 'main.c' || echo '$(srcdir)/'`main.c

@@ -6,8 +6,8 @@
  * Copyright (C) 2010
  */
 
-#ifndef EXTC_EXCEPTIONS_H
-#define EXTC_EXCEPTIONS_H
+#ifndef EXTC_EXCEPTION_H
+#define EXTC_EXCEPTION_H
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"

@@ -13,9 +13,16 @@
 #include "config.h"
 #endif
 
-#include "exceptions.h"
+#include <stddef.h>
+#include "exception.h"
 
-/*
+/**
+ * Represents a generalized function for comparing arbitrary data.
+ * memcmp() fits this definition and is suitable in many cases.
+ */
+typedef int (*template_compare_function)(const void *, const void *, size_t);
+
+/**
  * N1256 6.2.6:
  * "All pointers to union types shall have the same representation and alignment
  *  requirements as each other. Pointers to other types need not have the same

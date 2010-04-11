@@ -15,7 +15,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include "exceptions.h"
+#include "exception.h"
 
 /**
  * Exception thrown if memory could not be allocated.
@@ -35,10 +35,10 @@ exception_declaration(MemoryException);
 void *extc_calloc (size_t count, size_t size);
 
 /**
- * Convenience macro for free() for uniformity with the other functions here.
+ * Convenience function for free() for uniformity with the other functions here.
  * This may be updated later to do something amazing.
  */
-#define extc_free(p) free((p))
+void extc_free (void *ptr);
 
 /**
  * Allocates 'size' bytes of memory and returns a pointer to it.

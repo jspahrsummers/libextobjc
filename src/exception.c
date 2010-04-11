@@ -9,7 +9,7 @@
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include "exceptions.h"
+#include "exception.h"
 #include "memory.h"
 
 /*** Exception types ***/

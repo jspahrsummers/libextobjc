@@ -1,5 +1,5 @@
 /**
- * libextc exceptions testcase
+ * libextc exception testcase
  * ExtendedC
  *
  * by Justin Spahr-Summers
@@ -7,14 +7,14 @@
  */
 
 #include <assert.h>
-#include "exceptions_test.h"
+#include "exception_test.h"
 
 static void exception_test_nested (void);
 static void exception_test_nested2 (void);
 
 exception_subclass(Exception, TestException);
 
-void exceptions_test (void) {
+void exception_test (void) {
     int caught = 0;
     bool executed_finally = false;
     
