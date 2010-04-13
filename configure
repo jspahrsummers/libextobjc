@@ -706,7 +706,7 @@ PACKAGE_STRING='extc 0.1'
 PACKAGE_BUGREPORT='Justin.SpahrSummers@gmail.com'
 PACKAGE_URL=''
 
-ac_unique_file="src/exceptions.c"
+ac_unique_file="include/extc.h"
 # Factoring default headers for most tests.
 ac_includes_default="\
 #include <stdio.h>

@@ -15,6 +15,7 @@
 
 #include "algorithm.h"
 #include "blocks.h"
+#include "enum.h"
 #include "exception.h"
 #include "memory.h"
 #include "refcounted.h"

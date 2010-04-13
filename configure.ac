@@ -2,7 +2,7 @@ AC_PREREQ(2.65)
 AC_INIT([extc], [0.1], [Justin.SpahrSummers@gmail.com])
 AM_INIT_AUTOMAKE([dist-bzip2])
 AC_CONFIG_MACRO_DIR([m4])
-AC_CONFIG_SRCDIR([src/exceptions.c])
+AC_CONFIG_SRCDIR([include/extc.h])
 AC_CONFIG_HEADERS([config.h])
 
 AC_PROG_CC

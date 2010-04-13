@@ -15,6 +15,6 @@
 
 #include "algorithm.h"
 
-void algorithm_tests (void);
+void algorithm_test (void);
 
 #endif

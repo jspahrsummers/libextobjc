@@ -48,9 +48,9 @@ CONFIG_HEADER = $(top_builddir)/config.h
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 am_test_OBJECTS = test-algorithm_test.$(OBJEXT) \
-	test-exception_test.$(OBJEXT) test-main.$(OBJEXT) \
-	test-memory_test.$(OBJEXT) test-refcounted_test.$(OBJEXT) \
-	test-vector_test.$(OBJEXT)
+	test-enum_test.$(OBJEXT) test-exception_test.$(OBJEXT) \
+	test-main.$(OBJEXT) test-memory_test.$(OBJEXT) \
+	test-refcounted_test.$(OBJEXT) test-vector_test.$(OBJEXT)
 test_OBJECTS = $(am_test_OBJECTS)
 test_DEPENDENCIES = ../src/libextc.la
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
@@ -184,7 +184,7 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 TESTS = $(check_PROGRAMS)
-test_SOURCES = algorithm_test.c exception_test.c main.c memory_test.c refcounted_test.c vector_test.c
+test_SOURCES = algorithm_test.c enum_test.c exception_test.c main.c memory_test.c refcounted_test.c vector_test.c
 test_CPPFLAGS = -pedantic -Wall -Wextra -I../include -I$(pkgincludedir)
 test_LDADD = ../src/libextc.la
 all: all-am
@@ -241,6 +241,7 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-algorithm_test.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-enum_test.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-exception_test.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-main.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-memory_test.Po@am__quote@
@@ -281,6 +282,20 @@ test-algorithm_test.obj: algorithm_test.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='algorithm_test.c' object='test-algorithm_test.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o test-algorithm_test.obj `if test -f 'algorithm_test.c'; then $(CYGPATH_W) 'algorithm_test.c'; else $(CYGPATH_W) '$(srcdir)/algorithm_test.c'; fi`
+
+test-enum_test.o: enum_test.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT test-enum_test.o -MD -MP -MF $(DEPDIR)/test-enum_test.Tpo -c -o test-enum_test.o `test -f 'enum_test.c' || echo '$(srcdir)/'`enum_test.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/test-enum_test.Tpo $(DEPDIR)/test-enum_test.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='enum_test.c' object='test-enum_test.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o test-enum_test.o `test -f 'enum_test.c' || echo '$(srcdir)/'`enum_test.c
+
+test-enum_test.obj: enum_test.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT test-enum_test.obj -MD -MP -MF $(DEPDIR)/test-enum_test.Tpo -c -o test-enum_test.obj `if test -f 'enum_test.c'; then $(CYGPATH_W) 'enum_test.c'; else $(CYGPATH_W) '$(srcdir)/enum_test.c'; fi`
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/test-enum_test.Tpo $(DEPDIR)/test-enum_test.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='enum_test.c' object='test-enum_test.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o test-enum_test.obj `if test -f 'enum_test.c'; then $(CYGPATH_W) 'enum_test.c'; else $(CYGPATH_W) '$(srcdir)/enum_test.c'; fi`
 
 test-exception_test.o: exception_test.c
 @am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT test-exception_test.o -MD -MP -MF $(DEPDIR)/test-exception_test.Tpo -c -o test-exception_test.o `test -f 'exception_test.c' || echo '$(srcdir)/'`exception_test.c

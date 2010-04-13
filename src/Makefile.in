@@ -71,7 +71,7 @@ am__base_list = \
 am__installdirs = "$(DESTDIR)$(libdir)"
 LTLIBRARIES = $(lib_LTLIBRARIES)
 libextc_la_LIBADD =
-am_libextc_la_OBJECTS = libextc_la-algorithm.lo \
+am_libextc_la_OBJECTS = libextc_la-algorithm.lo libextc_la-enum.lo \
 	libextc_la-exception.lo libextc_la-memory.lo \
 	libextc_la-refcounted.lo libextc_la-template.lo \
 	libextc_la-vector.lo
@@ -206,7 +206,7 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 lib_LTLIBRARIES = libextc.la
 libextc_la_CPPFLAGS = -pedantic -Wall -Wextra -Werror -I../include
-libextc_la_SOURCES = algorithm.c exception.c memory.c refcounted.c template.c vector.c
+libextc_la_SOURCES = algorithm.c enum.c exception.c memory.c refcounted.c template.c vector.c
 all: all-am
 
 .SUFFIXES:
@@ -282,6 +282,7 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libextc_la-algorithm.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libextc_la-enum.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libextc_la-exception.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libextc_la-memory.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libextc_la-refcounted.Plo@am__quote@
@@ -315,6 +316,13 @@ libextc_la-algorithm.lo: algorithm.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='algorithm.c' object='libextc_la-algorithm.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libextc_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libextc_la-algorithm.lo `test -f 'algorithm.c' || echo '$(srcdir)/'`algorithm.c
+
+libextc_la-enum.lo: enum.c
+@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libextc_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libextc_la-enum.lo -MD -MP -MF $(DEPDIR)/libextc_la-enum.Tpo -c -o libextc_la-enum.lo `test -f 'enum.c' || echo '$(srcdir)/'`enum.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libextc_la-enum.Tpo $(DEPDIR)/libextc_la-enum.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='enum.c' object='libextc_la-enum.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libextc_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libextc_la-enum.lo `test -f 'enum.c' || echo '$(srcdir)/'`enum.c
 
 libextc_la-exception.lo: exception.c
 @am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libextc_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libextc_la-exception.lo -MD -MP -MF $(DEPDIR)/libextc_la-exception.Tpo -c -o libextc_la-exception.lo `test -f 'exception.c' || echo '$(srcdir)/'`exception.c

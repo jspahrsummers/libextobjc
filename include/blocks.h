@@ -58,7 +58,7 @@
 
 /**
  * Allows you to define or initialize a variable for use with a given block of
- * code. 'break' and 'continue' will both exit the with statement.
+ * code. 'break' will exit the with statement.
  *
  * Some examples:
  *
