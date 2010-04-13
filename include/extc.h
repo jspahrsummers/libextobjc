@@ -19,6 +19,7 @@
 #include "exception.h"
 #include "memory.h"
 #include "refcounted.h"
+#include "scope.h"
 #include "static_assert.h"
 #include "template.h"
 #include "vector.h"

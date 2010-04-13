@@ -6,8 +6,8 @@
  * Copyright (C) 2010
  */
 
-#ifndef EXTC_HEADER_STATIC_ASSERT
-#define EXTC_HEADER_STATIC_ASSERT
+#ifndef EXTC_HEADER_STATIC_ASSERT_H
+#define EXTC_HEADER_STATIC_ASSERT_H
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"

@@ -50,7 +50,8 @@ CONFIG_CLEAN_VPATH_FILES =
 am_test_OBJECTS = test-algorithm_test.$(OBJEXT) \
 	test-enum_test.$(OBJEXT) test-exception_test.$(OBJEXT) \
 	test-main.$(OBJEXT) test-memory_test.$(OBJEXT) \
-	test-refcounted_test.$(OBJEXT) test-vector_test.$(OBJEXT)
+	test-refcounted_test.$(OBJEXT) test-scope_test.$(OBJEXT) \
+	test-vector_test.$(OBJEXT)
 test_OBJECTS = $(am_test_OBJECTS)
 test_DEPENDENCIES = ../src/libextc.la
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
@@ -184,7 +185,7 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 TESTS = $(check_PROGRAMS)
-test_SOURCES = algorithm_test.c enum_test.c exception_test.c main.c memory_test.c refcounted_test.c vector_test.c
+test_SOURCES = algorithm_test.c enum_test.c exception_test.c main.c memory_test.c refcounted_test.c scope_test.c vector_test.c
 test_CPPFLAGS = -pedantic -Wall -Wextra -I../include -I$(pkgincludedir)
 test_LDADD = ../src/libextc.la
 all: all-am
@@ -246,6 +247,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-main.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-memory_test.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-refcounted_test.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-scope_test.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-vector_test.Po@am__quote@
 
 .c.o:
@@ -352,6 +354,20 @@ test-refcounted_test.obj: refcounted_test.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='refcounted_test.c' object='test-refcounted_test.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o test-refcounted_test.obj `if test -f 'refcounted_test.c'; then $(CYGPATH_W) 'refcounted_test.c'; else $(CYGPATH_W) '$(srcdir)/refcounted_test.c'; fi`
+
+test-scope_test.o: scope_test.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT test-scope_test.o -MD -MP -MF $(DEPDIR)/test-scope_test.Tpo -c -o test-scope_test.o `test -f 'scope_test.c' || echo '$(srcdir)/'`scope_test.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/test-scope_test.Tpo $(DEPDIR)/test-scope_test.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='scope_test.c' object='test-scope_test.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o test-scope_test.o `test -f 'scope_test.c' || echo '$(srcdir)/'`scope_test.c
+
+test-scope_test.obj: scope_test.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT test-scope_test.obj -MD -MP -MF $(DEPDIR)/test-scope_test.Tpo -c -o test-scope_test.obj `if test -f 'scope_test.c'; then $(CYGPATH_W) 'scope_test.c'; else $(CYGPATH_W) '$(srcdir)/scope_test.c'; fi`
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/test-scope_test.Tpo $(DEPDIR)/test-scope_test.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='scope_test.c' object='test-scope_test.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o test-scope_test.obj `if test -f 'scope_test.c'; then $(CYGPATH_W) 'scope_test.c'; else $(CYGPATH_W) '$(srcdir)/scope_test.c'; fi`
 
 test-vector_test.o: vector_test.c
 @am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(test_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT test-vector_test.o -MD -MP -MF $(DEPDIR)/test-vector_test.Tpo -c -o test-vector_test.o `test -f 'vector_test.c' || echo '$(srcdir)/'`vector_test.c
