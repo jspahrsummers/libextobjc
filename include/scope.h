@@ -121,15 +121,20 @@
  */
 #define scope_exit \
     if (scope_cleaning_up_ ||                                               \
+        /* if not currently cleaning up, make sure to set the jump points   \
+           for the first and last cleanup blocks */                         \
         !exprify(scope_last_clean_ = __LINE__,                              \
         (scope_first_clean_ == ULONG_MAX ?                                  \
             scope_first_clean_ = __LINE__                                   \
             : 0                                                             \
         ))                                                                  \
     )                                                                       \
+        /* eventually jumps here if cleaning up */                          \
         case __LINE__:                                                      \
+            /* loop to execute user code then do something else */          \
             for (bool scope_done_once_ = false;;scope_done_once_ = true)    \
                 if (scope_done_once_) {                                     \
+                    /* if the cleanup code finished, continue onward */     \
                     ++scope_jump_to_;                                       \
                     goto scope_loop_;                                       \
                 } else                                                      \
@@ -149,13 +154,15 @@
  * end of your function. Many compilers also shut up if you use assert(0);
  */
 #define sreturn \
-    if (!scope_cleaning_up_) {                  \
-        scope_cleaning_up_ = true;              \
-        scope_jump_to_ = scope_first_clean_;    \
-        scope_return_from_ = __LINE__;          \
-        goto scope_loop_;                       \
-    } else                                      \
-        case __LINE__:                          \
+    if (!scope_cleaning_up_) {                      \
+        /* if not currently cleaning up, do that */ \
+        scope_cleaning_up_ = true;                  \
+        scope_jump_to_ = scope_first_clean_;        \
+        scope_return_from_ = __LINE__;              \
+        goto scope_loop_;                           \
+    } else                                          \
+        /* cleanup finished, now actually return */ \
+        case __LINE__:                              \
             return
 
 #endif
