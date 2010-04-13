@@ -11,6 +11,9 @@
 #include "memory_test.h"
 
 void memory_test (void) {
+    // tests memory swapping code!
+    // (allocation can't really be tested, unfortunately)
+    
     char strA[] = "hello world";
     char strB[] = "foobar     ";
     

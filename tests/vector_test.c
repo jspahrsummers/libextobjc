@@ -13,6 +13,9 @@
 #include "vector_test.h"
 
 void vector_test (void) {
+    // generic vector structure!
+    // tests a bunch of different operations which are mostly self-explanatory
+    
     vector(int) *v = vector_new(int);
     vector(double) *vf = vector_new(double);
     vector(const char *) *vs = vector_new(const char *);
@@ -23,12 +26,14 @@ void vector_test (void) {
     
     vector_add(vs, "foobar");
     
+    // constructs a couple arrays on-the-fly and adds them
     vector_add_array(vf, 3, ((const double[]){ 6.7, 3.14, 365.25 }));
     vector_insert_array(vs, 2, ((const char *[]){ "hello", "world" }), 0);
     
     vector_foreach_index (i, int val, v) {
         assert(i < 3);
     
+        // ensures that the items are at the intended indices
         switch (i) {
         case 0:
             assert(val == 10);
@@ -50,6 +55,7 @@ void vector_test (void) {
         }
     }
     
+    // make sure an attempted access out of bounds throws an exception
     bool out_of_bounds = false;
     volatile int i = 0;
     try {

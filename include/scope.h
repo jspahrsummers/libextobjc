@@ -1,5 +1,5 @@
 /**
- * Automatic scoping and destructor functionality
+ * Automatic scoping and destructor functionality a la scope() in D
  * ExtendedC
  *
  * by Justin Spahr-Summers
@@ -150,7 +150,8 @@
  * Although a given sreturn statement may always be executed, the compiler may
  * still issue warnings about your non-void function not returning a value. To
  * suppress these warnings, you can use 'return' with a bogus value at the very
- * end of your function. Many compilers also shut up if you use assert(0);
+ * end of your function. Many compilers also shut up if you use assert(0); at
+ * the very end.
  */
 #define sreturn \
     if (!scope_cleaning_up_) {                      \

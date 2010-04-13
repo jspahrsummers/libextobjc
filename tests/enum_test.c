@@ -27,6 +27,7 @@ enum_map(foo_map) {
 void enum_test (void) {
     enum foo something;
     
+    // get enum values from strings!
     something = enum_from_string(foo_map, "DO_SOMETHING");
     assert(something == DO_SOMETHING);
     
@@ -41,6 +42,7 @@ void enum_test (void) {
     
     const char *str;
     
+    // get strings from enum values!
     str = enum_to_string(foo_map, DO_SOMETHING);
     assert(strcmp(str, "DO_SOMETHING") == 0);
     
@@ -50,6 +52,7 @@ void enum_test (void) {
     str = enum_to_string(foo_map, DO_SOMETHING_ELSE);
     assert(strcmp(str, "DO_SOMETHING_ELSE") == 0);
     
-    str = enum_to_string(foo_map, OMG_HEX);
+    // the symbolic name doesn't have to be used for this to work:
+    str = enum_to_string(foo_map, 0xFF);
     assert(strcmp(str, "OMG_HEX") == 0);
 }
