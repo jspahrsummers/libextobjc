@@ -34,7 +34,7 @@ void refcounted_release_ (refcounted_ptr ptr) {
         
         // zero out the 'value' field to help catch errors
         memset(valueData + prefaceSize, 0, ref->structSize_ - prefaceSize);
+        
+        extc_free(ref);
     }
-    
-    extc_free(ref);
 }

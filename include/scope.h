@@ -17,8 +17,8 @@
 #include "blocks.h"
 
 /**
- * Expands to scope_KEYWORD. Allows usage of the scope macros more like an
- * actual language construct.
+ * Expands to scope_KEYWORD. Allows usage of the scope macros more like the D
+ * language construct.
  *
  * KEYWORD must be one of the following:
  *
@@ -49,25 +49,24 @@
  */
 #define scope_new \
     /* the next few loops initialize variables */                           \
-    for (bool scope_done_ = false; ! scope_done_ ; scope_done_ =            \
-        true)                                                               \
-    for (bool scope_cleaning_up_ = false; ! scope_done_ ;                   \
-        scope_done_ = true)                                                 \
+    for (bool scope_cleaned_up_ = false; ! scope_cleaned_up_ ;              \
+        scope_cleaned_up_ = true)                                           \
+    for (bool scope_cleaning_up_ = false; ! scope_cleaned_up_ ;             \
+        scope_cleaned_up_ = true)                                           \
     for (unsigned long scope_first_clean_ = ULONG_MAX;                      \
-        ! scope_done_ ; scope_done_ = true)                                 \
+        ! scope_cleaned_up_ ; scope_cleaned_up_ = true)                     \
     for (unsigned long scope_last_clean_ = ULONG_MAX;                       \
-        ! scope_done_ ; scope_done_ = true)                                 \
+        ! scope_cleaned_up_ ; scope_cleaned_up_ = true)                     \
     for (unsigned long scope_return_from_ = ULONG_MAX;                      \
-        ! scope_done_ ; scope_done_ = true)                                 \
+        ! scope_cleaned_up_ ; scope_cleaned_up_ = true)                     \
     for (unsigned long scope_jump_to_ = 0;                                  \
-        ! scope_done_ ; scope_done_ = true)                                 \
+        ! scope_cleaned_up_ ; scope_cleaned_up_ = true)                     \
                                                                             \
     /* create a label for jumping outside the enclosing loop */             \
     scope_exit_ :                                                           \
                                                                             \
     /* enclosing loop to automatically clean up */                          \
-    for (bool scope_cleaned_up_ = false;                                    \
-        ! scope_cleaned_up_ ; scope_cleaning_up_                            \
+    for (; ! scope_cleaned_up_ ; scope_cleaning_up_                         \
         = true, scope_jump_to_ =                                            \
         scope_first_clean_)                                                 \
                                                                             \

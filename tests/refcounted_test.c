@@ -12,6 +12,7 @@
 
 void refcounted_test (void) {
     refcounted(const char *) *str = refcounted_new(const char *);
+    refcounted(const char *) *strRef = str;
     
     str->value = "hello world";
     
@@ -20,8 +21,9 @@ void refcounted_test (void) {
     assert(str->refcount_ == 2);
     
     release(str);
-    assert(str->refcount_ == 1);
-    
-    release(str);
     assert(str == NULL);
+    assert(strRef->refcount_ == 1);
+    
+    release(strRef);
+    assert(strRef == NULL);
 }

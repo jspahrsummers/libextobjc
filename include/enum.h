@@ -36,7 +36,7 @@ struct enum_map_item {
  */
 #define enum_item(NAME) \
     {                                                   \
-        .name = enum_name_stringify((NAME)),            \
+        .name = enum_name_stringify(NAME),              \
         .code = (NAME)                                  \
     }
 
