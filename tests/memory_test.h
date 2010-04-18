@@ -14,6 +14,7 @@
 #endif
 
 #include "memory.h"
+#include "test.h"
 
 void memory_test (void);
 

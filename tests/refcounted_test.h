@@ -14,6 +14,7 @@
 #endif
 
 #include "refcounted.h"
+#include "test.h"
 
 void refcounted_test (void);
 

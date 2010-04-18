@@ -14,6 +14,7 @@
 #endif
 
 #include "algorithm.h"
+#include "test.h"
 
 void algorithm_test (void);
 

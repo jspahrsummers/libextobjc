@@ -13,6 +13,7 @@
 #include "config.h"
 #endif
 
+#include "test.h"
 #include "vector.h"
 
 void vector_test (void);

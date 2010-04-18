@@ -14,6 +14,7 @@
 #endif
 
 #include "scope.h"
+#include "test.h"
 
 void scope_test (void);
 

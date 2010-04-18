@@ -14,6 +14,7 @@
 #endif
 
 #include "exception.h"
+#include "test.h"
 
 exception_declaration(TestException);
 

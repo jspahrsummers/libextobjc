@@ -14,6 +14,7 @@
 #endif
 
 #include "enum.h"
+#include "test.h"
 
 void enum_test (void);
 

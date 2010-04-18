@@ -6,23 +6,28 @@
  * Copyright (C) 2010
  */
 
-#include <stdio.h>
 #include "algorithm_test.h"
 #include "enum_test.h"
 #include "exception_test.h"
+#include "memory_test.h"
 #include "refcounted_test.h"
 #include "scope_test.h"
+#include "test.h"
 #include "vector_test.h"
 
-#define test(NAME) \
-    (NAME ## _test(), printf("*** %s module passed all tests!\n", # NAME))
-
 int main (void) {
-    test(algorithm);
-    test(enum);
-    test(exception);
-    test(refcounted);
-    test(scope);
-    test(vector);
+    putc('\n', stdout);
+
+    // a couple modules depend on exception handling functionality
+    // so run the tests there before any dependent ones
+    TEST_MODULE(exception);
+    
+    TEST_MODULE(algorithm);
+    TEST_MODULE(enum);
+    TEST_MODULE(memory);
+    TEST_MODULE(refcounted);
+    TEST_MODULE(scope);
+    TEST_MODULE(vector);
+    
     return 0;
 }

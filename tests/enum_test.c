@@ -6,8 +6,6 @@
  * Copyright (C) 2010
  */
 
-#include <assert.h>
-#include <string.h>
 #include "enum_test.h"
 
 enum foo {
@@ -28,6 +26,8 @@ void enum_test (void) {
     enum foo something;
     
     // get enum values from strings!
+    LOG_TEST("obtaining enum values from strings");
+    
     something = enum_from_string(foo_map, "DO_SOMETHING");
     assert(something == DO_SOMETHING);
     
@@ -43,6 +43,8 @@ void enum_test (void) {
     const char *str;
     
     // get strings from enum values!
+    LOG_TEST("obtaining strings from enum values");
+    
     str = enum_to_string(foo_map, DO_SOMETHING);
     assert(strcmp(str, "DO_SOMETHING") == 0);
     
@@ -53,6 +55,8 @@ void enum_test (void) {
     assert(strcmp(str, "DO_SOMETHING_ELSE") == 0);
     
     // the symbolic name doesn't have to be used for this to work:
+    LOG_TEST("obtaining strings from integer values (which correspond to enums)");
+    
     str = enum_to_string(foo_map, 0xFF);
     assert(strcmp(str, "OMG_HEX") == 0);
 }
