@@ -18,6 +18,7 @@
 #include "enum.h"
 #include "exception.h"
 #include "memory.h"
+#include "metamacros.h"
 #include "refcounted.h"
 #include "scope.h"
 #include "static_assert.h"

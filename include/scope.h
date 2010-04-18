@@ -14,7 +14,7 @@
 #endif
 
 #include <limits.h>
-#include "blocks.h"
+#include "metamacros.h"
 
 /**
  * Expands to scope_KEYWORD. Allows usage of the scope macros more like the D

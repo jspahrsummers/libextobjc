@@ -17,6 +17,7 @@
 #include <stdbool.h>
 #include <stddef.h>
 #include "blocks.h"
+#include "metamacros.h"
 
 struct exception_data_;
 
