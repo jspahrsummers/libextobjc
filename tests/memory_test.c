@@ -9,6 +9,34 @@
 #include "exception.h"
 #include "memory_test.h"
 
+void memory_benchmark (void) {
+    // don't allocate any significant amount right here
+    // we're benchmarking how much overhead allocating with the memory module involves
+    BENCHMARK(void *ptr = malloc(1); free(ptr));
+    BENCHMARK(void *ptr = extc_malloc(1); extc_free(ptr));
+    
+    void *a = malloc(256);
+    void *b = malloc(256);
+    BENCHMARK_TIMES(DEFAULT_BENCHMARK_TIMES / 10, extc_memswap(a, b, 256));
+    BENCHMARK_TIMES(DEFAULT_BENCHMARK_TIMES / 10, unsigned char c[256]; memcpy(c, a, 256); memcpy(a, b, 256); memcpy(b, c, 256));
+    free(a);
+    free(b);
+    
+    a = malloc(1024);
+    b = malloc(1024);
+    BENCHMARK_TIMES(DEFAULT_BENCHMARK_TIMES / 50, extc_memswap(a, b, 1024));
+    BENCHMARK_TIMES(DEFAULT_BENCHMARK_TIMES / 50, unsigned char c[1024]; memcpy(c, a, 1024); memcpy(a, b, 1024); memcpy(b, c, 1024));
+    free(a);
+    free(b);
+    
+    a = malloc(65536);
+    b = malloc(65536);
+    BENCHMARK_TIMES(DEFAULT_BENCHMARK_TIMES / 1000, extc_memswap(a, b, 65536));
+    BENCHMARK_TIMES(DEFAULT_BENCHMARK_TIMES / 1000, void *c = malloc(65536); memcpy(c, a, 65536); memcpy(a, b, 65536); memcpy(b, c, 65536); free(c));
+    free(a);
+    free(b);
+}
+
 void memory_test (void) {
     // test that allocation always returns NULL or an exception
     LOG_TEST("running successively bigger allocations until we fail");

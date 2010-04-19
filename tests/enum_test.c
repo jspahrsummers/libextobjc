@@ -22,6 +22,12 @@ enum_map(foo_map) {
     enum_item(OMG_HEX)
 };
 
+void enum_benchmark (void) {
+    enum foo something;
+    BENCHMARK(something = enum_from_string(foo_map, "DO_SOMETHING_PLUS_ONE"));
+    BENCHMARK(enum_to_string(foo_map, something));
+}
+
 void enum_test (void) {
     enum foo something;
     

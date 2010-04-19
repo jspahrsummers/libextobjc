@@ -13,6 +13,22 @@ static void exception_test_nested2 (void);
 
 exception_subclass(Exception, TestException);
 
+void exception_benchmark (void) {
+    BENCHMARK_TIMES(DEFAULT_BENCHMARK_TIMES / 10, try {});
+    BENCHMARK_TIMES(DEFAULT_BENCHMARK_TIMES / 10, try {} finally {});
+    BENCHMARK_TIMES(DEFAULT_BENCHMARK_TIMES / 100,
+        try {
+            raise(TestException, NULL);
+        } catch (TestException, ex) {}
+    );
+    BENCHMARK_TIMES(DEFAULT_BENCHMARK_TIMES / 100,
+        try {
+            raise(TestException, NULL);
+        } catch (TestException, ex) {}
+        finally {}
+    );
+}
+
 void exception_test (void) {
     int caught = 0;
     bool executed_finally = false;
@@ -51,6 +67,10 @@ void exception_test (void) {
         LOG_TEST("catching rethrown Exception as its true type as a TestException");
         caught = 5;
         
+        // make sure data is preserved
+        LOG_TEST("validating exception userdata");
+        assert(strcmp(ex->data, "hello") == 0);
+        
         // throw an exception to increment 'caught'
         try {
             LOG_TEST("try block nested within a catch block");
@@ -78,6 +98,21 @@ void exception_test (void) {
     }
     
     assert(executed_finally);
+    
+    LOG_TEST("handling exceptions in a loop");
+    for (int i = 0;i < 3;++i) {
+        caught = -1;
+    
+        try {
+            LOG_TEST("throwing exception %i", i + 1);
+            raise(Exception, NULL);
+        } catch_all (ex) {
+            LOG_TEST("caught exception %i", i + 1);
+            caught = i;
+        } finally {
+            assert(caught == i);
+        }
+    }
 }
 
 static void exception_test_nested (void) {
@@ -103,7 +138,7 @@ static void exception_test_nested2 (void) {
     // throws, catches, then rethrows a TestException
     try {
         LOG_TEST("throwing a TestException (subclass of Exception)");
-        raise(TestException, NULL);
+        raise(TestException, "hello");
     } catch_all (ex) {
         LOG_TEST("catching and rethrowing our thrown exception (of any type)");
         caught = true;

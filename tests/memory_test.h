@@ -16,6 +16,7 @@
 #include "memory.h"
 #include "test.h"
 
+void memory_benchmark (void);
 void memory_test (void);
 
 #endif

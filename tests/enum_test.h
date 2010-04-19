@@ -16,6 +16,7 @@
 #include "enum.h"
 #include "test.h"
 
+void enum_benchmark (void);
 void enum_test (void);
 
 #endif

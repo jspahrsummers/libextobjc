@@ -16,6 +16,7 @@
 #include "refcounted.h"
 #include "test.h"
 
+void refcounted_benchmark (void);
 void refcounted_test (void);
 
 #endif

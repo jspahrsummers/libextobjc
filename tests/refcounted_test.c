@@ -8,6 +8,13 @@
 
 #include "refcounted_test.h"
 
+void refcounted_benchmark (void) {
+    refcounted(int) *ref = refcounted_new(int);
+    
+    BENCHMARK(retain(ref));
+    BENCHMARK(refcounted(int) *dup = ref; release(dup));
+}
+
 void refcounted_test (void) {
     // allocates a reference-counted string
     refcounted(const char *) *str = refcounted_new(const char *);

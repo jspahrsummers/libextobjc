@@ -18,6 +18,7 @@
 
 exception_declaration(TestException);
 
+void exception_benchmark (void);
 void exception_test (void);
 
 #endif

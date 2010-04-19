@@ -16,6 +16,7 @@
 #include "test.h"
 #include "vector.h"
 
+void vector_benchmark (void);
 void vector_test (void);
 
 #endif

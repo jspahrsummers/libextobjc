@@ -29,5 +29,12 @@ int main (void) {
     TEST_MODULE(scope);
     TEST_MODULE(vector);
     
+    BENCHMARK_MODULE(algorithm);
+    BENCHMARK_MODULE(enum);
+    BENCHMARK_MODULE(exception);
+    BENCHMARK_MODULE(memory);
+    BENCHMARK_MODULE(refcounted);
+    BENCHMARK_MODULE(scope);
+    BENCHMARK_MODULE(vector);
     return 0;
 }

@@ -16,6 +16,7 @@
 #include "algorithm.h"
 #include "test.h"
 
+void algorithm_benchmark (void);
 void algorithm_test (void);
 
 #endif

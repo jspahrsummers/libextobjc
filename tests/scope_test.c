@@ -56,3 +56,511 @@ void scope_alloc (void) {
     assert(ptr == NULL);
     LOG_TEST("scope has been cleaned up");
 }
+
+static
+void scope_benchmark1 (void);
+
+static
+void scope_benchmark2 (void);
+
+static
+void scope_benchmark3 (void);
+
+static
+void scope_benchmark4 (void);
+
+static
+void scope_benchmark5 (void);
+
+void scope_benchmark (void) {
+    scope_benchmark1();
+    scope_benchmark2();
+    scope_benchmark4();
+    scope_benchmark3();
+    scope_benchmark5();
+}
+
+static
+void scope_benchmark1 (void) {
+    BENCHMARK(scope(new) {});
+}
+
+static
+void scope_benchmark2 (void) {
+    BENCHMARK(
+        scope(new) {
+            scope(exit) {}
+        }
+    );
+}
+
+static
+void scope_benchmark4 (void) {
+    unsigned i = 0;
+    benchmark_t start;
+    double elapsed;
+
+    benchmark_begin(&start);
+    // compare with scope_benchmark3() and scope_benchmark5()
+    for (;i < DEFAULT_BENCHMARK_TIMES / 10;++i) {
+        scope(new) {
+            scope(exit) {}
+            scope(exit) {}
+            scope(exit) {}
+            scope(exit) {}
+            scope(exit) {}
+        }
+    }
+    
+    elapsed = benchmark_end(&start) * 1000;
+    LOG_BENCHMARK("five successive scope(exit) statements", DEFAULT_BENCHMARK_TIMES / 10, elapsed);
+}
+
+static
+void scope_benchmark3 (void) {
+    unsigned i = 0;
+    benchmark_t start;
+    double elapsed;
+
+    benchmark_begin(&start);
+    // tests scope cleanup over a long function
+    for (;i < DEFAULT_BENCHMARK_TIMES / 10;++i) {
+        scope(new) {
+            scope(exit) {}
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            scope(exit) {}
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            scope(exit) {}
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            scope(exit) {}
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            scope(exit) {}
+        }
+    }
+    
+    elapsed = benchmark_end(&start) * 1000;
+    LOG_BENCHMARK("five scope(exit) statements spread out over a function", DEFAULT_BENCHMARK_TIMES / 10, elapsed);
+}
+
+static
+void scope_benchmark5 (void) {
+    unsigned i = 0;
+    benchmark_t start;
+    double elapsed;
+
+    benchmark_begin(&start);
+    // tests scope cleanup over a long function
+    for (;i < DEFAULT_BENCHMARK_TIMES / 10;++i) {
+        scope(new) {
+            scope(exit) {}
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            scope(exit) {}
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            scope(exit) {}
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            scope(exit) {}
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            scope(exit) {}
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+        }
+    }
+    
+    elapsed = benchmark_end(&start) * 1000;
+    LOG_BENCHMARK("five scope(exit) statements spread out over a long function", DEFAULT_BENCHMARK_TIMES / 10, elapsed);
+}

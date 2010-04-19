@@ -9,6 +9,19 @@
 #include "exception.h"
 #include "vector_test.h"
 
+void vector_benchmark (void) {
+    vector(int) *v = vector_new(int);
+    BENCHMARK(vector_add(v, 42));
+    BENCHMARK(vector_bounds_check(v, 0));
+    BENCHMARK(vector_remove(v, v->count - 1));
+    vector_delete(v);
+    
+    v = vector_new(int);
+    BENCHMARK(vector_insert(v, 42, 0));
+    BENCHMARK(vector_remove(v, 0));
+    vector_delete(v);
+}
+
 void vector_test (void) {
     // generic vector structure!
     // tests a bunch of different operations which are mostly self-explanatory

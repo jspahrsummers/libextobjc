@@ -14,6 +14,10 @@ AC_PROG_LIBTOOL
 AC_HEADER_STDBOOL
 AC_CHECK_HEADERS([assert.h setjmp.h stdarg.h stddef.h], [], AC_MSG_ERROR([libextc requires all the headers defined as standard in C99]))
 
+# for benchmarks in module tests, not libextc proper
+AC_CHECK_HEADERS_ONCE([sys/time.h])
+AC_CHECK_FUNCS_ONCE([gettimeofday])
+
 AC_TYPE_SIZE_T
 AC_C_RESTRICT
 
