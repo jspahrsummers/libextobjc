@@ -109,7 +109,7 @@ bool exception_is_a (const exception *ex, const struct exception_type_info *type
  * This can only be called from within a catch block.
  */
 #define throw \
-    if (exprify(exception_propagation_.line = __LINE__,                     \
+    if (metamacro_exprify(exception_propagation_.line = __LINE__,           \
         exception_uncaught_ = true, exception_propagation_.propagate =      \
         true))                                                              \
         break
@@ -155,23 +155,26 @@ bool exception_is_a (const exception *ex, const struct exception_type_info *type
                 /* if the exception was rethrown with 'throw'... */         \
                 (exception_propagation_.propagate &&                        \
                     /* push to a handler further up, saving a backtrace */  \
-                    exprify(exception_rethrow_from_(                        \
+                    metamacro_exprify(exception_rethrow_from_(              \
                         exception_current_data_,                            \
                         &exception_current_data_->exception_obj,            \
                         exception_propagation_.line))                       \
                 ) ||                                                        \
                 /* ... or it was just not caught... */                      \
                 /* push to a handler further up without a backtrace */      \
-                exprify(exception_raise_up_block_(exception_current_data_)) \
+                metamacro_exprify(exception_raise_up_block_(                \
+                    exception_current_data_))                               \
             )) ||                                                           \
             /* ... or the exception WAS handled cleanly... */               \
-            exprify(exception_block_free_(exception_current_data_))         \
+            metamacro_exprify(exception_block_free_(                        \
+                exception_current_data_))                                   \
         )) ||                                                               \
         /* ... or if there were no exceptions thrown and/or caught... */    \
         ((exception_unhandled_ == 0 || (exception_uncaught_ &&              \
             !exception_propagation_.propagate)) &&                          \
             /* go back in and execute the 'finally' block */                \
-            exprify(exception_block_pop_(), exception_unhandled_ = 2)       \
+            metamacro_exprify(exception_block_pop_(),                       \
+                exception_unhandled_ = 2)                                   \
         ))                                                                  \
                                                                             \
         /* this Duff's device ripoff allows us to circumvent syntax */      \
@@ -212,7 +215,8 @@ bool exception_is_a (const exception *ex, const struct exception_type_info *type
  */
 #define catch(TYPE, VAR) \
                     /* if the exception type matches, mark it as caught */  \
-                    else if_then (exception_is_a(&exception_current_data_-> \
+                    else metamacro_if_then (                                \
+                        exception_is_a(&exception_current_data_->           \
                         exception_obj, TYPE), exception_uncaught_ = false,  \
                         exception_block_pop_(), exception_unhandled_ = 2)   \
                         with (const exception *VAR =                        \

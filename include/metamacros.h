@@ -21,7 +21,7 @@
  * Executes one or more expressions (which may have a void type, such as a call
  * to a function that returns no value) and always returns true.
  */
-#define exprify(...) \
+#define metamacro_exprify(...) \
     ((__VA_ARGS__), true)
 
 /**
@@ -29,7 +29,17 @@
  * type) are evaluated and the given block entered like a regular 'if'
  * statement. Can also be used immediately after an 'else' for else-if behavior.
  */
-#define if_then(COND, ...) \
-    if ((COND) && exprify(__VA_ARGS__))
+#define metamacro_if_then(COND, ...) \
+    if ((COND) && metamacro_exprify(__VA_ARGS__))
+
+/**
+ * Returns a string representation of VALUE after full macro expansion.
+ */
+#define metamacro_stringify(VALUE) \
+        metamacro_stringify_(VALUE)
+
+// IMPLEMENTATION DETAILS FOLLOW!
+// Do not write code that depends on anything below this line.
+#define metamacro_stringify_(VALUE) # VALUE
 
 #endif

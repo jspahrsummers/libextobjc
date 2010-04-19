@@ -122,7 +122,7 @@
     if (scope_cleaning_up_ ||                                               \
         /* if not currently cleaning up, make sure to set the jump points   \
            for the first and last cleanup blocks */                         \
-        !exprify(scope_last_clean_ = __LINE__,                              \
+        !metamacro_exprify(scope_last_clean_ = __LINE__,                    \
         (scope_first_clean_ == ULONG_MAX ?                                  \
             scope_first_clean_ = __LINE__                                   \
             : 0                                                             \

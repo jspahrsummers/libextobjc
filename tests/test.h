@@ -78,10 +78,10 @@
         (ELAPSED) / (TIMES));
 
 #define LOG_TEST(...) \
-        LOG_TEST_(__VA_ARGS__, 0)
+        LOG_TEST_(__VA_ARGS__, "")
 
 #define LOG_TEST_(MSG, ...) \
-    printf(__FILE__ ":%lu (%s): " MSG "\n", (unsigned long)__LINE__, __func__, __VA_ARGS__)
+    printf(__FILE__ ":%lu (%s): " MSG "%s\n", (unsigned long)__LINE__, __func__, __VA_ARGS__)
 
 #define TEST_MODULE(NAME) \
     (                                                               \

@@ -15,6 +15,7 @@
 
 #include <limits.h>
 #include <stddef.h>
+#include "metamacros.h"
 
 /**
  * Represents an enumerated value mapped to a string.
@@ -36,7 +37,7 @@ struct enum_map_item {
  */
 #define enum_item(NAME) \
     {                                                   \
-        .name = enum_name_stringify(NAME),              \
+        .name = metamacro_stringify(NAME),              \
         .code = (NAME)                                  \
     }
 
@@ -62,11 +63,6 @@ struct enum_map_item {
 
 // IMPLEMENTATION DETAILS FOLLOW!
 // Do not write code that depends on anything below this line.
-#define enum_name_stringify(NAME) \
-        enum_name_stringify_(NAME)
-
-#define enum_name_stringify_(NAME) # NAME
-
 int       enum_from_string_ (const struct enum_map_item *items, size_t itemCount, const char *name);
 
 const char *enum_to_string_ (const struct enum_map_item *items, size_t itemCount, int code);
