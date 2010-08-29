@@ -17,7 +17,7 @@
 #include <string.h>
 #include "metamacros.h"
 
-#define SCOPE_DESTRUCTOR_LIMIT 256
+#define SCOPE_DESTRUCTOR_LIMIT 128
 
 enum scope_cleanup_t {
 	SCOPE_EXECUTING,
@@ -44,7 +44,7 @@ enum scope_cleanup_t {
 
 /**
  * Creates a new scope that performs automatic cleanup when exited. Works like
- * a statement, so that it takes a block of code that becomes the scope.
+ * a statement, in that it takes a block of code that becomes the scope.
  *
  * Some notes for usage:
  *      - Variables that will be used in cleanup blocks must be declared OUTSIDE
@@ -60,20 +60,20 @@ enum scope_cleanup_t {
 	/* set up the state variable that indicates what the scope is doing */	\
 	for (enum scope_cleanup_t scope_cleanup_state_ = SCOPE_EXECUTING;	\
 		scope_cleanup_state_ != SCOPE_EXITING;	\
-		scope_cleanup_state_ = SCOPE_EXITING)	\
+		scope_cleanup_state_  = SCOPE_EXITING)	\
 	/* set up an array for the line numbers of scope(exit) statements */	\
 	/* jmplines is actually a stack so that cleanup is done in reverse */	\
 	for (unsigned int scope_jmplines_[SCOPE_DESTRUCTOR_LIMIT];	\
 		scope_cleanup_state_ != SCOPE_EXITING;	\
-		scope_cleanup_state_ = SCOPE_EXITING)	\
+		scope_cleanup_state_  = SCOPE_EXITING)	\
 	/* initialize the first "line" with 0 so it always enters default: */	\
 	for (scope_jmplines_[0] = 0;	\
 		scope_cleanup_state_ != SCOPE_EXITING;	\
-		scope_cleanup_state_ = SCOPE_EXITING)	\
+		scope_cleanup_state_  = SCOPE_EXITING)	\
 	/* set up variables for positioning in the lines array */	\
 	for (unsigned short scope_cleanup_count_ = 0, scope_cleanup_index_ = 0;	\
 		scope_cleanup_state_ != SCOPE_EXITING;	\
-		scope_cleanup_state_ = SCOPE_EXITING)	\
+		scope_cleanup_state_  = SCOPE_EXITING)	\
 	\
 	/* label this spot so exit blocks can jump out, then in to the next one */	\
 	/* unfortunately, this does prevent multiple scopes from existing */	\
@@ -163,7 +163,7 @@ enum scope_cleanup_t {
 		/* if already cleaning up (meaning this is within a cleanup block)... */	\
 		if (scope_cleanup_state_ == SCOPE_CLEANING_UP) { \
 			/* jump to the next cleanup block now that this spot is marked */	\
-            --scope_cleanup_index_;	\
+			--scope_cleanup_index_;	\
 		} else {	\
 			/* otherwise, start all the normal cleanup logic */	\
 			scope_cleanup_state_ = SCOPE_CLEANING_UP;	\
