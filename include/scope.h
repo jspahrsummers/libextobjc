@@ -70,7 +70,7 @@ enum scope_cleanup_t {
  * Works just like a statement in that it can take one line, or multiple lines
  * surrounded by braces.
  *
- * Multiple cleanup blocks are executed in lexical order.
+ * Multiple cleanup blocks are executed in reverse lexical order.
  *
  * Some notes for usage:
  *      - Variables that will be used in cleanup blocks must be declared OUTSIDE
