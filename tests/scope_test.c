@@ -29,19 +29,19 @@ void scope_alloc (void) {
         assert(ptr != NULL);
         LOG_TEST("allocated pointer %p", (void *)ptr);
         
-        // frees the just-allocated memory *when this scope exits*
-        scope(exit) {
-            LOG_TEST("inside scope cleanup, freeing pointer %p", (void *)ptr);
-            free(ptr);
-            ptr = NULL;
-        }
-        
         scope(exit) {
             LOG_TEST("inside second scope cleanup");
             cleaned_up = true;
             
             // previous cleanup block should've been executed already
             assert(ptr == NULL);
+        }
+        
+        // frees the just-allocated memory *when this scope exits*
+        scope(exit) {
+            LOG_TEST("inside scope cleanup, freeing pointer %p", (void *)ptr);
+            free(ptr);
+            ptr = NULL;
         }
         
         // 'ptr' has not been freed yet!

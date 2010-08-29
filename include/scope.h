@@ -16,6 +16,14 @@
 #include <limits.h>
 #include "metamacros.h"
 
+#define SCOPE_DESTRUCTOR_LIMIT 256
+
+enum scope_cleanup_t {
+	SCOPE_EXECUTING,
+	SCOPE_CLEANING_UP,
+	SCOPE_EXITING
+};
+
 /**
  * Expands to scope_KEYWORD. Allows usage of the scope macros more like the D
  * language construct.
@@ -48,58 +56,14 @@
  *        the functionality of the former.
  */
 #define scope_new \
-    /* the next few loops initialize variables */                           \
-    for (bool scope_cleaned_up_ = false; ! scope_cleaned_up_ ;              \
-        scope_cleaned_up_ = true)                                           \
-    for (bool scope_cleaning_up_ = false; ! scope_cleaned_up_ ;             \
-        scope_cleaned_up_ = true)                                           \
-    for (unsigned long scope_first_clean_ = ULONG_MAX;                      \
-        ! scope_cleaned_up_ ; scope_cleaned_up_ = true)                     \
-    for (unsigned long scope_last_clean_ = ULONG_MAX;                       \
-        ! scope_cleaned_up_ ; scope_cleaned_up_ = true)                     \
-    for (unsigned long scope_return_from_ = ULONG_MAX;                      \
-        ! scope_cleaned_up_ ; scope_cleaned_up_ = true)                     \
-    for (unsigned long scope_jump_to_ = 0;                                  \
-        ! scope_cleaned_up_ ; scope_cleaned_up_ = true)                     \
-                                                                            \
-    /* create a label for jumping outside the enclosing loop */             \
-    scope_exit_ :                                                           \
-                                                                            \
-    /* enclosing loop to automatically clean up */                          \
-    for (; ! scope_cleaned_up_ ; scope_cleaning_up_                         \
-        = true, scope_jump_to_ =                                            \
-        scope_first_clean_)                                                 \
-                                                                            \
-    /* create a label to provide 'continue'-like functionality */           \
-    scope_loop_:                                                            \
-                                                                            \
-    /* jump to normal or cleanup code */                                    \
-    switch (scope_jump_to_)                                                 \
-        /* if no cleanup label is found */                                  \
-        default:                                                            \
-            if (scope_cleaning_up_) {                                       \
-                /* if there are still more cleanup handlers */              \
-                if (scope_first_clean_ != ULONG_MAX &&                      \
-                    scope_jump_to_ <                                        \
-                    scope_last_clean_)                                      \
-                    /* iterate until we hit the next one */                 \
-                    ++scope_jump_to_;                                       \
-                else {                                                      \
-                    /* break out */                                         \
-                    scope_cleaned_up_ = true;                               \
-                    if (scope_return_from_ == ULONG_MAX)                    \
-                        /* 'sreturn' wasn't used, so just exit the loop */  \
-                        goto scope_exit_;                                   \
-                                                                            \
-                    /* jump back to where 'sreturn' was used */             \
-                    scope_jump_to_ =                                        \
-                        scope_return_from_;                                 \
-                }                                                           \
-                                                                            \
-                /* redo the jump */                                         \
-                goto scope_loop_;                                           \
-            } else                                                          \
-                /* user code */
+	for (enum scope_cleanup_t scope_cleanup_state_ = SCOPE_EXECUTING;scope_cleanup_state_ != SCOPE_EXITING;scope_cleanup_state_ = SCOPE_EXITING) \
+	for (unsigned int scope_jmplines[SCOPE_DESTRUCTOR_LIMIT];scope_cleanup_state_ != SCOPE_EXITING;scope_cleanup_state_ = SCOPE_EXITING) \
+	for (scope_jmplines[0] = 0;scope_cleanup_state_ != SCOPE_EXITING;scope_cleanup_state_ = SCOPE_EXITING) \
+	for (unsigned short scope_cleanup_count_ = 0, scope_cleanup_index_ = 0;scope_cleanup_state_ != SCOPE_EXITING;scope_cleanup_state_ = SCOPE_EXITING) \
+	scope_loop_: \
+	for (;scope_cleanup_state_ == SCOPE_EXECUTING || (scope_cleanup_index_ > 0 && scope_cleanup_index_ < SCOPE_DESTRUCTOR_LIMIT);scope_cleanup_state_ = SCOPE_CLEANING_UP, scope_cleanup_index_ = scope_cleanup_count_) \
+	switch (scope_jmplines[scope_cleanup_index_]) \
+	default:
 
 /**
  * Defines some cleanup code to be executed when the current scope is left.
@@ -113,31 +77,24 @@
  *        of the scope. They will retain their assigned values.
  *      - Scopes must never contain declarations for variable-length arrays
  *        because of the underlying 'goto' and 'switch' mechanics.
- *      - It is illegal to 'return', 'sreturn', or 'goto' out of a cleanup
- *        block.
- *      - Currently, exceptions cause cleanup blocks to be skipped. This WILL be
+ *      - It is illegal to 'return' or 'goto' out of a cleanup block.
+ *      - Currently, exceptions cause cleanup blocks to be skipped. This may be
  *        fixed in a future version.
  */
 #define scope_exit \
-    if (scope_cleaning_up_ ||                                               \
-        /* if not currently cleaning up, make sure to set the jump points   \
-           for the first and last cleanup blocks */                         \
-        !metamacro_exprify(scope_last_clean_ = __LINE__,                    \
-        (scope_first_clean_ == ULONG_MAX ?                                  \
-            scope_first_clean_ = __LINE__                                   \
-            : 0                                                             \
-        ))                                                                  \
-    )                                                                       \
-        /* eventually jumps here if cleaning up */                          \
+	if ( \
+		scope_cleanup_state_ == SCOPE_CLEANING_UP || ( \
+			(scope_jmplines[++scope_cleanup_index_] = __LINE__) && \
+			++scope_cleanup_count_ && \
+			0 \
+		) \
+	) \
         case __LINE__:                                                      \
-            /* loop to execute user code then do something else */          \
             for (bool scope_done_once_ = false;;scope_done_once_ = true)    \
                 if (scope_done_once_) {                                     \
-                    /* if the cleanup code finished, continue onward */     \
-                    ++scope_jump_to_;                                       \
+                	--scope_cleanup_index_; \
                     goto scope_loop_;                                       \
                 } else                                                      \
-                    /* user cleanup code */
 
 /**
  * Exits the current scope, runs any cleanup code, and returns the given value
@@ -154,14 +111,14 @@
  * the very end.
  */
 #define sreturn \
-    if (!scope_cleaning_up_) {                      \
-        /* if not currently cleaning up, do that */ \
-        scope_cleaning_up_ = true;                  \
-        scope_jump_to_ = scope_first_clean_;        \
-        scope_return_from_ = __LINE__;              \
+    if (scope_cleanup_state_ == SCOPE_EXECUTING) { \
+        scope_cleanup_state_ = SCOPE_CLEANING_UP; \
+        scope_cleanup_index_ = SCOPE_DESTRUCTOR_LIMIT - scope_cleanup_count_; \
         goto scope_loop_;                           \
-    } else                                          \
-        /* cleanup finished, now actually return */ \
+    } else if (scope_cleanup_state_ == SCOPE_CLEANING_UP) { \
+        --scope_cleanup_index_; \
+        goto scope_loop_;                           \
+    } else \
         case __LINE__:                              \
             return
 
