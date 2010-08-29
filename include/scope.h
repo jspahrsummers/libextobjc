@@ -31,49 +31,49 @@ enum scope_cleanup_t {
  *
  * KEYWORD must be one of the following:
  *
- *  new
- *      creates a new scope
- *      (see scope_new)
+ *	new
+ *		creates a new scope
+ *		(see scope_new)
  *
- *  exit
- *      performs a block when the current scope is exited
- *      (see scope_exit)
+ *	exit
+ *		performs a block when the current scope is exited
+ *		(see scope_exit)
  */
 #define scope(KEYWORD) \
-    scope_ ## KEYWORD
+	scope_ ## KEYWORD
 
 /**
  * Creates a new scope that performs automatic cleanup when exited. Works like
  * a statement, in that it takes a block of code that becomes the scope.
  *
  * Some notes for usage:
- *      - Variables that will be used in cleanup blocks must be declared OUTSIDE
- *        of the scope. They will retain their assigned values.
- *      - Scopes must never contain declarations for variable-length arrays
- *        because of the underlying 'goto' and 'switch' mechanics.
- *      - Only one 'scope_new' can appear in any given function. This
- *        restriction may be removed in future versions.
- *      - It is illegal to 'return' or 'goto' out of a scope. 'sreturn' provides
- *        the functionality of the former.
+ *		- Variables that will be used in cleanup blocks must be declared OUTSIDE
+ *		  of the scope. They will retain their assigned values.
+ *		- Scopes must never contain declarations for variable-length arrays
+ *		  because of the underlying 'goto' and 'switch' mechanics.
+ *		- Only one 'scope_new' can appear in any given function. This
+ *		  restriction may be removed in future versions.
+ *		- It is illegal to 'return' or 'goto' out of a scope. 'sreturn' provides
+ *		  the functionality of the former.
  */
 #define scope_new \
 	/* set up the state variable that indicates what the scope is doing */	\
 	for (enum scope_cleanup_t scope_cleanup_state_ = SCOPE_EXECUTING;	\
 		scope_cleanup_state_ != SCOPE_EXITING;	\
-		scope_cleanup_state_  = SCOPE_EXITING)	\
+		scope_cleanup_state_	= SCOPE_EXITING)	\
 	/* set up an array for the line numbers of scope(exit) statements */	\
 	/* jmplines is actually a stack so that cleanup is done in reverse */	\
 	for (unsigned int scope_jmplines_[SCOPE_DESTRUCTOR_LIMIT];	\
 		scope_cleanup_state_ != SCOPE_EXITING;	\
-		scope_cleanup_state_  = SCOPE_EXITING)	\
+		scope_cleanup_state_	= SCOPE_EXITING)	\
 	/* initialize the first "line" with 0 so it always enters default: */	\
 	for (scope_jmplines_[0] = 0;	\
 		scope_cleanup_state_ != SCOPE_EXITING;	\
-		scope_cleanup_state_  = SCOPE_EXITING)	\
+		scope_cleanup_state_	= SCOPE_EXITING)	\
 	/* set up variables for positioning in the lines array */	\
 	for (unsigned short scope_cleanup_count_ = 0, scope_cleanup_index_ = 0;	\
 		scope_cleanup_state_ != SCOPE_EXITING;	\
-		scope_cleanup_state_  = SCOPE_EXITING)	\
+		scope_cleanup_state_	= SCOPE_EXITING)	\
 	\
 	/* label this spot so exit blocks can jump out, then in to the next one */	\
 	/* unfortunately, this does prevent multiple scopes from existing */	\
@@ -106,11 +106,11 @@ enum scope_cleanup_t {
  * Multiple cleanup blocks are executed in reverse lexical order.
  *
  * Some notes for usage:
- *      - Variables that will be used in cleanup blocks must be declared OUTSIDE
- *        of the scope. They will retain their assigned values.
- *      - It is illegal to 'return' or 'goto' out of a cleanup block.
- *      - Currently, exceptions cause cleanup blocks to be skipped. This may be
- *        fixed in a future version.
+ *		- Variables that will be used in cleanup blocks must be declared OUTSIDE
+ *		  of the scope. They will retain their assigned values.
+ *		- It is illegal to 'return' or 'goto' out of a cleanup block.
+ *		- Currently, exceptions cause cleanup blocks to be skipped. This may be
+ *		  fixed in a future version.
  */
 #define scope_exit \
 	/* this if statement will only ever get hit during normal flow */	\
@@ -123,18 +123,18 @@ enum scope_cleanup_t {
 		0 \
 	) \
 		/* execution will jump straight here during cleanup */	\
-        case __LINE__:	\
-        	/* execute this block of code only once */	\
-        	/* this also means that 'break' and 'continue' are usable */	\
-            for (bool scope_done_once_ = false;;scope_done_once_ = true)	\
-            	/* if finished... */	\
-                if (scope_done_once_) {	\
-                	/* mark this cleanup block as being finished */	\
-                	--scope_cleanup_index_;	\
-                	/* return to the loop so the next one will be done */	\
-                    goto scope_loop_;	\
-                } else	\
-                	/* cleanup code begins here */
+		case __LINE__:	\
+			/* execute this block of code only once */	\
+			/* this also means that 'break' and 'continue' are usable */	\
+			for (bool scope_done_once_ = false;;scope_done_once_ = true)	\
+				/* if finished... */	\
+				if (scope_done_once_) {	\
+					/* mark this cleanup block as being finished */	\
+					--scope_cleanup_index_;	\
+					/* return to the loop so the next one will be done */	\
+					goto scope_loop_;	\
+				} else	\
+					/* cleanup code begins here */
 
 /**
  * Exits the current scope, runs any cleanup code, and returns the given value
