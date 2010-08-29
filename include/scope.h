@@ -85,7 +85,8 @@ enum scope_cleanup_t {
 		for (;	\
 			/* loop while executing or there are still cleanup blocks to hit */	\
 			scope_cleanup_state_ == SCOPE_EXECUTING || (	\
-				scope_cleanup_index_ > 0 &&	\
+				/* include index 0 if it's the location for an sreturn statement */	\
+				(scope_cleanup_index_ > 0 || scope_jmplines_[0] != 0) &&	\
 				scope_cleanup_index_ < SCOPE_DESTRUCTOR_LIMIT	\
 			);	\
 			/* after one full execution, change state to start cleaning up */ \
@@ -143,8 +144,8 @@ enum scope_cleanup_t {
  * always be used instead of 'return' inside a scope, and cannot be used outside
  * of one.
  *
- * sreturn is legal within scope(exit) blocks. The last sreturn statement
- * executed provides the value that is actually returned to the caller.
+ * sreturn is legal within scope(exit) blocks. The final sreturn statement that
+ * is executed provides the value that is actually returned to the caller.
  *
  * Although a given sreturn statement may always be executed, the compiler may
  * still issue warnings about your non-void function not returning a value. To
@@ -153,23 +154,22 @@ enum scope_cleanup_t {
  * the very end.
  */
 #define sreturn \
-	/* if still executing and there are cleanup blocks... */	\
-	if (scope_cleanup_state_ == SCOPE_EXECUTING && scope_cleanup_count_) {	\
+	/* if there are cleanup blocks... */	\
+	if (scope_cleanup_count_) {	\
 		/* we need to mark this spot to return to after all the cleanup */	\
 		/* subvert the stack and insert this line in the logically last spot */	\
-		memmove(scope_jmplines_ + 2, scope_jmplines_ + 1,	\
-			sizeof(*scope_jmplines_) * scope_cleanup_count_);	\
-		scope_jmplines_[1] = __LINE__;	\
-		++scope_cleanup_count_;	\
+		scope_jmplines_[0] = __LINE__;	\
 		\
-		/* then start all the normal cleanup logic */	\
-		scope_cleanup_state_ = SCOPE_CLEANING_UP;	\
-		scope_cleanup_index_ = scope_cleanup_count_;	\
-		goto scope_loop_;	\
-	/* or if cleaning up when this statement is hit... */	\
-	} else if (scope_cleanup_state_ == SCOPE_CLEANING_UP) { \
-		/* simply jump to the next cleanup block */	\
-		--scope_cleanup_index_;	\
+		/* if already cleaning up (meaning this is within a cleanup block)... */	\
+		if (scope_cleanup_state_ == SCOPE_CLEANING_UP) { \
+			/* jump to the next cleanup block now that this spot is marked */	\
+            --scope_cleanup_index_;	\
+		} else {	\
+			/* otherwise, start all the normal cleanup logic */	\
+			scope_cleanup_state_ = SCOPE_CLEANING_UP;	\
+			scope_cleanup_index_ = scope_cleanup_count_;	\
+		}	\
+		\
 		goto scope_loop_;	\
 	/* otherwise, actually exit the function */	\
 	} else	\

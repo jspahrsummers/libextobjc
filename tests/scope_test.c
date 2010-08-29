@@ -20,7 +20,7 @@ void scope_test (void) {
     int ret = scope_return();
     
     // value should have been 20 at the point of return
-    assert(ret == 10);
+    assert(ret == 20);
 }
 
 static
