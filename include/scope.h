@@ -14,6 +14,7 @@
 #endif
 
 #include <limits.h>
+#include <string.h>
 #include "metamacros.h"
 
 #define SCOPE_DESTRUCTOR_LIMIT 256
@@ -56,14 +57,45 @@ enum scope_cleanup_t {
  *        the functionality of the former.
  */
 #define scope_new \
-	for (enum scope_cleanup_t scope_cleanup_state_ = SCOPE_EXECUTING;scope_cleanup_state_ != SCOPE_EXITING;scope_cleanup_state_ = SCOPE_EXITING) \
-	for (unsigned int scope_jmplines[SCOPE_DESTRUCTOR_LIMIT];scope_cleanup_state_ != SCOPE_EXITING;scope_cleanup_state_ = SCOPE_EXITING) \
-	for (scope_jmplines[0] = 0;scope_cleanup_state_ != SCOPE_EXITING;scope_cleanup_state_ = SCOPE_EXITING) \
-	for (unsigned short scope_cleanup_count_ = 0, scope_cleanup_index_ = 0;scope_cleanup_state_ != SCOPE_EXITING;scope_cleanup_state_ = SCOPE_EXITING) \
-	scope_loop_: \
-	for (;scope_cleanup_state_ == SCOPE_EXECUTING || (scope_cleanup_index_ > 0 && scope_cleanup_index_ < SCOPE_DESTRUCTOR_LIMIT);scope_cleanup_state_ = SCOPE_CLEANING_UP, scope_cleanup_index_ = scope_cleanup_count_) \
-	switch (scope_jmplines[scope_cleanup_index_]) \
-	default:
+	/* set up the state variable that indicates what the scope is doing */	\
+	for (enum scope_cleanup_t scope_cleanup_state_ = SCOPE_EXECUTING;	\
+		scope_cleanup_state_ != SCOPE_EXITING;	\
+		scope_cleanup_state_ = SCOPE_EXITING)	\
+	/* set up an array for the line numbers of scope(exit) statements */	\
+	/* jmplines is actually a stack so that cleanup is done in reverse */	\
+	for (unsigned int scope_jmplines_[SCOPE_DESTRUCTOR_LIMIT];	\
+		scope_cleanup_state_ != SCOPE_EXITING;	\
+		scope_cleanup_state_ = SCOPE_EXITING)	\
+	/* initialize the first "line" with 0 so it always enters default: */	\
+	for (scope_jmplines_[0] = 0;	\
+		scope_cleanup_state_ != SCOPE_EXITING;	\
+		scope_cleanup_state_ = SCOPE_EXITING)	\
+	/* set up variables for positioning in the lines array */	\
+	for (unsigned short scope_cleanup_count_ = 0, scope_cleanup_index_ = 0;	\
+		scope_cleanup_state_ != SCOPE_EXITING;	\
+		scope_cleanup_state_ = SCOPE_EXITING)	\
+	\
+	/* label this spot so exit blocks can jump out, then in to the next one */	\
+	/* unfortunately, this does prevent multiple scopes from existing */	\
+	scope_loop_:	\
+		/* this loop does two things:
+			- if the scope has yet to execute, it executes it once
+			- if the scope has yet to clean up, it jumps to each cleanup block
+		*/	\
+		for (;	\
+			/* loop while executing or there are still cleanup blocks to hit */	\
+			scope_cleanup_state_ == SCOPE_EXECUTING || (	\
+				scope_cleanup_index_ > 0 &&	\
+				scope_cleanup_index_ < SCOPE_DESTRUCTOR_LIMIT	\
+			);	\
+			/* after one full execution, change state to start cleaning up */ \
+			scope_cleanup_state_ = SCOPE_CLEANING_UP,	\
+			scope_cleanup_index_ = scope_cleanup_count_)	\
+		/* jump to the appropriate exit block, or default: if not cleaning */	\
+		switch (scope_jmplines_[scope_cleanup_index_])	\
+		default:	\
+			/* normal execution flow begins here */	\
+			/* 'break' or 'continue' will exit the switch and begin cleanup */
 
 /**
  * Defines some cleanup code to be executed when the current scope is left.
@@ -75,26 +107,33 @@ enum scope_cleanup_t {
  * Some notes for usage:
  *      - Variables that will be used in cleanup blocks must be declared OUTSIDE
  *        of the scope. They will retain their assigned values.
- *      - Scopes must never contain declarations for variable-length arrays
- *        because of the underlying 'goto' and 'switch' mechanics.
  *      - It is illegal to 'return' or 'goto' out of a cleanup block.
  *      - Currently, exceptions cause cleanup blocks to be skipped. This may be
  *        fixed in a future version.
  */
 #define scope_exit \
+	/* this if statement will only ever get hit during normal flow */	\
 	if ( \
-		scope_cleanup_state_ == SCOPE_CLEANING_UP || ( \
-			(scope_jmplines[++scope_cleanup_index_] = __LINE__) && \
-			++scope_cleanup_count_ && \
-			0 \
-		) \
+		/* mark this spot for jumping during cleanup */	\
+		(scope_jmplines_[++scope_cleanup_index_] = __LINE__) && \
+		/* increment the number of cleanup blocks */ \
+		++scope_cleanup_count_ && \
+		/* and, of course, don't actually enter this statement */ \
+		0 \
 	) \
-        case __LINE__:                                                      \
-            for (bool scope_done_once_ = false;;scope_done_once_ = true)    \
-                if (scope_done_once_) {                                     \
-                	--scope_cleanup_index_; \
-                    goto scope_loop_;                                       \
-                } else                                                      \
+		/* execution will jump straight here during cleanup */	\
+        case __LINE__:	\
+        	/* execute this block of code only once */	\
+        	/* this also means that 'break' and 'continue' are usable */	\
+            for (bool scope_done_once_ = false;;scope_done_once_ = true)	\
+            	/* if finished... */	\
+                if (scope_done_once_) {	\
+                	/* mark this cleanup block as being finished */	\
+                	--scope_cleanup_index_;	\
+                	/* return to the loop so the next one will be done */	\
+                    goto scope_loop_;	\
+                } else	\
+                	/* cleanup code begins here */
 
 /**
  * Exits the current scope, runs any cleanup code, and returns the given value
@@ -104,6 +143,9 @@ enum scope_cleanup_t {
  * always be used instead of 'return' inside a scope, and cannot be used outside
  * of one.
  *
+ * sreturn is legal within scope(exit) blocks. The last sreturn statement
+ * executed provides the value that is actually returned to the caller.
+ *
  * Although a given sreturn statement may always be executed, the compiler may
  * still issue warnings about your non-void function not returning a value. To
  * suppress these warnings, you can use 'return' with a bogus value at the very
@@ -111,15 +153,29 @@ enum scope_cleanup_t {
  * the very end.
  */
 #define sreturn \
-    if (scope_cleanup_state_ == SCOPE_EXECUTING) { \
-        scope_cleanup_state_ = SCOPE_CLEANING_UP; \
-        scope_cleanup_index_ = SCOPE_DESTRUCTOR_LIMIT - scope_cleanup_count_; \
-        goto scope_loop_;                           \
-    } else if (scope_cleanup_state_ == SCOPE_CLEANING_UP) { \
-        --scope_cleanup_index_; \
-        goto scope_loop_;                           \
-    } else \
-        case __LINE__:                              \
-            return
+	/* if still executing and there are cleanup blocks... */	\
+	if (scope_cleanup_state_ == SCOPE_EXECUTING && scope_cleanup_count_) {	\
+		/* we need to mark this spot to return to after all the cleanup */	\
+		/* subvert the stack and insert this line in the logically last spot */	\
+		memmove(scope_jmplines_ + 2, scope_jmplines_ + 1,	\
+			sizeof(*scope_jmplines_) * scope_cleanup_count_);	\
+		scope_jmplines_[1] = __LINE__;	\
+		++scope_cleanup_count_;	\
+		\
+		/* then start all the normal cleanup logic */	\
+		scope_cleanup_state_ = SCOPE_CLEANING_UP;	\
+		scope_cleanup_index_ = scope_cleanup_count_;	\
+		goto scope_loop_;	\
+	/* or if cleaning up when this statement is hit... */	\
+	} else if (scope_cleanup_state_ == SCOPE_CLEANING_UP) { \
+		/* simply jump to the next cleanup block */	\
+		--scope_cleanup_index_;	\
+		goto scope_loop_;	\
+	/* otherwise, actually exit the function */	\
+	} else	\
+		/* mark this point for jumping if we have cleanup */	\
+		case __LINE__:	\
+			/* pass on the user's return value */	\
+			return
 
 #endif

@@ -11,10 +11,19 @@
 static
 void scope_alloc (void);
 
+static
+int scope_return (void);
+
 void scope_test (void) {
     scope_alloc();
+    
+    int ret = scope_return();
+    
+    // value should have been 20 at the point of return
+    assert(ret == 10);
 }
 
+static
 void scope_alloc (void) {
     LOG_TEST("using scope() to automatically deallocate memory");
 
@@ -33,13 +42,14 @@ void scope_alloc (void) {
             LOG_TEST("inside second scope cleanup");
             cleaned_up = true;
             
-            // previous cleanup block should've been executed already
+            // previous (lexically next) cleanup block should've been executed
             assert(ptr == NULL);
         }
         
         // frees the just-allocated memory *when this scope exits*
         scope(exit) {
             LOG_TEST("inside scope cleanup, freeing pointer %p", (void *)ptr);
+            
             free(ptr);
             ptr = NULL;
         }
@@ -55,6 +65,49 @@ void scope_alloc (void) {
     assert(cleaned_up);
     assert(ptr == NULL);
     LOG_TEST("scope has been cleaned up");
+}
+
+static
+int scope_return (void) {
+	LOG_TEST("testing sreturn in various cases");
+
+    int value = 5;
+    scope(new) {
+    	scope(exit) {
+    		assert(value == 10);
+    		
+    		int ret = 20;
+    		LOG_TEST("returning from final cleanup block with %i", ret);
+    		
+    		// this should actually exit now
+    		sreturn ret;
+    	}
+    
+    	scope(exit) {
+    		assert(value == 10);
+    		
+    		LOG_TEST("returning from cleanup block with %i", value + 5);
+    		
+    		// this should jump to the next cleanup block
+    		sreturn value + 5;
+    		
+    		value = 50;
+    	}
+    	
+    	assert(value == 5);
+    	value = 10;
+    
+    	LOG_TEST("returning from scope(new) with value = %i", value);
+    	sreturn value;
+    
+    	scope(exit) {
+    		// this scope block should never be reached
+    		assert(0);
+    	}
+    }
+    
+    // should never reach here with all the sreturns
+    assert(0);
 }
 
 static
