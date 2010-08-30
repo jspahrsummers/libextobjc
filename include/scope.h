@@ -14,6 +14,7 @@
 #endif
 
 #include <limits.h>
+#include <stdbool.h>
 #include <string.h>
 #include "metamacros.h"
 
@@ -124,17 +125,18 @@ enum scope_cleanup_t {
 	) \
 		/* execution will jump straight here during cleanup */	\
 		case __LINE__:	\
-			/* execute this block of code only once */	\
-			/* this also means that 'break' and 'continue' are usable */	\
+			/* meaningless outer loop to allow the use of 'break' */	\
 			for (bool scope_done_once_ = false;;scope_done_once_ = true)	\
-				/* if finished... */	\
-				if (scope_done_once_) {	\
-					/* mark this cleanup block as being finished */	\
-					--scope_cleanup_index_;	\
-					/* return to the loop so the next one will be done */	\
-					goto scope_loop_;	\
-				} else	\
-					/* cleanup code begins here */
+				/* executes this block of code only once */	\
+				for (;;scope_done_once_ = true)	\
+					/* if finished... */	\
+					if (scope_done_once_) {	\
+						/* mark this cleanup block as being finished */	\
+						--scope_cleanup_index_;	\
+						/* return to the loop so the next one will be done */	\
+						goto scope_loop_;	\
+					} else	\
+						/* cleanup code begins here */
 
 /**
  * Exits the current scope, runs any cleanup code, and returns the given value
