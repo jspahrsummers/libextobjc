@@ -30,12 +30,12 @@
  *
  * 	contract(void *, allocate_memory, size_t sz) {
  * 		in {
- * 			assert(sz <= 1024);
+ * 			ensure(sz <= 1024);
  * 		}
  * 		
  * 		void *ret = body(sz);
  * 		out {
- * 			assert(ret != NULL);
+ * 			ensure(ret != NULL);
  * 		}
  * 		
  * 		return ret;
