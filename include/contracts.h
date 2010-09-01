@@ -30,13 +30,13 @@
 		\
 		if (0)
 	
-	#define out(VALUE) \
+	#define out \
 		if (0)
 #else
 	#define in \
 			}
 	
-	#define out(VALUE)
+	#define out
 #endif
 
 #endif
