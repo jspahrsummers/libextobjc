@@ -7,6 +7,7 @@
  */
 
 #include "algorithm_test.h"
+#include "contracts_test.h"
 #include "enum_test.h"
 #include "exception_test.h"
 #include "memory_test.h"
@@ -23,6 +24,7 @@ int main (void) {
     TEST_MODULE(exception);
     
     TEST_MODULE(algorithm);
+    TEST_MODULE(contracts);
     TEST_MODULE(enum);
     TEST_MODULE(memory);
     TEST_MODULE(refcounted);

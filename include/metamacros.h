@@ -38,8 +38,15 @@
 #define metamacro_stringify(VALUE) \
         metamacro_stringify_(VALUE)
 
+/**
+ * Returns A and B concatenated after full macro expansion.
+ */
+#define metamacro_concat(A, B) \
+        metamacro_concat_(A, B)
+
 // IMPLEMENTATION DETAILS FOLLOW!
 // Do not write code that depends on anything below this line.
 #define metamacro_stringify_(VALUE) # VALUE
+#define metamacro_concat_(A, B) A ## B
 
 #endif
