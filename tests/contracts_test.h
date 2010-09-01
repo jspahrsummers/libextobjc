@@ -36,12 +36,12 @@ contract(bool, in_test, int value) {
 
 contract(void *, out_test, size_t sz) {
 	in {
-		assert(sz <= 1024);
+		ensure(sz <= 1024);
 	}
 	
 	void *ret = body(sz);
 	out {
-		assert(ret != NULL);
+		ensure(ret != NULL);
 	}
 	
 	return ret;

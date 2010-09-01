@@ -15,6 +15,8 @@
 
 #include <assert.h>
 #include <stdbool.h>
+#include <stdio.h>
+#include <stdlib.h>
 #include "metamacros.h"
 
 /**
@@ -59,13 +61,48 @@
 	 * regardless of whether the function actually has arguments.
 	 */
 	#define in \
-			}
+		}	\
+		\
+		for (	\
+			bool contract_succeeded_ = true, contract_done_ = false;;	\
+			contract_done_ = true	\
+		)	\
+			if (contract_done_) {	\
+				if (!contract_succeeded_) {	\
+					fprintf(stderr, "*** In contract of %s() failed!\n", __func__);	\
+					abort();	\
+				}	\
+				\
+				break;	\
+			} else
 	
 	/**
 	 * Defines and documents assumptions about the function's return value. This
 	 * statement is optional.
 	 */
-	#define out
+	#define out \
+		for (	\
+			bool contract_succeeded_ = true, contract_done_ = false;;	\
+			contract_done_ = true	\
+		)	\
+			if (contract_done_) {	\
+				if (!contract_succeeded_) {	\
+					fprintf(stderr, "*** Out contract of %s() failed!\n", __func__);	\
+					abort();	\
+				}	\
+				\
+				break;	\
+			} else
+	
+	/**
+	 * Verifies an assumption COND. If COND is false, the current contract will
+	 * fail. This macro must be used within an 'in' or 'out' statement.
+	 */
+	#define ensure(COND) \
+		if (!(COND)) {	\
+			contract_succeeded_ = false;	\
+			fprintf(stderr, "*** Contract violation: (%s) is false\n", metamacro_stringify(COND));	\
+		}
 #else
 	// disable execution of contracts if NDEBUG is defined
 	#define in \
@@ -75,6 +112,8 @@
 	
 	#define out \
 		if (0)
+	
+	#define ensure(COND)
 #endif
 
 #endif
