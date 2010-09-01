@@ -20,6 +20,8 @@ void contracts_test (void) {
 	LOG_TEST("validating 'out' contract");
 	void *ptr = out_test(1024);
 	assert(ptr != NULL);
+	
+	free(ptr);
 }
 
 bool in_test_body (int value) {
