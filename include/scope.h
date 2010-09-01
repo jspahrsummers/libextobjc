@@ -15,16 +15,9 @@
 
 #include <limits.h>
 #include <stdbool.h>
+#include <stdio.h>
 #include <string.h>
 #include "metamacros.h"
-
-#define SCOPE_DESTRUCTOR_LIMIT 128
-
-enum scope_cleanup_t {
-	SCOPE_EXECUTING,
-	SCOPE_CLEANING_UP,
-	SCOPE_EXITING
-};
 
 /**
  * Expands to scope_KEYWORD. Allows usage of the scope macros more like the D
@@ -115,7 +108,10 @@ enum scope_cleanup_t {
  */
 #define scope_exit \
 	/* this if statement will only ever get hit during normal flow */	\
-	if ( \
+	if (scope_cleanup_count_ + 1 >= SCOPE_DESTRUCTOR_LIMIT) {	\
+		fprintf(stderr, "*** Too many scope(exit) statements, skipping %s:%lu",	\
+			__FILE__, (unsigned long)__LINE__);	\
+	} else if ( \
 		/* mark this spot for jumping during cleanup */	\
 		(scope_jmplines_[++scope_cleanup_index_] = __LINE__) && \
 		/* increment the number of cleanup blocks */ \
@@ -179,5 +175,16 @@ enum scope_cleanup_t {
 		case __LINE__:	\
 			/* pass on the user's return value */	\
 			return
+
+// IMPLEMENTATION DETAILS FOLLOW!
+// Do not write code that depends on anything below this line.
+enum scope_cleanup_t {
+	SCOPE_EXECUTING,
+	SCOPE_CLEANING_UP,
+	SCOPE_EXITING
+};
+
+// the maximum number of scope(exit) statements allowed
+#define SCOPE_DESTRUCTOR_LIMIT 128
 
 #endif
