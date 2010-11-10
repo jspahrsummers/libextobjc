@@ -7,6 +7,7 @@
  */
 
 #import "EXTConcreteProtocol.h"
+#import "EXTMixin.h"
 #import "EXTMultiObject.h"
 #import "EXTSwizzle.h"
 

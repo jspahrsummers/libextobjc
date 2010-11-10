@@ -61,9 +61,8 @@
 	\
 	@implementation NAME ## _MethodContainer \
 	\
-	__attribute__((constructor)) void NAME ## _inject (void) { \
-		NSLog(@"loading concrete protocol %s", # NAME); \
-		\
+	__attribute__((constructor)) \
+	static void ext_ ## NAME ## _inject (void) { \
 		Protocol *protocol = objc_getProtocol(# NAME); \
 		if (!protocol) { \
 			NSLog(@"ERROR: Concrete protocol %s does not have a corresponding @protocol interface", # NAME); \
@@ -116,7 +115,10 @@
 				IMP imp = method_getImplementation(method); \
 				const char *types = method_getTypeEncoding(method); \
 				\
-				class_addMethod(class, selector, imp, types); \
+				if (!class_addMethod(class, selector, imp, types)) { \
+					NSLog(@"ERROR: Could not implement instance method %@ from concrete protocol %s on class %@", \
+						NSStringFromSelector(selector), # NAME, class); \
+				} \
 			} \
 			\
 			Class metaclass = object_getClass(class); \
@@ -137,7 +139,10 @@
 				IMP imp = method_getImplementation(method); \
 				const char *types = method_getTypeEncoding(method); \
 				\
-				class_addMethod(metaclass, selector, imp, types); \
+				if (!class_addMethod(metaclass, selector, imp, types)) { \
+					NSLog(@"ERROR: Could not implement class method %@ from concrete protocol %s on class %@", \
+						NSStringFromSelector(selector), # NAME, metaclass); \
+				} \
 			} \
 		} \
 		\

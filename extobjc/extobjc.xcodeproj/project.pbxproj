@@ -76,6 +76,8 @@
 		D0CFB5D0128A8109006DC377 /* EXTMultiObject.m in Sources */ = {isa = PBXBuildFile; fileRef = D0CFB5CE128A8109006DC377 /* EXTMultiObject.m */; };
 		D0CFB5D1128A8109006DC377 /* EXTMultiObject.h in Headers */ = {isa = PBXBuildFile; fileRef = D0CFB5CD128A8109006DC377 /* EXTMultiObject.h */; };
 		D0CFB5D2128A8109006DC377 /* EXTMultiObject.m in Sources */ = {isa = PBXBuildFile; fileRef = D0CFB5CE128A8109006DC377 /* EXTMultiObject.m */; };
+		D0CFB5EC128A8A62006DC377 /* EXTMixin.h in Headers */ = {isa = PBXBuildFile; fileRef = D0CFB5EB128A8A62006DC377 /* EXTMixin.h */; };
+		D0CFB5ED128A8A62006DC377 /* EXTMixin.h in Headers */ = {isa = PBXBuildFile; fileRef = D0CFB5EB128A8A62006DC377 /* EXTMixin.h */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -138,6 +140,7 @@
 		D0C1D917128A57B600E96C0F /* EXTConcreteProtocolTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXTConcreteProtocolTest.m; sourceTree = "<group>"; };
 		D0CFB5CD128A8109006DC377 /* EXTMultiObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXTMultiObject.h; sourceTree = "<group>"; };
 		D0CFB5CE128A8109006DC377 /* EXTMultiObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXTMultiObject.m; sourceTree = "<group>"; };
+		D0CFB5EB128A8A62006DC377 /* EXTMixin.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXTMixin.h; sourceTree = "<group>"; };
 		D2AAC07E0554694100DB518D /* libextobjc_OSX.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libextobjc_OSX.a; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -278,6 +281,7 @@
 			isa = PBXGroup;
 			children = (
 				D0A8B336128A5185004AACE0 /* EXTConcreteProtocol.h */,
+				D0CFB5EB128A8A62006DC377 /* EXTMixin.h */,
 				D0A8B2F7128A49E9004AACE0 /* EXTSwizzle.h */,
 			);
 			path = Modules;
@@ -307,6 +311,7 @@
 				D0A8B312128A4BDE004AACE0 /* extobjc.h in Headers */,
 				D0A8B33A128A5185004AACE0 /* EXTConcreteProtocol.h in Headers */,
 				D0CFB5CF128A8109006DC377 /* EXTMultiObject.h in Headers */,
+				D0CFB5EC128A8A62006DC377 /* EXTMixin.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -331,6 +336,7 @@
 				D0A8B313128A4BDE004AACE0 /* extobjc.h in Headers */,
 				D0A8B338128A5185004AACE0 /* EXTConcreteProtocol.h in Headers */,
 				D0CFB5D1128A8109006DC377 /* EXTMultiObject.h in Headers */,
+				D0CFB5ED128A8A62006DC377 /* EXTMixin.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
