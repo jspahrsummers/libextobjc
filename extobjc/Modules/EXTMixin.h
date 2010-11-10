@@ -28,12 +28,6 @@
 		unsigned imethodCount = 0; \
 		Method *imethodList = class_copyMethodList(sourceClass, &imethodCount); \
 		\
-		unsigned cmethodCount = 0; \
-		Method *cmethodList = class_copyMethodList(object_getClass(sourceClass), &cmethodCount); \
-		\
-		if (!imethodCount && !cmethodCount) \
-			return; \
-		\
 		for (unsigned methodIndex = 0;methodIndex < imethodCount;++methodIndex) { \
 			Method method = imethodList[methodIndex]; \
 			SEL selector = method_getName(method); \
@@ -42,6 +36,11 @@
 			\
 			class_replaceMethod(targetClass, selector, imp, types); \
 		} \
+		\
+		free(imethodList); imethodList = NULL; \
+		\
+		unsigned cmethodCount = 0; \
+		Method *cmethodList = class_copyMethodList(object_getClass(sourceClass), &cmethodCount); \
 		\
 		Class metaclass = object_getClass(targetClass); \
 		for (unsigned methodIndex = 0;methodIndex < cmethodCount;++methodIndex) { \
@@ -52,5 +51,7 @@
 			\
 			class_replaceMethod(metaclass, selector, imp, types); \
 		} \
+		\
+		free(cmethodList); cmethodList = NULL;
 	}
 
