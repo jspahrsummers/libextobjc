@@ -3,7 +3,7 @@
 //  extobjc
 //
 //  Created by Justin Spahr-Summers on 2010-11-09.
-//  Copyright 2010 Übermind, Inc. All rights reserved.
+//  Released into the public domain.
 //
 
 #import <SenTestingKit/SenTestingKit.h>
