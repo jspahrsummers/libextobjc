@@ -24,6 +24,36 @@
  * Any object that declares itself to conform to protocol \a NAME will receive
  * its method implementations \e only if no method by the same name already
  * exists.
+ *
+ * @code
+ *
+
+@protocol MyProtocol
+@required
+	- (void)someRequiredMethod;
+
+@optional
+	- (void)someOptionalMethod;
+
+@concrete
+	- (BOOL)isConcrete;
+
+@end
+
+ *
+ * @endcode
+ * @code
+ *
+
+@concreteprotocol(MyProtocol)
+- (BOOL)isConcrete {
+  	return YES;
+}
+
+@end
+
+ *
+ * @endcode
  */
 #define concreteprotocol(NAME) \
 	interface NAME ## _MethodContainer {} \

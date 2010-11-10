@@ -9,13 +9,13 @@
 #import "EXTSwizzleTest.h"
 
 /* Test category for macro manipulation */
-@interface NSURLRequest (UberMetaMacroTestCategory)
+@interface NSURLRequest (SwizzleTestCategory)
 - (id)replacementSelf;
 
 + (Class)replacementClass;
 @end
 
-@implementation NSURLRequest (UberMetaMacroTestCategory)
+@implementation NSURLRequest (SwizzleTestCategory)
 - (void)replacementDealloc {
 	[self oldDealloc];
 }
