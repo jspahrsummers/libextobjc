@@ -6,5 +6,7 @@
  *  Released into the public domain.
  */
 
+#import "EXTConcreteProtocol.h"
+#import "EXTMultiObject.h"
 #import "EXTSwizzle.h"
 
