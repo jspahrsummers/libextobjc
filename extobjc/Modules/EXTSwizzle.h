@@ -12,11 +12,6 @@
 #import "metamacros.h"
 
 /**
- * @defgroup EXTSwizzle EXTSwizzle
- * @{
- */
-
-/**
  * Replaces an instance method on \a CLASS, saving it under a new name.
  * \a ORIGINAL specifies a selector name to replace with the implementation from
  * \a NEW. Once replaced, the original implementation will be stored as selector
@@ -147,5 +142,3 @@
 		IMP newImpl_ = method_getImplementation(new_); \
 		class_replaceMethod(meta_, @selector(ORIGINAL), newImpl_, method_getTypeEncoding(new_)); \
 	} while (0)
-
-/** @} */

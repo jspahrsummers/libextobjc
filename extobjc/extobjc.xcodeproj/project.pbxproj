@@ -71,6 +71,8 @@
 		D0A8B313128A4BDE004AACE0 /* extobjc.h in Headers */ = {isa = PBXBuildFile; fileRef = D0A8B311128A4BDE004AACE0 /* extobjc.h */; };
 		D0A8B338128A5185004AACE0 /* EXTConcreteProtocol.h in Headers */ = {isa = PBXBuildFile; fileRef = D0A8B336128A5185004AACE0 /* EXTConcreteProtocol.h */; };
 		D0A8B33A128A5185004AACE0 /* EXTConcreteProtocol.h in Headers */ = {isa = PBXBuildFile; fileRef = D0A8B336128A5185004AACE0 /* EXTConcreteProtocol.h */; };
+		D0B6C99D128B121B00137E97 /* EXTConcreteProtocol.m in Sources */ = {isa = PBXBuildFile; fileRef = D0B6C99C128B121B00137E97 /* EXTConcreteProtocol.m */; };
+		D0B6C99E128B121B00137E97 /* EXTConcreteProtocol.m in Sources */ = {isa = PBXBuildFile; fileRef = D0B6C99C128B121B00137E97 /* EXTConcreteProtocol.m */; };
 		D0C1D918128A57B600E96C0F /* EXTConcreteProtocolTest.m in Sources */ = {isa = PBXBuildFile; fileRef = D0C1D917128A57B600E96C0F /* EXTConcreteProtocolTest.m */; };
 		D0CFB5CF128A8109006DC377 /* EXTMultiObject.h in Headers */ = {isa = PBXBuildFile; fileRef = D0CFB5CD128A8109006DC377 /* EXTMultiObject.h */; };
 		D0CFB5D0128A8109006DC377 /* EXTMultiObject.m in Sources */ = {isa = PBXBuildFile; fileRef = D0CFB5CE128A8109006DC377 /* EXTMultiObject.m */; };
@@ -87,28 +89,28 @@
 			isa = PBXContainerItemProxy;
 			containerPortal = 0867D690FE84028FC02AAC07 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = D2AAC07D0554694100DB518D /* libextobjc (OS X) */;
+			remoteGlobalIDString = D2AAC07D0554694100DB518D;
 			remoteInfo = "libextobjc (OS X)";
 		};
 		D0CFB619128A8F05006DC377 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 0867D690FE84028FC02AAC07 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = D0A8B028128A4261004AACE0 /* libextobjc (iOS) */;
+			remoteGlobalIDString = D0A8B028128A4261004AACE0;
 			remoteInfo = "libextobjc (iOS)";
 		};
 		D0CFB61B128A8F0B006DC377 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 0867D690FE84028FC02AAC07 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = D0A8B2DB128A495D004AACE0 /* OS X Tests */;
+			remoteGlobalIDString = D0A8B2DB128A495D004AACE0;
 			remoteInfo = "OS X Tests";
 		};
 		D0CFB61D128A8F0C006DC377 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 0867D690FE84028FC02AAC07 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = D0CFB60E128A8EEE006DC377 /* iOS Tests */;
+			remoteGlobalIDString = D0CFB60E128A8EEE006DC377;
 			remoteInfo = "iOS Tests";
 		};
 /* End PBXContainerItemProxy section */
@@ -145,6 +147,7 @@
 		D0A8B30D128A4B56004AACE0 /* EXTSwizzleTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXTSwizzleTest.m; sourceTree = "<group>"; };
 		D0A8B311128A4BDE004AACE0 /* extobjc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = extobjc.h; sourceTree = "<group>"; };
 		D0A8B336128A5185004AACE0 /* EXTConcreteProtocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXTConcreteProtocol.h; sourceTree = "<group>"; };
+		D0B6C99C128B121B00137E97 /* EXTConcreteProtocol.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXTConcreteProtocol.m; sourceTree = "<group>"; };
 		D0C1D916128A57B600E96C0F /* EXTConcreteProtocolTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXTConcreteProtocolTest.h; sourceTree = "<group>"; };
 		D0C1D917128A57B600E96C0F /* EXTConcreteProtocolTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXTConcreteProtocolTest.m; sourceTree = "<group>"; };
 		D0CFB5CD128A8109006DC377 /* EXTMultiObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXTMultiObject.h; sourceTree = "<group>"; };
@@ -301,6 +304,7 @@
 			isa = PBXGroup;
 			children = (
 				D0A8B336128A5185004AACE0 /* EXTConcreteProtocol.h */,
+				D0B6C99C128B121B00137E97 /* EXTConcreteProtocol.m */,
 				D0CFB5EB128A8A62006DC377 /* EXTMixin.h */,
 				D0A8B2F7128A49E9004AACE0 /* EXTSwizzle.h */,
 			);
@@ -525,6 +529,7 @@
 				D0A8B299128A46B0004AACE0 /* template.c in Sources */,
 				D0A8B29A128A46B0004AACE0 /* vector.c in Sources */,
 				D0CFB5D0128A8109006DC377 /* EXTMultiObject.m in Sources */,
+				D0B6C99D128B121B00137E97 /* EXTConcreteProtocol.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -558,6 +563,7 @@
 				D0A8B292128A46B0004AACE0 /* template.c in Sources */,
 				D0A8B293128A46B0004AACE0 /* vector.c in Sources */,
 				D0CFB5D2128A8109006DC377 /* EXTMultiObject.m in Sources */,
+				D0B6C99E128B121B00137E97 /* EXTConcreteProtocol.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

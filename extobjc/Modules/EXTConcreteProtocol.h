@@ -155,3 +155,7 @@
 		free(allClasses); \
 	}
 
+/*** implementation details follow ***/
+BOOL ext_addConcreteProtocol (Protocol *protocol, Class methodContainer);
+void ext_loadConcreteProtocol (Protocol *protocol);
+
