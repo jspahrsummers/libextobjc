@@ -26,6 +26,7 @@
 @end
 
 /*** first test class ***/
+// conforms to MyProtocol, implements a class method
 @interface TestClass : NSObject <MyProtocol> {}
 @end
 
@@ -36,6 +37,7 @@
 @end
 
 /*** second test class ***/
+// conforms to MyProtocol, implements an instance method
 @interface TestClass2 : NSObject <MyProtocol> {}
 @end
 
@@ -46,6 +48,8 @@
 @end
 
 /*** third test class ***/
+// conforms to SubProtocol (a child of MyProtocol), implements a class
+// method from MyProtocol
 @interface TestClass3 : NSObject <SubProtocol> {}
 @end
 
@@ -53,6 +57,14 @@
 + (NSUInteger)meaningfulNumber {
  	return 0;
 }
+@end
+
+/*** fourth test class ***/
+// inherits from TestClass3 and doesn't indicate conformance to its protocols
+@interface TestClass4 : TestClass3 {}
+@end
+
+@implementation TestClass4
 @end
 
 /*** logic test code ***/
@@ -75,13 +87,23 @@
 }
 
 - (void)testInheritance {
-	STAssertEquals([TestClass3 meaningfulNumber], (NSUInteger)0, @"TestClass3 should not be using protocol implementation of meaningfulNumber");
+	TestClass3 *obj;
 
-	TestClass3 *obj = [[TestClass3 alloc] init];
+	STAssertEquals([TestClass3 meaningfulNumber], (NSUInteger)0, @"TestClass3 should not be using protocol implementation of meaningfulNumber");
+	
+	obj = [[TestClass3 alloc] init];
 	STAssertNotNil(obj, @"could not allocate concreteprotocol'd class");
 	STAssertEqualObjects([obj getSomeString], @"MyProtocol", @"TestClass3 should be using protocol implementation of getSomeString");
 	STAssertTrue([obj respondsToSelector:@selector(additionalMethod)], @"TestClass3 should have protocol implementation of additionalMethod");
 	STAssertNoThrow([obj release], @"could not deallocate concreteprotocol'd class");
+
+	STAssertEquals([TestClass4 meaningfulNumber], (NSUInteger)0, @"TestClass4 should not be using protocol implementation of meaningfulNumber");
+	
+	obj = [[TestClass4 alloc] init];
+	STAssertNotNil(obj, @"could not allocate concreteprotocol'd subclass");
+	STAssertEqualObjects([obj getSomeString], @"MyProtocol", @"TestClass4 should be using protocol implementation of getSomeString");
+	STAssertTrue([obj respondsToSelector:@selector(additionalMethod)], @"TestClass4 should have protocol implementation of additionalMethod");
+	STAssertNoThrow([obj release], @"could not deallocate concreteprotocol'd subclass");
 }
 
 @end
