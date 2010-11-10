@@ -7,6 +7,9 @@
  */
 
 #import "EXTConcreteProtocol.h"
+#import <pthread.h>
+#import <stdio.h>
+#import <stdlib.h>
 
 typedef struct {
 	Class methodContainer;
@@ -14,6 +17,7 @@ typedef struct {
 	BOOL loaded;
 } EXTConcreteProtocol;
 
+static pthread_mutex_t concreteProtocolsLock = PTHREAD_MUTEX_INITIALIZER;
 static EXTConcreteProtocol * restrict concreteProtocols = NULL;
 static size_t concreteProtocolCount = 0;
 static size_t concreteProtocolCapacity = 0;
@@ -21,6 +25,11 @@ static size_t concreteProtocolsLoaded = 0;
 
 static
 void ext_injectConcreteProtocols (void) {
+	/*
+	 * don't lock concreteProtocolsLock in this function, as it is called only
+	 * from public functions which already perform the synchronization
+	 */
+
 	int classCount = objc_getClassList(NULL, 0);
 	Class *allClasses = malloc(sizeof(Class) * classCount);
 	if (!allClasses) {
@@ -109,8 +118,15 @@ BOOL ext_addConcreteProtocol (Protocol *protocol, Class methodContainer) {
 	if (!protocol || !methodContainer)
 		return NO;
 	
-	if (concreteProtocolCount == SIZE_MAX)
+	if (pthread_mutex_lock(&concreteProtocolsLock) != 0) {
+		fprintf(stderr, "ERROR: Could not synchronize on concrete protocol data\n");
 		return NO;
+	}
+	
+	if (concreteProtocolCount == SIZE_MAX) {
+		pthread_mutex_unlock(&concreteProtocolsLock);
+		return NO;
+	}
 
 	if (concreteProtocolCount >= concreteProtocolCapacity) {
 		size_t newCapacity;
@@ -120,14 +136,18 @@ BOOL ext_addConcreteProtocol (Protocol *protocol, Class methodContainer) {
 			newCapacity = concreteProtocolCapacity << 1;
 			if (newCapacity < concreteProtocolCapacity) {
 				newCapacity = SIZE_MAX;
-				if (newCapacity <= concreteProtocolCapacity)
+				if (newCapacity <= concreteProtocolCapacity) {
+					pthread_mutex_unlock(&concreteProtocolsLock);
 					return NO;
+				}
 			}
 		}
 
 		void * restrict ptr = realloc(concreteProtocols, sizeof(EXTConcreteProtocol) * newCapacity);
-		if (!ptr)
+		if (!ptr) {
+			pthread_mutex_unlock(&concreteProtocolsLock);
 			return NO;
+		}
 
 		concreteProtocols = ptr;
 		concreteProtocolCapacity = newCapacity;
@@ -141,6 +161,7 @@ BOOL ext_addConcreteProtocol (Protocol *protocol, Class methodContainer) {
 		.loaded = NO
 	};
 
+	pthread_mutex_unlock(&concreteProtocolsLock);
 	return YES;
 }
 
@@ -148,6 +169,11 @@ void ext_loadConcreteProtocol (Protocol *protocol) {
 	if (!protocol)
 		return;
 	
+	if (pthread_mutex_lock(&concreteProtocolsLock) != 0) {
+		fprintf(stderr, "ERROR: Could not synchronize on concrete protocol data\n");
+		return;
+	}
+
 	for (size_t i = 0;i < concreteProtocolCount;++i) {
 		if (concreteProtocols[i].protocol == protocol) {
 			if (!concreteProtocols[i].loaded) {
@@ -161,5 +187,7 @@ void ext_loadConcreteProtocol (Protocol *protocol) {
 			break;
 		}
 	}
+
+	pthread_mutex_unlock(&concreteProtocolsLock);
 }
 
