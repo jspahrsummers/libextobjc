@@ -15,10 +15,16 @@
 - (NSString *)getSomeString;
 @end
 
+@protocol SubProtocol <MyProtocol>
+@concrete
+- (void)additionalMethod;
+@end
+
 @interface EXTConcreteProtocolTest : SenTestCase {
 
 }
 
 - (void)testImplementations;
+- (void)testInheritance;
 
 @end
