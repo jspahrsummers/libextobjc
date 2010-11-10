@@ -210,7 +210,7 @@
 				D0CFB5CD128A8109006DC377 /* EXTMultiObject.h */,
 				D0CFB5CE128A8109006DC377 /* EXTMultiObject.m */,
 			);
-			name = Classes;
+			path = Classes;
 			sourceTree = "<group>";
 		};
 		32C88DFF0371C24200C91783 /* Other Sources */ = {
