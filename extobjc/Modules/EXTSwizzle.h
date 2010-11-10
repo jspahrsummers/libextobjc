@@ -6,6 +6,7 @@
  *  Released into the public domain.
  */
 
+#import <Foundation/Foundation.h>
 #import <objc/runtime.h>
 #import <string.h>
 #import "metamacros.h"

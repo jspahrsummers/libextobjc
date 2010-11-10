@@ -69,6 +69,9 @@
 		D0A8B30E128A4B56004AACE0 /* EXTSwizzleTest.m in Sources */ = {isa = PBXBuildFile; fileRef = D0A8B30D128A4B56004AACE0 /* EXTSwizzleTest.m */; };
 		D0A8B312128A4BDE004AACE0 /* extobjc.h in Headers */ = {isa = PBXBuildFile; fileRef = D0A8B311128A4BDE004AACE0 /* extobjc.h */; };
 		D0A8B313128A4BDE004AACE0 /* extobjc.h in Headers */ = {isa = PBXBuildFile; fileRef = D0A8B311128A4BDE004AACE0 /* extobjc.h */; };
+		D0A8B338128A5185004AACE0 /* EXTConcreteProtocol.h in Headers */ = {isa = PBXBuildFile; fileRef = D0A8B336128A5185004AACE0 /* EXTConcreteProtocol.h */; };
+		D0A8B33A128A5185004AACE0 /* EXTConcreteProtocol.h in Headers */ = {isa = PBXBuildFile; fileRef = D0A8B336128A5185004AACE0 /* EXTConcreteProtocol.h */; };
+		D0C1D918128A57B600E96C0F /* EXTConcreteProtocolTest.m in Sources */ = {isa = PBXBuildFile; fileRef = D0C1D917128A57B600E96C0F /* EXTConcreteProtocolTest.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -86,12 +89,12 @@
 			remoteGlobalIDString = D0A8B028128A4261004AACE0;
 			remoteInfo = "libextobjc (iOS)";
 		};
-		D0A8B2E1128A4964004AACE0 /* PBXContainerItemProxy */ = {
+		D0C1D944128A5C6D00E96C0F /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 0867D690FE84028FC02AAC07 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = D2AAC07D0554694100DB518D;
-			remoteInfo = "libextobjc (OS X)";
+			remoteGlobalIDString = D0A8B20C128A4324004AACE0 /* libextobjc */;
+			remoteInfo = libextobjc;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -126,6 +129,9 @@
 		D0A8B30C128A4B56004AACE0 /* EXTSwizzleTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXTSwizzleTest.h; sourceTree = "<group>"; };
 		D0A8B30D128A4B56004AACE0 /* EXTSwizzleTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXTSwizzleTest.m; sourceTree = "<group>"; };
 		D0A8B311128A4BDE004AACE0 /* extobjc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = extobjc.h; sourceTree = "<group>"; };
+		D0A8B336128A5185004AACE0 /* EXTConcreteProtocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXTConcreteProtocol.h; sourceTree = "<group>"; };
+		D0C1D916128A57B600E96C0F /* EXTConcreteProtocolTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXTConcreteProtocolTest.h; sourceTree = "<group>"; };
+		D0C1D917128A57B600E96C0F /* EXTConcreteProtocolTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXTConcreteProtocolTest.m; sourceTree = "<group>"; };
 		D2AAC07E0554694100DB518D /* libextobjc_OSX.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libextobjc_OSX.a; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -251,6 +257,8 @@
 		D0A8B2E4128A497A004AACE0 /* Tests */ = {
 			isa = PBXGroup;
 			children = (
+				D0C1D916128A57B600E96C0F /* EXTConcreteProtocolTest.h */,
+				D0C1D917128A57B600E96C0F /* EXTConcreteProtocolTest.m */,
 				D0A8B30C128A4B56004AACE0 /* EXTSwizzleTest.h */,
 				D0A8B30D128A4B56004AACE0 /* EXTSwizzleTest.m */,
 				D0A8B2DD128A495D004AACE0 /* Logic Tests-Info.plist */,
@@ -261,6 +269,7 @@
 		D0A8B2F6128A49D9004AACE0 /* Modules */ = {
 			isa = PBXGroup;
 			children = (
+				D0A8B336128A5185004AACE0 /* EXTConcreteProtocol.h */,
 				D0A8B2F7128A49E9004AACE0 /* EXTSwizzle.h */,
 			);
 			path = Modules;
@@ -288,6 +297,7 @@
 				D0A8B2D4128A48EE004AACE0 /* vector.h in Headers */,
 				D0A8B2F9128A49E9004AACE0 /* EXTSwizzle.h in Headers */,
 				D0A8B312128A4BDE004AACE0 /* extobjc.h in Headers */,
+				D0A8B33A128A5185004AACE0 /* EXTConcreteProtocol.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -310,6 +320,7 @@
 				D0A8B2C7128A48ED004AACE0 /* vector.h in Headers */,
 				D0A8B2F8128A49E9004AACE0 /* EXTSwizzle.h in Headers */,
 				D0A8B313128A4BDE004AACE0 /* extobjc.h in Headers */,
+				D0A8B338128A5185004AACE0 /* EXTConcreteProtocol.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -346,7 +357,7 @@
 			buildRules = (
 			);
 			dependencies = (
-				D0A8B2E2128A4964004AACE0 /* PBXTargetDependency */,
+				D0C1D945128A5C6D00E96C0F /* PBXTargetDependency */,
 			);
 			name = "Logic Tests";
 			productName = "Logic Tests";
@@ -435,7 +446,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "cd libextc && ./configure && make check";
+			shellScript = "cd libextc && ./configure --quiet && make check";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -459,6 +470,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				D0A8B30E128A4B56004AACE0 /* EXTSwizzleTest.m in Sources */,
+				D0C1D918128A57B600E96C0F /* EXTConcreteProtocolTest.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -489,10 +501,10 @@
 			target = D0A8B028128A4261004AACE0 /* libextobjc (iOS) */;
 			targetProxy = D0A8B211128A4333004AACE0 /* PBXContainerItemProxy */;
 		};
-		D0A8B2E2128A4964004AACE0 /* PBXTargetDependency */ = {
+		D0C1D945128A5C6D00E96C0F /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = D2AAC07D0554694100DB518D /* libextobjc (OS X) */;
-			targetProxy = D0A8B2E1128A4964004AACE0 /* PBXContainerItemProxy */;
+			target = D0A8B20C128A4324004AACE0 /* libextobjc */;
+			targetProxy = D0C1D944128A5C6D00E96C0F /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -505,6 +517,7 @@
 				COPY_PHASE_STRIP = NO;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_ENABLE_OBJC_GC = supported;
 				GCC_MODEL_TUNING = G5;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -521,6 +534,7 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_ENABLE_OBJC_GC = supported;
 				GCC_MODEL_TUNING = G5;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = extobjc_Prefix.pch;
@@ -666,6 +680,7 @@
 				INFOPLIST_FILE = "Tests/Logic Tests-Info.plist";
 				INSTALL_PATH = "$(USER_LIBRARY_DIR)/Bundles";
 				OTHER_LDFLAGS = (
+					"-ObjC",
 					"-framework",
 					Cocoa,
 					"-framework",
@@ -693,6 +708,7 @@
 				INFOPLIST_FILE = "Tests/Logic Tests-Info.plist";
 				INSTALL_PATH = "$(USER_LIBRARY_DIR)/Bundles";
 				OTHER_LDFLAGS = (
+					"-ObjC",
 					"-framework",
 					Cocoa,
 					"-framework",
