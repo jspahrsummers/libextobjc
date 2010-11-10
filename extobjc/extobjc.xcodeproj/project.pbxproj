@@ -72,6 +72,8 @@
 		D0A8B338128A5185004AACE0 /* EXTConcreteProtocol.h in Headers */ = {isa = PBXBuildFile; fileRef = D0A8B336128A5185004AACE0 /* EXTConcreteProtocol.h */; };
 		D0A8B33A128A5185004AACE0 /* EXTConcreteProtocol.h in Headers */ = {isa = PBXBuildFile; fileRef = D0A8B336128A5185004AACE0 /* EXTConcreteProtocol.h */; };
 		D0C1D918128A57B600E96C0F /* EXTConcreteProtocolTest.m in Sources */ = {isa = PBXBuildFile; fileRef = D0C1D917128A57B600E96C0F /* EXTConcreteProtocolTest.m */; };
+		D0C1D950128A5EAC00E96C0F /* EXTConcreteProtocol.m in Sources */ = {isa = PBXBuildFile; fileRef = D0C1D94F128A5EAC00E96C0F /* EXTConcreteProtocol.m */; };
+		D0C1D951128A5EAC00E96C0F /* EXTConcreteProtocol.m in Sources */ = {isa = PBXBuildFile; fileRef = D0C1D94F128A5EAC00E96C0F /* EXTConcreteProtocol.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -132,6 +134,7 @@
 		D0A8B336128A5185004AACE0 /* EXTConcreteProtocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXTConcreteProtocol.h; sourceTree = "<group>"; };
 		D0C1D916128A57B600E96C0F /* EXTConcreteProtocolTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXTConcreteProtocolTest.h; sourceTree = "<group>"; };
 		D0C1D917128A57B600E96C0F /* EXTConcreteProtocolTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXTConcreteProtocolTest.m; sourceTree = "<group>"; };
+		D0C1D94F128A5EAC00E96C0F /* EXTConcreteProtocol.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXTConcreteProtocol.m; sourceTree = "<group>"; };
 		D2AAC07E0554694100DB518D /* libextobjc_OSX.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libextobjc_OSX.a; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -270,6 +273,7 @@
 			isa = PBXGroup;
 			children = (
 				D0A8B336128A5185004AACE0 /* EXTConcreteProtocol.h */,
+				D0C1D94F128A5EAC00E96C0F /* EXTConcreteProtocol.m */,
 				D0A8B2F7128A49E9004AACE0 /* EXTSwizzle.h */,
 			);
 			path = Modules;
@@ -462,6 +466,7 @@
 				D0A8B298128A46B0004AACE0 /* refcounted.c in Sources */,
 				D0A8B299128A46B0004AACE0 /* template.c in Sources */,
 				D0A8B29A128A46B0004AACE0 /* vector.c in Sources */,
+				D0C1D950128A5EAC00E96C0F /* EXTConcreteProtocol.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -485,6 +490,7 @@
 				D0A8B291128A46B0004AACE0 /* refcounted.c in Sources */,
 				D0A8B292128A46B0004AACE0 /* template.c in Sources */,
 				D0A8B293128A46B0004AACE0 /* vector.c in Sources */,
+				D0C1D951128A5EAC00E96C0F /* EXTConcreteProtocol.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

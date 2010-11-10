@@ -10,6 +10,21 @@
 #import <objc/runtime.h>
 #import "metamacros.h"
 
+/**
+ * Used to list methods with concrete implementations within a \@protocol
+ * definition.
+ */
+#define concrete \
+	optional
+
+/**
+ * Defines a "concrete protocol," which can provide default implementations of
+ * methods within protocol \a NAME. A \@protocol block should exist in a header
+ * file, and a corresponding \@concreteprotocol block in an implementation file.
+ * Any object that declares itself to conform to protocol \a NAME will receive
+ * its method implementations \e only if no method by the same name already
+ * exists.
+ */
 #define concreteprotocol(NAME) \
 	interface NAME ## _MethodContainer {} \
 	@end \
@@ -21,26 +36,32 @@
 		\
 		Protocol *protocol = objc_getProtocol(# NAME); \
 		if (!protocol) { \
-			NSLog(@"Concrete protocol %s does not have a corresponding @protocol interface, cannot load", # NAME); \
+			NSLog(@"ERROR: Concrete protocol %s does not have a corresponding @protocol interface", # NAME); \
 			return; \
 		} \
 		\
-		unsigned methodCount = 0; \
-		Method *methodList = class_copyMethodList(objc_getClass(metamacro_stringify(NAME ## _MethodContainer)), &methodCount); \
-		\
-		if (!methodList || !methodCount) { \
-			free(methodList); \
-			\
-			NSLog(@"No methods in concrete protocol %s", # NAME); \
+		Class containerClass = objc_getClass(metamacro_stringify(NAME ## _MethodContainer)); \
+		if (!containerClass) { \
+			NSLog(@"ERROR: Could not locate methods for concrete protocol %s", # NAME); \
 			return; \
 		} \
+		\
+		unsigned imethodCount = 0; \
+		Method *imethodList = class_copyMethodList(containerClass, &imethodCount); \
+		\
+		unsigned cmethodCount = 0; \
+		Method *cmethodList = class_copyMethodList(object_getClass(containerClass), &cmethodCount); \
+		\
+		if (!imethodCount && !cmethodCount) \
+			return; \
 		\
 		int classCount = objc_getClassList(NULL, 0); \
 		Class *allClasses = malloc(sizeof(Class) * classCount); \
 		if (!allClasses) { \
-			free(methodList); \
+			free(imethodList); \
+			free(cmethodList); \
 			\
-			NSLog(@"Could not obtain list of all classes"); \
+			NSLog(@"ERROR: Could not obtain list of all classes"); \
 			return; \
 		} \
 		\
@@ -50,9 +71,8 @@
 			if (!class_conformsToProtocol(class, protocol)) \
 				continue; \
 			\
-			NSLog(@"Found class %@ conforming to concrete protocol %s", class, # NAME); \
-			for (unsigned methodIndex = 0;methodIndex < methodCount;++methodIndex) { \
-				Method method = methodList[methodIndex]; \
+			for (unsigned methodIndex = 0;methodIndex < imethodCount;++methodIndex) { \
+				Method method = imethodList[methodIndex]; \
 				SEL selector = method_getName(method); \
 				\
 				if (class_getInstanceMethod(class, selector)) { \
@@ -68,9 +88,31 @@
 				\
 				class_addMethod(class, selector, imp, types); \
 			} \
+			\
+			Class metaclass = object_getClass(class); \
+			for (unsigned methodIndex = 0;methodIndex < cmethodCount;++methodIndex) { \
+				Method method = cmethodList[methodIndex]; \
+				SEL selector = method_getName(method); \
+				\
+				/* this actually checks for class methods (instance of the
+				 * metaclass) */ \
+				if (class_getInstanceMethod(metaclass, selector)) { \
+					/*
+					 * don't override implementations, even those of
+					 * a superclass
+					 */ \
+					continue; \
+				} \
+				\
+				IMP imp = method_getImplementation(method); \
+				const char *types = method_getTypeEncoding(method); \
+				\
+				class_addMethod(metaclass, selector, imp, types); \
+			} \
 		} \
 		\
-		free(methodList); \
+		free(imethodList); \
+		free(cmethodList); \
 		free(allClasses); \
 	}
 

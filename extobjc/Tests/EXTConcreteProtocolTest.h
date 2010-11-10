@@ -10,8 +10,9 @@
 #import "EXTConcreteProtocol.h"
 
 @protocol MyProtocol <NSObject>
-@optional
-- (void)doSomethingInteresting;
+@concrete
++ (NSUInteger)meaningfulNumber;
+- (NSString *)getSomeString;
 @end
 
 @interface EXTConcreteProtocolTest : SenTestCase {
