@@ -17,6 +17,9 @@
  *
  * @note The mixing in occurs only after all +load methods in the image have been
  * executed.
+ *
+ * @warning Calls to \c super in mixed-in methods may invoke erratic behavior
+ * due to the nature of \c objc_msgSendSuper().
  */
 #define EXTMixin(TARGET, CLASS) \
 	__attribute__((constructor)) \
