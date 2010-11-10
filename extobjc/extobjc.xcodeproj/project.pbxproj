@@ -73,6 +73,8 @@
 		D0A8B33A128A5185004AACE0 /* EXTConcreteProtocol.h in Headers */ = {isa = PBXBuildFile; fileRef = D0A8B336128A5185004AACE0 /* EXTConcreteProtocol.h */; };
 		D0B6C99D128B121B00137E97 /* EXTConcreteProtocol.m in Sources */ = {isa = PBXBuildFile; fileRef = D0B6C99C128B121B00137E97 /* EXTConcreteProtocol.m */; };
 		D0B6C99E128B121B00137E97 /* EXTConcreteProtocol.m in Sources */ = {isa = PBXBuildFile; fileRef = D0B6C99C128B121B00137E97 /* EXTConcreteProtocol.m */; };
+		D0B6C9BC128B1A6F00137E97 /* libextobjc_OSX.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D2AAC07E0554694100DB518D /* libextobjc_OSX.a */; };
+		D0B6C9BF128B1A7100137E97 /* libextobjc_iOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D0A8B029128A4261004AACE0 /* libextobjc_iOS.a */; };
 		D0C1D918128A57B600E96C0F /* EXTConcreteProtocolTest.m in Sources */ = {isa = PBXBuildFile; fileRef = D0C1D917128A57B600E96C0F /* EXTConcreteProtocolTest.m */; };
 		D0CFB5CF128A8109006DC377 /* EXTMultiObject.h in Headers */ = {isa = PBXBuildFile; fileRef = D0CFB5CD128A8109006DC377 /* EXTMultiObject.h */; };
 		D0CFB5D0128A8109006DC377 /* EXTMultiObject.m in Sources */ = {isa = PBXBuildFile; fileRef = D0CFB5CE128A8109006DC377 /* EXTMultiObject.m */; };
@@ -171,6 +173,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D0B6C9BC128B1A6F00137E97 /* libextobjc_OSX.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -178,6 +181,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D0B6C9BF128B1A7100137E97 /* libextobjc_iOS.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -597,7 +601,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
 				COPY_PHASE_STRIP = NO;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_FIX_AND_CONTINUE = YES;
@@ -607,7 +610,6 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = extobjc_Prefix.pch;
 				INSTALL_PATH = /usr/local/lib;
-				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_NAME = extobjc_OSX;
 			};
 			name = Debug;
@@ -616,7 +618,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				GCC_ENABLE_OBJC_GC = supported;
 				GCC_MODEL_TUNING = G5;
