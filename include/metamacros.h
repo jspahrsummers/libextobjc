@@ -7,7 +7,8 @@
  * single statements, just like built-in constructs.
  *
  * by Justin Spahr-Summers
- * Copyright (C) 2010
+ *
+ * Released 9. Nov 2010 into the public domain.
  */
 
 #ifndef EXTC_METAMACROS_H
