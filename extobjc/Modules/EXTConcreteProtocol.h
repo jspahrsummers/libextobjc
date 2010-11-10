@@ -56,7 +56,7 @@
  * @endcode
  */
 #define concreteprotocol(NAME) \
-	interface NAME ## _MethodContainer {} \
+	interface NAME ## _MethodContainer : NSObject {} \
 	@end \
 	\
 	@implementation NAME ## _MethodContainer \
