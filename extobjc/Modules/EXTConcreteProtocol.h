@@ -54,6 +54,10 @@
 
  *
  * @endcode
+ *
+ * @warning You should not invoke methods against \c super in the implementation
+ * of a concrete protocol, as the superclass may not be the type you expect (and
+ * may not even inherit from \c NSObject).
  */
 #define concreteprotocol(NAME) \
 	interface NAME ## _MethodContainer : NSObject {} \
