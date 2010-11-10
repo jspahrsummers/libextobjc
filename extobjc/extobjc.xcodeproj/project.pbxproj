@@ -1,0 +1,568 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 45;
+	objects = {
+
+/* Begin PBXAggregateTarget section */
+		D0A8B20C128A4324004AACE0 /* libextobjc */ = {
+			isa = PBXAggregateTarget;
+			buildConfigurationList = D0A8B215128A4376004AACE0 /* Build configuration list for PBXAggregateTarget "libextobjc" */;
+			buildPhases = (
+			);
+			dependencies = (
+				D0A8B210128A432F004AACE0 /* PBXTargetDependency */,
+				D0A8B212128A4333004AACE0 /* PBXTargetDependency */,
+			);
+			name = libextobjc;
+			productName = libextobjc;
+		};
+/* End PBXAggregateTarget section */
+
+/* Begin PBXBuildFile section */
+		D0A8B04F128A42F4004AACE0 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0867D69BFE84028FC02AAC07 /* Foundation.framework */; };
+		D0A8B188128A4303004AACE0 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D0A8B187128A4303004AACE0 /* Foundation.framework */; };
+		D0A8B28D128A46B0004AACE0 /* algorithm.c in Sources */ = {isa = PBXBuildFile; fileRef = D0A8B286128A46B0004AACE0 /* algorithm.c */; };
+		D0A8B28E128A46B0004AACE0 /* enum.c in Sources */ = {isa = PBXBuildFile; fileRef = D0A8B287128A46B0004AACE0 /* enum.c */; };
+		D0A8B28F128A46B0004AACE0 /* exception.c in Sources */ = {isa = PBXBuildFile; fileRef = D0A8B288128A46B0004AACE0 /* exception.c */; };
+		D0A8B290128A46B0004AACE0 /* memory.c in Sources */ = {isa = PBXBuildFile; fileRef = D0A8B289128A46B0004AACE0 /* memory.c */; };
+		D0A8B291128A46B0004AACE0 /* refcounted.c in Sources */ = {isa = PBXBuildFile; fileRef = D0A8B28A128A46B0004AACE0 /* refcounted.c */; };
+		D0A8B292128A46B0004AACE0 /* template.c in Sources */ = {isa = PBXBuildFile; fileRef = D0A8B28B128A46B0004AACE0 /* template.c */; };
+		D0A8B293128A46B0004AACE0 /* vector.c in Sources */ = {isa = PBXBuildFile; fileRef = D0A8B28C128A46B0004AACE0 /* vector.c */; };
+		D0A8B294128A46B0004AACE0 /* algorithm.c in Sources */ = {isa = PBXBuildFile; fileRef = D0A8B286128A46B0004AACE0 /* algorithm.c */; };
+		D0A8B295128A46B0004AACE0 /* enum.c in Sources */ = {isa = PBXBuildFile; fileRef = D0A8B287128A46B0004AACE0 /* enum.c */; };
+		D0A8B296128A46B0004AACE0 /* exception.c in Sources */ = {isa = PBXBuildFile; fileRef = D0A8B288128A46B0004AACE0 /* exception.c */; };
+		D0A8B297128A46B0004AACE0 /* memory.c in Sources */ = {isa = PBXBuildFile; fileRef = D0A8B289128A46B0004AACE0 /* memory.c */; };
+		D0A8B298128A46B0004AACE0 /* refcounted.c in Sources */ = {isa = PBXBuildFile; fileRef = D0A8B28A128A46B0004AACE0 /* refcounted.c */; };
+		D0A8B299128A46B0004AACE0 /* template.c in Sources */ = {isa = PBXBuildFile; fileRef = D0A8B28B128A46B0004AACE0 /* template.c */; };
+		D0A8B29A128A46B0004AACE0 /* vector.c in Sources */ = {isa = PBXBuildFile; fileRef = D0A8B28C128A46B0004AACE0 /* vector.c */; };
+		D0A8B2BB128A48ED004AACE0 /* algorithm.h in Headers */ = {isa = PBXBuildFile; fileRef = D0A8B2A2128A47CE004AACE0 /* algorithm.h */; };
+		D0A8B2BC128A48ED004AACE0 /* blocks.h in Headers */ = {isa = PBXBuildFile; fileRef = D0A8B2A3128A47CE004AACE0 /* blocks.h */; };
+		D0A8B2BD128A48ED004AACE0 /* contracts.h in Headers */ = {isa = PBXBuildFile; fileRef = D0A8B2A4128A47CE004AACE0 /* contracts.h */; };
+		D0A8B2BE128A48ED004AACE0 /* enum.h in Headers */ = {isa = PBXBuildFile; fileRef = D0A8B2A5128A47CE004AACE0 /* enum.h */; };
+		D0A8B2BF128A48ED004AACE0 /* exception.h in Headers */ = {isa = PBXBuildFile; fileRef = D0A8B2A6128A47CE004AACE0 /* exception.h */; };
+		D0A8B2C0128A48ED004AACE0 /* extc.h in Headers */ = {isa = PBXBuildFile; fileRef = D0A8B2A7128A47CE004AACE0 /* extc.h */; };
+		D0A8B2C1128A48ED004AACE0 /* memory.h in Headers */ = {isa = PBXBuildFile; fileRef = D0A8B2A8128A47CE004AACE0 /* memory.h */; };
+		D0A8B2C2128A48ED004AACE0 /* metamacros.h in Headers */ = {isa = PBXBuildFile; fileRef = D0A8B2A9128A47CE004AACE0 /* metamacros.h */; };
+		D0A8B2C3128A48ED004AACE0 /* refcounted.h in Headers */ = {isa = PBXBuildFile; fileRef = D0A8B2AA128A47CE004AACE0 /* refcounted.h */; };
+		D0A8B2C4128A48ED004AACE0 /* scope.h in Headers */ = {isa = PBXBuildFile; fileRef = D0A8B2AB128A47CE004AACE0 /* scope.h */; };
+		D0A8B2C5128A48ED004AACE0 /* static_assert.h in Headers */ = {isa = PBXBuildFile; fileRef = D0A8B2AC128A47CE004AACE0 /* static_assert.h */; };
+		D0A8B2C6128A48ED004AACE0 /* template.h in Headers */ = {isa = PBXBuildFile; fileRef = D0A8B2AD128A47CE004AACE0 /* template.h */; };
+		D0A8B2C7128A48ED004AACE0 /* vector.h in Headers */ = {isa = PBXBuildFile; fileRef = D0A8B2AE128A47CE004AACE0 /* vector.h */; };
+		D0A8B2C8128A48EE004AACE0 /* algorithm.h in Headers */ = {isa = PBXBuildFile; fileRef = D0A8B2A2128A47CE004AACE0 /* algorithm.h */; };
+		D0A8B2C9128A48EE004AACE0 /* blocks.h in Headers */ = {isa = PBXBuildFile; fileRef = D0A8B2A3128A47CE004AACE0 /* blocks.h */; };
+		D0A8B2CA128A48EE004AACE0 /* contracts.h in Headers */ = {isa = PBXBuildFile; fileRef = D0A8B2A4128A47CE004AACE0 /* contracts.h */; };
+		D0A8B2CB128A48EE004AACE0 /* enum.h in Headers */ = {isa = PBXBuildFile; fileRef = D0A8B2A5128A47CE004AACE0 /* enum.h */; };
+		D0A8B2CC128A48EE004AACE0 /* exception.h in Headers */ = {isa = PBXBuildFile; fileRef = D0A8B2A6128A47CE004AACE0 /* exception.h */; };
+		D0A8B2CD128A48EE004AACE0 /* extc.h in Headers */ = {isa = PBXBuildFile; fileRef = D0A8B2A7128A47CE004AACE0 /* extc.h */; };
+		D0A8B2CE128A48EE004AACE0 /* memory.h in Headers */ = {isa = PBXBuildFile; fileRef = D0A8B2A8128A47CE004AACE0 /* memory.h */; };
+		D0A8B2CF128A48EE004AACE0 /* metamacros.h in Headers */ = {isa = PBXBuildFile; fileRef = D0A8B2A9128A47CE004AACE0 /* metamacros.h */; };
+		D0A8B2D0128A48EE004AACE0 /* refcounted.h in Headers */ = {isa = PBXBuildFile; fileRef = D0A8B2AA128A47CE004AACE0 /* refcounted.h */; };
+		D0A8B2D1128A48EE004AACE0 /* scope.h in Headers */ = {isa = PBXBuildFile; fileRef = D0A8B2AB128A47CE004AACE0 /* scope.h */; };
+		D0A8B2D2128A48EE004AACE0 /* static_assert.h in Headers */ = {isa = PBXBuildFile; fileRef = D0A8B2AC128A47CE004AACE0 /* static_assert.h */; };
+		D0A8B2D3128A48EE004AACE0 /* template.h in Headers */ = {isa = PBXBuildFile; fileRef = D0A8B2AD128A47CE004AACE0 /* template.h */; };
+		D0A8B2D4128A48EE004AACE0 /* vector.h in Headers */ = {isa = PBXBuildFile; fileRef = D0A8B2AE128A47CE004AACE0 /* vector.h */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		D0A8B20F128A432F004AACE0 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0867D690FE84028FC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = D2AAC07D0554694100DB518D;
+			remoteInfo = "libextobjc (OS X)";
+		};
+		D0A8B211128A4333004AACE0 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0867D690FE84028FC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = D0A8B028128A4261004AACE0;
+			remoteInfo = "libextobjc (iOS)";
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		0867D69BFE84028FC02AAC07 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
+		32DBCF5E0370ADEE00C91783 /* extobjc_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = extobjc_Prefix.pch; sourceTree = "<group>"; };
+		D0A8B029128A4261004AACE0 /* libextobjc_iOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libextobjc_iOS.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		D0A8B187128A4303004AACE0 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		D0A8B286128A46B0004AACE0 /* algorithm.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = algorithm.c; path = libextc/src/algorithm.c; sourceTree = "<group>"; };
+		D0A8B287128A46B0004AACE0 /* enum.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = enum.c; path = libextc/src/enum.c; sourceTree = "<group>"; };
+		D0A8B288128A46B0004AACE0 /* exception.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = exception.c; path = libextc/src/exception.c; sourceTree = "<group>"; };
+		D0A8B289128A46B0004AACE0 /* memory.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = memory.c; path = libextc/src/memory.c; sourceTree = "<group>"; };
+		D0A8B28A128A46B0004AACE0 /* refcounted.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = refcounted.c; path = libextc/src/refcounted.c; sourceTree = "<group>"; };
+		D0A8B28B128A46B0004AACE0 /* template.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = template.c; path = libextc/src/template.c; sourceTree = "<group>"; };
+		D0A8B28C128A46B0004AACE0 /* vector.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = vector.c; path = libextc/src/vector.c; sourceTree = "<group>"; };
+		D0A8B2A2128A47CE004AACE0 /* algorithm.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = algorithm.h; path = libextc/include/algorithm.h; sourceTree = "<group>"; };
+		D0A8B2A3128A47CE004AACE0 /* blocks.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = blocks.h; path = libextc/include/blocks.h; sourceTree = "<group>"; };
+		D0A8B2A4128A47CE004AACE0 /* contracts.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = contracts.h; path = libextc/include/contracts.h; sourceTree = "<group>"; };
+		D0A8B2A5128A47CE004AACE0 /* enum.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = enum.h; path = libextc/include/enum.h; sourceTree = "<group>"; };
+		D0A8B2A6128A47CE004AACE0 /* exception.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = exception.h; path = libextc/include/exception.h; sourceTree = "<group>"; };
+		D0A8B2A7128A47CE004AACE0 /* extc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = extc.h; path = libextc/include/extc.h; sourceTree = "<group>"; };
+		D0A8B2A8128A47CE004AACE0 /* memory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = memory.h; path = libextc/include/memory.h; sourceTree = "<group>"; };
+		D0A8B2A9128A47CE004AACE0 /* metamacros.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = metamacros.h; path = libextc/include/metamacros.h; sourceTree = "<group>"; };
+		D0A8B2AA128A47CE004AACE0 /* refcounted.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = refcounted.h; path = libextc/include/refcounted.h; sourceTree = "<group>"; };
+		D0A8B2AB128A47CE004AACE0 /* scope.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = scope.h; path = libextc/include/scope.h; sourceTree = "<group>"; };
+		D0A8B2AC128A47CE004AACE0 /* static_assert.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = static_assert.h; path = libextc/include/static_assert.h; sourceTree = "<group>"; };
+		D0A8B2AD128A47CE004AACE0 /* template.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = template.h; path = libextc/include/template.h; sourceTree = "<group>"; };
+		D0A8B2AE128A47CE004AACE0 /* vector.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = vector.h; path = libextc/include/vector.h; sourceTree = "<group>"; };
+		D2AAC07E0554694100DB518D /* libextobjc_OSX.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libextobjc_OSX.a; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		D0A8B027128A4261004AACE0 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D0A8B188128A4303004AACE0 /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D2AAC07C0554694100DB518D /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D0A8B04F128A42F4004AACE0 /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		034768DFFF38A50411DB9C8B /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				D2AAC07E0554694100DB518D /* libextobjc_OSX.a */,
+				D0A8B029128A4261004AACE0 /* libextobjc_iOS.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		0867D691FE84028FC02AAC07 /* libextobjc */ = {
+			isa = PBXGroup;
+			children = (
+				08FB77AEFE84172EC02AAC07 /* Classes */,
+				32C88DFF0371C24200C91783 /* Other Sources */,
+				0867D69AFE84028FC02AAC07 /* Frameworks */,
+				034768DFFF38A50411DB9C8B /* Products */,
+			);
+			name = libextobjc;
+			sourceTree = "<group>";
+		};
+		0867D69AFE84028FC02AAC07 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				D0A8B25C128A4694004AACE0 /* libextc */,
+				D0A8B20B128A430D004AACE0 /* iOS */,
+				D0A8B20A128A430A004AACE0 /* Mac OS X */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		08FB77AEFE84172EC02AAC07 /* Classes */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Classes;
+			sourceTree = "<group>";
+		};
+		32C88DFF0371C24200C91783 /* Other Sources */ = {
+			isa = PBXGroup;
+			children = (
+				32DBCF5E0370ADEE00C91783 /* extobjc_Prefix.pch */,
+			);
+			name = "Other Sources";
+			sourceTree = "<group>";
+		};
+		D0A8B20A128A430A004AACE0 /* Mac OS X */ = {
+			isa = PBXGroup;
+			children = (
+				0867D69BFE84028FC02AAC07 /* Foundation.framework */,
+			);
+			name = "Mac OS X";
+			sourceTree = "<group>";
+		};
+		D0A8B20B128A430D004AACE0 /* iOS */ = {
+			isa = PBXGroup;
+			children = (
+				D0A8B187128A4303004AACE0 /* Foundation.framework */,
+			);
+			name = iOS;
+			sourceTree = "<group>";
+		};
+		D0A8B25C128A4694004AACE0 /* libextc */ = {
+			isa = PBXGroup;
+			children = (
+				D0A8B2A2128A47CE004AACE0 /* algorithm.h */,
+				D0A8B2A3128A47CE004AACE0 /* blocks.h */,
+				D0A8B2A4128A47CE004AACE0 /* contracts.h */,
+				D0A8B2A5128A47CE004AACE0 /* enum.h */,
+				D0A8B2A6128A47CE004AACE0 /* exception.h */,
+				D0A8B2A7128A47CE004AACE0 /* extc.h */,
+				D0A8B2A8128A47CE004AACE0 /* memory.h */,
+				D0A8B2A9128A47CE004AACE0 /* metamacros.h */,
+				D0A8B2AA128A47CE004AACE0 /* refcounted.h */,
+				D0A8B2AB128A47CE004AACE0 /* scope.h */,
+				D0A8B2AC128A47CE004AACE0 /* static_assert.h */,
+				D0A8B2AD128A47CE004AACE0 /* template.h */,
+				D0A8B2AE128A47CE004AACE0 /* vector.h */,
+				D0A8B286128A46B0004AACE0 /* algorithm.c */,
+				D0A8B287128A46B0004AACE0 /* enum.c */,
+				D0A8B288128A46B0004AACE0 /* exception.c */,
+				D0A8B289128A46B0004AACE0 /* memory.c */,
+				D0A8B28A128A46B0004AACE0 /* refcounted.c */,
+				D0A8B28B128A46B0004AACE0 /* template.c */,
+				D0A8B28C128A46B0004AACE0 /* vector.c */,
+			);
+			name = libextc;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		D0A8B025128A4261004AACE0 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D0A8B2C8128A48EE004AACE0 /* algorithm.h in Headers */,
+				D0A8B2C9128A48EE004AACE0 /* blocks.h in Headers */,
+				D0A8B2CA128A48EE004AACE0 /* contracts.h in Headers */,
+				D0A8B2CB128A48EE004AACE0 /* enum.h in Headers */,
+				D0A8B2CC128A48EE004AACE0 /* exception.h in Headers */,
+				D0A8B2CD128A48EE004AACE0 /* extc.h in Headers */,
+				D0A8B2CE128A48EE004AACE0 /* memory.h in Headers */,
+				D0A8B2CF128A48EE004AACE0 /* metamacros.h in Headers */,
+				D0A8B2D0128A48EE004AACE0 /* refcounted.h in Headers */,
+				D0A8B2D1128A48EE004AACE0 /* scope.h in Headers */,
+				D0A8B2D2128A48EE004AACE0 /* static_assert.h in Headers */,
+				D0A8B2D3128A48EE004AACE0 /* template.h in Headers */,
+				D0A8B2D4128A48EE004AACE0 /* vector.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D2AAC07A0554694100DB518D /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D0A8B2BB128A48ED004AACE0 /* algorithm.h in Headers */,
+				D0A8B2BC128A48ED004AACE0 /* blocks.h in Headers */,
+				D0A8B2BD128A48ED004AACE0 /* contracts.h in Headers */,
+				D0A8B2BE128A48ED004AACE0 /* enum.h in Headers */,
+				D0A8B2BF128A48ED004AACE0 /* exception.h in Headers */,
+				D0A8B2C0128A48ED004AACE0 /* extc.h in Headers */,
+				D0A8B2C1128A48ED004AACE0 /* memory.h in Headers */,
+				D0A8B2C2128A48ED004AACE0 /* metamacros.h in Headers */,
+				D0A8B2C3128A48ED004AACE0 /* refcounted.h in Headers */,
+				D0A8B2C4128A48ED004AACE0 /* scope.h in Headers */,
+				D0A8B2C5128A48ED004AACE0 /* static_assert.h in Headers */,
+				D0A8B2C6128A48ED004AACE0 /* template.h in Headers */,
+				D0A8B2C7128A48ED004AACE0 /* vector.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		D0A8B028128A4261004AACE0 /* libextobjc (iOS) */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = D0A8B031128A4270004AACE0 /* Build configuration list for PBXNativeTarget "libextobjc (iOS)" */;
+			buildPhases = (
+				D0A8B025128A4261004AACE0 /* Headers */,
+				D0A8B026128A4261004AACE0 /* Sources */,
+				D0A8B027128A4261004AACE0 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "libextobjc (iOS)";
+			productName = "libextobjc (iOS)";
+			productReference = D0A8B029128A4261004AACE0 /* libextobjc_iOS.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+		D2AAC07D0554694100DB518D /* libextobjc (OS X) */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 1DEB921E08733DC00010E9CD /* Build configuration list for PBXNativeTarget "libextobjc (OS X)" */;
+			buildPhases = (
+				D2AAC07A0554694100DB518D /* Headers */,
+				D2AAC07B0554694100DB518D /* Sources */,
+				D2AAC07C0554694100DB518D /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "libextobjc (OS X)";
+			productName = libextobjc;
+			productReference = D2AAC07E0554694100DB518D /* libextobjc_OSX.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		0867D690FE84028FC02AAC07 /* Project object */ = {
+			isa = PBXProject;
+			buildConfigurationList = 1DEB922208733DC00010E9CD /* Build configuration list for PBXProject "extobjc" */;
+			compatibilityVersion = "Xcode 3.1";
+			developmentRegion = English;
+			hasScannedForEncodings = 1;
+			knownRegions = (
+				English,
+				Japanese,
+				French,
+				German,
+			);
+			mainGroup = 0867D691FE84028FC02AAC07 /* libextobjc */;
+			productRefGroup = 034768DFFF38A50411DB9C8B /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				D0A8B20C128A4324004AACE0 /* libextobjc */,
+				D2AAC07D0554694100DB518D /* libextobjc (OS X) */,
+				D0A8B028128A4261004AACE0 /* libextobjc (iOS) */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		D0A8B026128A4261004AACE0 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D0A8B294128A46B0004AACE0 /* algorithm.c in Sources */,
+				D0A8B295128A46B0004AACE0 /* enum.c in Sources */,
+				D0A8B296128A46B0004AACE0 /* exception.c in Sources */,
+				D0A8B297128A46B0004AACE0 /* memory.c in Sources */,
+				D0A8B298128A46B0004AACE0 /* refcounted.c in Sources */,
+				D0A8B299128A46B0004AACE0 /* template.c in Sources */,
+				D0A8B29A128A46B0004AACE0 /* vector.c in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D2AAC07B0554694100DB518D /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D0A8B28D128A46B0004AACE0 /* algorithm.c in Sources */,
+				D0A8B28E128A46B0004AACE0 /* enum.c in Sources */,
+				D0A8B28F128A46B0004AACE0 /* exception.c in Sources */,
+				D0A8B290128A46B0004AACE0 /* memory.c in Sources */,
+				D0A8B291128A46B0004AACE0 /* refcounted.c in Sources */,
+				D0A8B292128A46B0004AACE0 /* template.c in Sources */,
+				D0A8B293128A46B0004AACE0 /* vector.c in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		D0A8B210128A432F004AACE0 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = D2AAC07D0554694100DB518D /* libextobjc (OS X) */;
+			targetProxy = D0A8B20F128A432F004AACE0 /* PBXContainerItemProxy */;
+		};
+		D0A8B212128A4333004AACE0 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = D0A8B028128A4261004AACE0 /* libextobjc (iOS) */;
+			targetProxy = D0A8B211128A4333004AACE0 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		1DEB921F08733DC00010E9CD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_MODEL_TUNING = G5;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = extobjc_Prefix.pch;
+				INSTALL_PATH = /usr/local/lib;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = extobjc_OSX;
+			};
+			name = Debug;
+		};
+		1DEB922008733DC00010E9CD /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_MODEL_TUNING = G5;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = extobjc_Prefix.pch;
+				INSTALL_PATH = /usr/local/lib;
+				PRODUCT_NAME = extobjc_OSX;
+			};
+			name = Release;
+		};
+		1DEB922308733DC00010E9CD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				GCC_C_LANGUAGE_STANDARD = c99;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_STRICT_ALIASING = YES;
+				GCC_THREADSAFE_STATICS = NO;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_MISSING_FIELD_INITIALIZERS = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_CHECK_SWITCH_STATEMENTS = YES;
+				GCC_WARN_FOUR_CHARACTER_CONSTANTS = YES;
+				GCC_WARN_INITIALIZER_NOT_FULLY_BRACKETED = YES;
+				GCC_WARN_MISSING_PARENTHESES = YES;
+				GCC_WARN_NON_VIRTUAL_DESTRUCTOR = YES;
+				GCC_WARN_PEDANTIC = YES;
+				GCC_WARN_SIGN_COMPARE = YES;
+				GCC_WARN_UNKNOWN_PRAGMAS = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_LABEL = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = libextc/include;
+				PREBINDING = NO;
+				RUN_CLANG_STATIC_ANALYZER = YES;
+				SDKROOT = macosx10.6;
+				WARNING_CFLAGS = "-Wno-unused-value";
+			};
+			name = Debug;
+		};
+		1DEB922408733DC00010E9CD /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				GCC_C_LANGUAGE_STANDARD = c99;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
+				GCC_STRICT_ALIASING = YES;
+				GCC_THREADSAFE_STATICS = NO;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_MISSING_FIELD_INITIALIZERS = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_CHECK_SWITCH_STATEMENTS = YES;
+				GCC_WARN_FOUR_CHARACTER_CONSTANTS = YES;
+				GCC_WARN_INITIALIZER_NOT_FULLY_BRACKETED = YES;
+				GCC_WARN_MISSING_PARENTHESES = YES;
+				GCC_WARN_NON_VIRTUAL_DESTRUCTOR = YES;
+				GCC_WARN_PEDANTIC = YES;
+				GCC_WARN_SIGN_COMPARE = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNKNOWN_PRAGMAS = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_LABEL = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = libextc/include;
+				LLVM_LTO = YES;
+				PREBINDING = NO;
+				RUN_CLANG_STATIC_ANALYZER = YES;
+				SDKROOT = macosx10.6;
+				WARNING_CFLAGS = "-Wno-unused-value";
+			};
+			name = Release;
+		};
+		D0A8B02A128A4261004AACE0 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = extobjc_Prefix.pch;
+				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
+				PREBINDING = NO;
+				PRODUCT_NAME = extobjc_iOS;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		D0A8B02B128A4261004AACE0 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = extobjc_Prefix.pch;
+				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
+				PREBINDING = NO;
+				PRODUCT_NAME = extobjc_iOS;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				ZERO_LINK = NO;
+			};
+			name = Release;
+		};
+		D0A8B20D128A4324004AACE0 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				PRODUCT_NAME = libextobjc;
+			};
+			name = Debug;
+		};
+		D0A8B20E128A4324004AACE0 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				PRODUCT_NAME = libextobjc;
+				ZERO_LINK = NO;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		1DEB921E08733DC00010E9CD /* Build configuration list for PBXNativeTarget "libextobjc (OS X)" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1DEB921F08733DC00010E9CD /* Debug */,
+				1DEB922008733DC00010E9CD /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		1DEB922208733DC00010E9CD /* Build configuration list for PBXProject "extobjc" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1DEB922308733DC00010E9CD /* Debug */,
+				1DEB922408733DC00010E9CD /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		D0A8B031128A4270004AACE0 /* Build configuration list for PBXNativeTarget "libextobjc (iOS)" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D0A8B02A128A4261004AACE0 /* Debug */,
+				D0A8B02B128A4261004AACE0 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		D0A8B215128A4376004AACE0 /* Build configuration list for PBXAggregateTarget "libextobjc" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D0A8B20D128A4324004AACE0 /* Debug */,
+				D0A8B20E128A4324004AACE0 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 0867D690FE84028FC02AAC07 /* Project object */;
+}
