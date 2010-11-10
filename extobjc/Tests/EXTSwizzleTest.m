@@ -8,16 +8,22 @@
 
 #import "EXTSwizzleTest.h"
 
+@protocol JunkForCompilerMethodPrototypeInfo
+@optional
+- (void)oldDealloc;
+- (id)oldSelf;
++ (Class)oldClass;
+@end
+
 /* Test category for macro manipulation */
 @interface NSURLRequest (SwizzleTestCategory)
 - (id)replacementSelf;
-
 + (Class)replacementClass;
 @end
 
 @implementation NSURLRequest (SwizzleTestCategory)
 - (void)replacementDealloc {
-	[self oldDealloc];
+	[(id)self oldDealloc];
 }
 
 - (id)replacementSelf {
@@ -48,7 +54,7 @@
 	
 	STAssertTrueNoThrow([[request self] isKindOfClass:[NSString class]], @"expected -self of NSURLRequest object to return a string after swapping implementation");
 	STAssertTrue([request respondsToSelector:@selector(oldSelf)], @"expected NSURLRequest to respond to -oldSelf after renaming -self");
-	STAssertEquals([request oldSelf], request, @"expected -oldSelf of NSURLRequest object to match itself after swapping implementation");
+	STAssertEquals([(id)request oldSelf], request, @"expected -oldSelf of NSURLRequest object to match itself after swapping implementation");
 	
 	STAssertNoThrow([request release], @"releasing a valid NSURLRequest after swizzling methods should not throw an exception");
 	request = nil;
@@ -80,7 +86,7 @@
 	
 	STAssertEqualObjects([NSURLRequest class], [NSString class], @"expected [NSURLRequest class] to equal [NSString class] after swapping out implementation");
 	STAssertTrue([NSURLRequest respondsToSelector:@selector(oldClass)], @"expected NSURLRequest to respond to +oldClass after renaming +class");
-	STAssertTrueNoThrow([[NSURLRequest oldClass] isEqual:NSClassFromString(@"NSURLRequest")], @"expected [NSURLRequest oldClass] to be a valid method that equals NSURLRequest");
+	STAssertTrueNoThrow([[NSClassFromString(@"NSURLRequest") oldClass] isEqual:NSClassFromString(@"NSURLRequest")], @"expected [NSURLRequest oldClass] to be a valid method that equals NSURLRequest");
 	
 	// ensure that superclass implemenations are intact
 	STAssertEqualObjects([NSObject class], NSClassFromString(@"NSObject"), @"expected [NSObject class] to equal NSObject");

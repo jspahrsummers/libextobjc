@@ -6,7 +6,6 @@
  *  Released into the public domain.
  */
 
-#import <Foundation/Foundation.h>
 #import <objc/runtime.h>
 
 /**
@@ -41,8 +40,8 @@
 		\
 		unsigned cmethodCount = 0; \
 		Method *cmethodList = class_copyMethodList(object_getClass(sourceClass), &cmethodCount); \
-		\
 		Class metaclass = object_getClass(targetClass); \
+		\
 		for (unsigned methodIndex = 0;methodIndex < cmethodCount;++methodIndex) { \
 			Method method = cmethodList[methodIndex]; \
 			SEL selector = method_getName(method); \
