@@ -3,12 +3,12 @@
  *  libextobjc
  *
  *  Created by Justin Spahr-Summers on 04.08.10.
- *  Copyright 2010 Übermind, Inc. All rights reserved.
- *
+ *  Released into the public domain.
  */
 
 #import <objc/runtime.h>
 #import <string.h>
+#import "metamacros.h"
 
 /**
  * @defgroup EXTSwizzle EXTSwizzle
@@ -148,5 +148,3 @@
 	} while (0)
 
 /** @} */
-
-#endif

@@ -64,6 +64,11 @@
 		D0A8B2D2128A48EE004AACE0 /* static_assert.h in Headers */ = {isa = PBXBuildFile; fileRef = D0A8B2AC128A47CE004AACE0 /* static_assert.h */; };
 		D0A8B2D3128A48EE004AACE0 /* template.h in Headers */ = {isa = PBXBuildFile; fileRef = D0A8B2AD128A47CE004AACE0 /* template.h */; };
 		D0A8B2D4128A48EE004AACE0 /* vector.h in Headers */ = {isa = PBXBuildFile; fileRef = D0A8B2AE128A47CE004AACE0 /* vector.h */; };
+		D0A8B2F8128A49E9004AACE0 /* EXTSwizzle.h in Headers */ = {isa = PBXBuildFile; fileRef = D0A8B2F7128A49E9004AACE0 /* EXTSwizzle.h */; };
+		D0A8B2F9128A49E9004AACE0 /* EXTSwizzle.h in Headers */ = {isa = PBXBuildFile; fileRef = D0A8B2F7128A49E9004AACE0 /* EXTSwizzle.h */; };
+		D0A8B30E128A4B56004AACE0 /* EXTSwizzleTest.m in Sources */ = {isa = PBXBuildFile; fileRef = D0A8B30D128A4B56004AACE0 /* EXTSwizzleTest.m */; };
+		D0A8B312128A4BDE004AACE0 /* extobjc.h in Headers */ = {isa = PBXBuildFile; fileRef = D0A8B311128A4BDE004AACE0 /* extobjc.h */; };
+		D0A8B313128A4BDE004AACE0 /* extobjc.h in Headers */ = {isa = PBXBuildFile; fileRef = D0A8B311128A4BDE004AACE0 /* extobjc.h */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -80,6 +85,13 @@
 			proxyType = 1;
 			remoteGlobalIDString = D0A8B028128A4261004AACE0;
 			remoteInfo = "libextobjc (iOS)";
+		};
+		D0A8B2E1128A4964004AACE0 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0867D690FE84028FC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = D2AAC07D0554694100DB518D;
+			remoteInfo = "libextobjc (OS X)";
 		};
 /* End PBXContainerItemProxy section */
 
@@ -108,6 +120,12 @@
 		D0A8B2AC128A47CE004AACE0 /* static_assert.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = static_assert.h; path = libextc/include/static_assert.h; sourceTree = "<group>"; };
 		D0A8B2AD128A47CE004AACE0 /* template.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = template.h; path = libextc/include/template.h; sourceTree = "<group>"; };
 		D0A8B2AE128A47CE004AACE0 /* vector.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = vector.h; path = libextc/include/vector.h; sourceTree = "<group>"; };
+		D0A8B2DC128A495D004AACE0 /* Logic Tests.octest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Logic Tests.octest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		D0A8B2DD128A495D004AACE0 /* Logic Tests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Logic Tests-Info.plist"; sourceTree = "<group>"; };
+		D0A8B2F7128A49E9004AACE0 /* EXTSwizzle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXTSwizzle.h; sourceTree = "<group>"; };
+		D0A8B30C128A4B56004AACE0 /* EXTSwizzleTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXTSwizzleTest.h; sourceTree = "<group>"; };
+		D0A8B30D128A4B56004AACE0 /* EXTSwizzleTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXTSwizzleTest.m; sourceTree = "<group>"; };
+		D0A8B311128A4BDE004AACE0 /* extobjc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = extobjc.h; sourceTree = "<group>"; };
 		D2AAC07E0554694100DB518D /* libextobjc_OSX.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libextobjc_OSX.a; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -117,6 +135,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				D0A8B188128A4303004AACE0 /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D0A8B2D9128A495D004AACE0 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -136,6 +161,7 @@
 			children = (
 				D2AAC07E0554694100DB518D /* libextobjc_OSX.a */,
 				D0A8B029128A4261004AACE0 /* libextobjc_iOS.a */,
+				D0A8B2DC128A495D004AACE0 /* Logic Tests.octest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -144,8 +170,10 @@
 			isa = PBXGroup;
 			children = (
 				08FB77AEFE84172EC02AAC07 /* Classes */,
+				D0A8B2F6128A49D9004AACE0 /* Modules */,
 				32C88DFF0371C24200C91783 /* Other Sources */,
 				0867D69AFE84028FC02AAC07 /* Frameworks */,
+				D0A8B2E4128A497A004AACE0 /* Tests */,
 				034768DFFF38A50411DB9C8B /* Products */,
 			);
 			name = libextobjc;
@@ -171,6 +199,7 @@
 		32C88DFF0371C24200C91783 /* Other Sources */ = {
 			isa = PBXGroup;
 			children = (
+				D0A8B311128A4BDE004AACE0 /* extobjc.h */,
 				32DBCF5E0370ADEE00C91783 /* extobjc_Prefix.pch */,
 			);
 			name = "Other Sources";
@@ -219,6 +248,24 @@
 			name = libextc;
 			sourceTree = "<group>";
 		};
+		D0A8B2E4128A497A004AACE0 /* Tests */ = {
+			isa = PBXGroup;
+			children = (
+				D0A8B30C128A4B56004AACE0 /* EXTSwizzleTest.h */,
+				D0A8B30D128A4B56004AACE0 /* EXTSwizzleTest.m */,
+				D0A8B2DD128A495D004AACE0 /* Logic Tests-Info.plist */,
+			);
+			path = Tests;
+			sourceTree = "<group>";
+		};
+		D0A8B2F6128A49D9004AACE0 /* Modules */ = {
+			isa = PBXGroup;
+			children = (
+				D0A8B2F7128A49E9004AACE0 /* EXTSwizzle.h */,
+			);
+			path = Modules;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -239,6 +286,8 @@
 				D0A8B2D2128A48EE004AACE0 /* static_assert.h in Headers */,
 				D0A8B2D3128A48EE004AACE0 /* template.h in Headers */,
 				D0A8B2D4128A48EE004AACE0 /* vector.h in Headers */,
+				D0A8B2F9128A49E9004AACE0 /* EXTSwizzle.h in Headers */,
+				D0A8B312128A4BDE004AACE0 /* extobjc.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -259,6 +308,8 @@
 				D0A8B2C5128A48ED004AACE0 /* static_assert.h in Headers */,
 				D0A8B2C6128A48ED004AACE0 /* template.h in Headers */,
 				D0A8B2C7128A48ED004AACE0 /* vector.h in Headers */,
+				D0A8B2F8128A49E9004AACE0 /* EXTSwizzle.h in Headers */,
+				D0A8B313128A4BDE004AACE0 /* extobjc.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -281,6 +332,26 @@
 			productName = "libextobjc (iOS)";
 			productReference = D0A8B029128A4261004AACE0 /* libextobjc_iOS.a */;
 			productType = "com.apple.product-type.library.static";
+		};
+		D0A8B2DB128A495D004AACE0 /* Logic Tests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = D0A8B2E0128A495D004AACE0 /* Build configuration list for PBXNativeTarget "Logic Tests" */;
+			buildPhases = (
+				D0A8B2D7128A495D004AACE0 /* Resources */,
+				D0A8B2D8128A495D004AACE0 /* Sources */,
+				D0A8B2D9128A495D004AACE0 /* Frameworks */,
+				D0A8B2DA128A495D004AACE0 /* Run Script (libextobjc tests) */,
+				D0A8B307128A4A72004AACE0 /* Run Script (libextc tests) */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				D0A8B2E2128A4964004AACE0 /* PBXTargetDependency */,
+			);
+			name = "Logic Tests";
+			productName = "Logic Tests";
+			productReference = D0A8B2DC128A495D004AACE0 /* Logic Tests.octest */;
+			productType = "com.apple.product-type.bundle";
 		};
 		D2AAC07D0554694100DB518D /* libextobjc (OS X) */ = {
 			isa = PBXNativeTarget;
@@ -322,9 +393,51 @@
 				D0A8B20C128A4324004AACE0 /* libextobjc */,
 				D2AAC07D0554694100DB518D /* libextobjc (OS X) */,
 				D0A8B028128A4261004AACE0 /* libextobjc (iOS) */,
+				D0A8B2DB128A495D004AACE0 /* Logic Tests */,
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		D0A8B2D7128A495D004AACE0 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		D0A8B2DA128A495D004AACE0 /* Run Script (libextobjc tests) */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Run Script (libextobjc tests)";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Run the unit tests in this test bundle.\n\"${SYSTEM_DEVELOPER_DIR}/Tools/RunUnitTests\"\n";
+		};
+		D0A8B307128A4A72004AACE0 /* Run Script (libextc tests) */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Run Script (libextc tests)";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "cd libextc && ./configure && make check";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		D0A8B026128A4261004AACE0 /* Sources */ = {
@@ -338,6 +451,14 @@
 				D0A8B298128A46B0004AACE0 /* refcounted.c in Sources */,
 				D0A8B299128A46B0004AACE0 /* template.c in Sources */,
 				D0A8B29A128A46B0004AACE0 /* vector.c in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D0A8B2D8128A495D004AACE0 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D0A8B30E128A4B56004AACE0 /* EXTSwizzleTest.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -367,6 +488,11 @@
 			isa = PBXTargetDependency;
 			target = D0A8B028128A4261004AACE0 /* libextobjc (iOS) */;
 			targetProxy = D0A8B211128A4333004AACE0 /* PBXContainerItemProxy */;
+		};
+		D0A8B2E2128A4964004AACE0 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = D2AAC07D0554694100DB518D /* libextobjc (OS X) */;
+			targetProxy = D0A8B2E1128A4964004AACE0 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -523,6 +649,62 @@
 			};
 			name = Release;
 		};
+		D0A8B2DE128A495D004AACE0 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = NO;
+				FRAMEWORK_SEARCH_PATHS = "$(DEVELOPER_LIBRARY_DIR)/Frameworks";
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_MODEL_TUNING = G5;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "$(SYSTEM_LIBRARY_DIR)/Frameworks/Cocoa.framework/Headers/Cocoa.h";
+				GCC_WARN_PEDANTIC = NO;
+				INFOPLIST_FILE = "Tests/Logic Tests-Info.plist";
+				INSTALL_PATH = "$(USER_LIBRARY_DIR)/Bundles";
+				OTHER_LDFLAGS = (
+					"-framework",
+					Cocoa,
+					"-framework",
+					SenTestingKit,
+				);
+				PREBINDING = NO;
+				PRODUCT_NAME = "Logic Tests";
+				WRAPPER_EXTENSION = octest;
+			};
+			name = Debug;
+		};
+		D0A8B2DF128A495D004AACE0 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				FRAMEWORK_SEARCH_PATHS = "$(DEVELOPER_LIBRARY_DIR)/Frameworks";
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_MODEL_TUNING = G5;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "$(SYSTEM_LIBRARY_DIR)/Frameworks/Cocoa.framework/Headers/Cocoa.h";
+				GCC_WARN_PEDANTIC = NO;
+				INFOPLIST_FILE = "Tests/Logic Tests-Info.plist";
+				INSTALL_PATH = "$(USER_LIBRARY_DIR)/Bundles";
+				OTHER_LDFLAGS = (
+					"-framework",
+					Cocoa,
+					"-framework",
+					SenTestingKit,
+				);
+				PREBINDING = NO;
+				PRODUCT_NAME = "Logic Tests";
+				WRAPPER_EXTENSION = octest;
+				ZERO_LINK = NO;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -558,6 +740,15 @@
 			buildConfigurations = (
 				D0A8B20D128A4324004AACE0 /* Debug */,
 				D0A8B20E128A4324004AACE0 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		D0A8B2E0128A495D004AACE0 /* Build configuration list for PBXNativeTarget "Logic Tests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D0A8B2DE128A495D004AACE0 /* Debug */,
+				D0A8B2DF128A495D004AACE0 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
