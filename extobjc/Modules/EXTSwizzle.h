@@ -6,9 +6,8 @@
  *  Released into the public domain.
  */
 
-#import <Foundation/Foundation.h>
 #import <objc/runtime.h>
-#import <string.h>
+#import <stdio.h>
 #import "metamacros.h"
 
 /**
@@ -47,7 +46,7 @@
 	do { \
 		Class cls_ = objc_getClass(metamacro_stringify(CLASS)); \
 		if (!cls_) { \
-			NSLog(@"ERROR: no class %s exists", \
+			fprintf(stderr, "ERROR: no class %s exists\n", \
 				metamacro_stringify(CLASS) \
 			); \
 			break; \
@@ -55,7 +54,7 @@
 		\
 		Method orig_ = class_getInstanceMethod(cls_, @selector(ORIGINAL)); \
 		if (!orig_) { \
-			NSLog(@"ERROR: class %s and superclasses do not contain an instance method for selector %s", \
+			fprintf(stderr, "ERROR: class %s and superclasses do not contain an instance method for selector %s\n", \
 				metamacro_stringify(CLASS), \
 				metamacro_stringify(ORIGINAL) \
 			); \
@@ -64,7 +63,7 @@
 		\
 		Method new_ = class_getInstanceMethod(cls_, @selector(NEW)); \
 		if (!new_) { \
-			NSLog(@"ERROR: class %s and superclasses do not contain an instance method for selector %s", \
+			fprintf(stderr, "ERROR: class %s and superclasses do not contain an instance method for selector %s\n", \
 				metamacro_stringify(CLASS), \
 				metamacro_stringify(NEW) \
 			); \
@@ -73,7 +72,7 @@
 		\
 		IMP origImpl_ = method_getImplementation(orig_); \
 		if (!class_addMethod(cls_, @selector(RENAME), origImpl_, method_getTypeEncoding(orig_))) { \
-			NSLog(@"ERROR: could not add instance method %s on %s", \
+			fprintf(stderr, "ERROR: could not add instance method %s on %s\n", \
 				metamacro_stringify(RENAME), \
 				metamacro_stringify(CLASS) \
 			); \
@@ -104,7 +103,7 @@
 	do { \
 		Class cls_ = objc_getClass(metamacro_stringify(CLASS)); \
 		if (!cls_) { \
-			NSLog(@"ERROR: no class %s exists", \
+			fprintf(stderr, "ERROR: no class %s exists\n", \
 				metamacro_stringify(CLASS) \
 			); \
 			break; \
@@ -113,7 +112,7 @@
 		Class meta_ = object_getClass(cls_); \
 		Method orig_ = class_getClassMethod(cls_, @selector(ORIGINAL)); \
 		if (!orig_) { \
-			NSLog(@"ERROR: class %s and superclasses do not contain a class method for selector %s", \
+			fprintf(stderr, "ERROR: class %s and superclasses do not contain a class method for selector %s\n", \
 				metamacro_stringify(CLASS), \
 				metamacro_stringify(ORIGINAL) \
 			); \
@@ -122,7 +121,7 @@
 		\
 		Method new_ = class_getClassMethod(cls_, @selector(NEW)); \
 		if (!new_) { \
-			NSLog(@"ERROR: class %s and superclasses do not contain a class method for selector %s", \
+			fprintf(stderr, "ERROR: class %s and superclasses do not contain a class method for selector %s\n", \
 				metamacro_stringify(CLASS), \
 				metamacro_stringify(NEW) \
 			); \
@@ -132,7 +131,7 @@
 		IMP origImpl_ = method_getImplementation(orig_); \
 		if (!class_addMethod(meta_, @selector(RENAME), origImpl_, \
 			method_getTypeEncoding(orig_))) { \
-			NSLog(@"ERROR: could not add class method %s on %s", \
+			fprintf(stderr, "ERROR: could not add class method %s on %s\n", \
 				metamacro_stringify(RENAME), \
 				metamacro_stringify(CLASS) \
 			); \
