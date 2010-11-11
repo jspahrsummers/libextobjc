@@ -67,6 +67,10 @@
 #define concreteprotocol(NAME) \
 	/*
 	 * create a class that simply contains all the methods used in this protocol
+	 *
+	 * it also conforms to the protocol itself, to help with static typing (for
+	 * instance, calling another protocol'd method on self) – this doesn't cause
+	 * any problems with the injection, since it's always done non-destructively
 	 */ \
 	interface NAME ## _MethodContainer : NSObject < NAME > {} \
 	@end \
