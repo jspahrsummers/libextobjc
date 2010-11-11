@@ -60,7 +60,7 @@ static size_t concreteProtocolsLoaded = 0;
 static pthread_mutex_t concreteProtocolsLock = PTHREAD_MUTEX_INITIALIZER;
 
 
-/*
+/**
  * This function actually performs the hard work. It obtains a full list of all
  * classes registered with the Objective-C runtime, finds those conforming to
  * concrete protocols, and then adds the methods as appropriate.
@@ -193,28 +193,47 @@ void ext_injectConcreteProtocols (void) {
 	free(allClasses);
 }
 
+/**
+ * Adds a concrete protocol identified by \a protocol and \a methodContainer to
+ * our global list. Returns \c YES on success.
+ */
 BOOL ext_addConcreteProtocol (Protocol *protocol, Class methodContainer) {
 	if (!protocol || !methodContainer)
 		return NO;
 	
+	// lock the mutex to prevent accesses from other threads while we perform
+	// this work
 	if (pthread_mutex_lock(&concreteProtocolsLock) != 0) {
 		fprintf(stderr, "ERROR: Could not synchronize on concrete protocol data\n");
 		return NO;
 	}
 	
+	// if we've hit the hard maximum for number of concrete protocols, we can't
+	// continue
 	if (concreteProtocolCount == SIZE_MAX) {
 		pthread_mutex_unlock(&concreteProtocolsLock);
 		return NO;
 	}
 
+	// if the array has no more space, we will need to allocate additional
+	// entries
 	if (concreteProtocolCount >= concreteProtocolCapacity) {
 		size_t newCapacity;
 		if (concreteProtocolCapacity == 0)
+			// if there are no entries, make space for just one
 			newCapacity = 1;
 		else {
+			// otherwise, double the current capacity
 			newCapacity = concreteProtocolCapacity << 1;
+
+			// if the new capacity is less than the current capacity, that's
+			// unsigned integer overflow
 			if (newCapacity < concreteProtocolCapacity) {
+				// set it to the maximum possible instead
 				newCapacity = SIZE_MAX;
+
+				// if the new capacity is still not greater than the current
+				// (for instance, if it was already SIZE_MAX), we can't continue
 				if (newCapacity <= concreteProtocolCapacity) {
 					pthread_mutex_unlock(&concreteProtocolsLock);
 					return NO;
@@ -222,18 +241,27 @@ BOOL ext_addConcreteProtocol (Protocol *protocol, Class methodContainer) {
 			}
 		}
 
+		// we have a new capacity, so resize the list of all concrete protocols
+		// to add the new entries
 		void * restrict ptr = realloc(concreteProtocols, sizeof(EXTConcreteProtocol) * newCapacity);
 		if (!ptr) {
+			// the allocation failed, abort
 			pthread_mutex_unlock(&concreteProtocolsLock);
 			return NO;
 		}
 
+		// update the file statics with the new array's info
 		concreteProtocols = ptr;
 		concreteProtocolCapacity = newCapacity;
 	}
 
+	// at this point, there absolutely must be at least one empty entry in the
+	// array
 	assert(concreteProtocolCount < concreteProtocolCapacity);
 
+	// construct a new EXTConcreteProtocol structure and add it to the first
+	// empty space in the array, incrementing concreteProtocolCount in the
+	// process
 	concreteProtocols[concreteProtocolCount++] = (EXTConcreteProtocol){
 		.methodContainer = methodContainer,
 		.protocol = protocol,
@@ -241,24 +269,46 @@ BOOL ext_addConcreteProtocol (Protocol *protocol, Class methodContainer) {
 	};
 
 	pthread_mutex_unlock(&concreteProtocolsLock);
+
+	// success!
 	return YES;
 }
 
+/**
+ * Marks a concrete protocol, identified by \a protocol, as being fully loaded
+ * by the Objective-C runtime. If all concrete protocols are now loaded, this
+ * will invoke #ext_injectConcreteProtocols to actually add the concrete methods
+ * into conforming classes.
+ */
 void ext_loadConcreteProtocol (Protocol *protocol) {
 	if (!protocol)
 		return;
 	
+	// lock the mutex to prevent accesses from other threads while we perform
+	// this work
 	if (pthread_mutex_lock(&concreteProtocolsLock) != 0) {
 		fprintf(stderr, "ERROR: Could not synchronize on concrete protocol data\n");
 		return;
 	}
 
+	// loop through all the concrete protocols in our list, trying to find the
+	// one associated with 'protocol'
 	for (size_t i = 0;i < concreteProtocolCount;++i) {
 		if (concreteProtocols[i].protocol == protocol) {
+			// found the matching concrete protocol, check to see if it's
+			// already loaded
 			if (!concreteProtocols[i].loaded) {
+				// if it's not, mark it as being loaded now
 				concreteProtocols[i].loaded = YES;
 
+				// since this concrete protocol was in our array, and it was not
+				// loaded, the total number of protocols loaded must be less
+				// than the total count at this point in time
 				assert(concreteProtocolsLoaded < concreteProtocolCount);
+
+				// ... and then increment the total number of concrete protocols
+				// loaded – if it now matches the total count of concrete
+				// protocols, begin the injection process
 				if (++concreteProtocolsLoaded == concreteProtocolCount)
 					ext_injectConcreteProtocols();
 			}
