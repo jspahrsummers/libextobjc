@@ -87,50 +87,31 @@ void ext_injectConcreteProtocols (void) {
 	// and then actually pull the list of the class objects
 	classCount = objc_getClassList(allClasses, classCount);
 
-	// now, loop through the concrete protocols, and apply each one to this full
-	// class list in turn
-	//
-	// doing this with the protocol outer loop avoids allocating and tearing
-	// down the protocol's methods on each inner loop iteration (instead, doing
-	// it once per outer loop iteration) – whether this is advantageous really
-	// depends on the use case, but performance should be good enough either
-	// way, as this only happens once
-	for (size_t i = 0;i < concreteProtocolCount;++i) {
-		// pull the information from the concrete protocol structure
-		Protocol *protocol = concreteProtocols[i].protocol;
-		Class containerClass = concreteProtocols[i].methodContainer;
+	// loop through all classes
+	for (int classIndex = 0;classIndex < classCount;++classIndex) {
+		Class class = allClasses[classIndex];
 
-		// get the full list of instance methods implemented by the concrete
-		// protocol
-		unsigned imethodCount = 0;
-		Method *imethodList = class_copyMethodList(containerClass, &imethodCount);
+		// get the metaclass of this class (the object on which class
+		// methods are implemented)
+		Class metaclass = object_getClass(class);
 
-		// get the full list of class methods implemented by the concrete
-		// protocol
-		unsigned cmethodCount = 0;
-		Method *cmethodList = class_copyMethodList(object_getClass(containerClass), &cmethodCount);
-
-		// if there are neither, don't even bother looping over all the
-		// classes... simply jump to the next loop iteration now
-		if (!imethodCount && !cmethodCount) {
-			// we free these arrays just in case they're NULL-terminated (which
-			// would mean that they are one-item arrays containing just a NULL
-			// entry)
-			//
-			// and, of course, freeing NULL has no effect
-			free(imethodList);
-			free(cmethodList);
-			continue;
-		}
-
-		// loop through all classes
-		for (int classIndex = 0;classIndex < classCount;++classIndex) {
-			Class class = allClasses[classIndex];
+		// now, loop through the concrete protocols, and apply each one to this
+		// class in turn
+		for (size_t i = 0;i < concreteProtocolCount;++i) {
+			Protocol *protocol = concreteProtocols[i].protocol;
 			
 			// if this class doesn't conform to the protocol, continue to the
-			// next class immediately
+			// next protocol immediately
 			if (!class_conformsToProtocol(class, protocol))
 				continue;
+
+			// get the class containing the methods of this concrete protocol
+			Class containerClass = concreteProtocols[i].methodContainer;
+
+			// get the full list of instance methods implemented by the concrete
+			// protocol
+			unsigned imethodCount = 0;
+			Method *imethodList = class_copyMethodList(containerClass, &imethodCount);
 
 			// inject all instance methods in the concrete protocol
 			for (unsigned methodIndex = 0;methodIndex < imethodCount;++methodIndex) {
@@ -153,11 +134,15 @@ void ext_injectConcreteProtocols (void) {
 				}
 			}
 
-			// get the metaclass of this class (the object on which class
-			// methods are implemented)
-			Class metaclass = object_getClass(class);
+			// free the instance method list
+			free(imethodList); imethodList = NULL;
 
-			// and then inject all class methods in the concrete protocol
+			// get the full list of class methods implemented by the concrete
+			// protocol
+			unsigned cmethodCount = 0;
+			Method *cmethodList = class_copyMethodList(object_getClass(containerClass), &cmethodCount);
+
+			// inject all class methods in the concrete protocol
 			for (unsigned methodIndex = 0;methodIndex < cmethodCount;++methodIndex) {
 				Method method = cmethodList[methodIndex];
 				SEL selector = method_getName(method);
@@ -181,11 +166,10 @@ void ext_injectConcreteProtocols (void) {
 						sel_getName(selector), protocol_getName(protocol), class_getName(class));
 				}
 			}
-		}
 
-		// free the copied method lists
-		free(imethodList);
-		free(cmethodList);
+			// free the class method list
+			free(cmethodList); cmethodList = NULL;
+		}
 	}
 
 	// free the allocated class list
