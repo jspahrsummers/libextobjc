@@ -31,8 +31,8 @@
  * exists.
  *
  * @code
- *
 
+// MyProtocol.h
 @protocol MyProtocol
 @required
 	- (void)someRequiredMethod;
@@ -45,11 +45,7 @@
 
 @end
 
- *
- * @endcode
- * @code
- *
-
+// MyProtocol.m
 @concreteprotocol(MyProtocol)
 - (BOOL)isConcrete {
   	return YES;
@@ -57,7 +53,6 @@
 
 @end
 
- *
  * @endcode
  *
  * @warning You should not invoke methods against \c super in the implementation

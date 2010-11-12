@@ -59,7 +59,6 @@ static size_t concreteProtocolsLoaded = 0;
 // variables
 static pthread_mutex_t concreteProtocolsLock = PTHREAD_MUTEX_INITIALIZER;
 
-
 /**
  * This function actually performs the hard work. It obtains a full list of all
  * classes registered with the Objective-C runtime, finds those conforming to
