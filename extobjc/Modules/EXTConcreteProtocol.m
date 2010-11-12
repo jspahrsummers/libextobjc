@@ -123,6 +123,12 @@ void ext_injectConcreteProtocols (void) {
 	// and then actually pull the list of the class objects
 	classCount = objc_getClassList(allClasses, classCount);
 
+	/*
+	 * set up an autorelease pool in case any Cocoa classes get used during
+	 * the injection process or +initialize
+	 */
+	NSAutoreleasePool *pool = [NSAutoreleasePool new];
+
 	// loop through all classes
 	for (int classIndex = 0;classIndex < classCount;++classIndex) {
 		Class class = allClasses[classIndex];
@@ -213,8 +219,17 @@ void ext_injectConcreteProtocols (void) {
 
 			// free the class method list
 			free(cmethodList); cmethodList = NULL;
+
+			// use [containerClass class] and discard the result to call +initialize
+			// on containerClass if it hasn't been called yet
+			//
+			// this is to allow the concrete protcool to perform custom initialization
+			(void)[containerClass class];
 		}
 	}
+
+	// drain the temporary autorelease pool
+	[pool drain];
 
 	// free the allocated class list
 	free(allClasses);
@@ -223,6 +238,10 @@ void ext_injectConcreteProtocols (void) {
 /**
  * Adds a concrete protocol identified by \a protocol and \a methodContainer to
  * our global list. Returns \c YES on success.
+ *
+ * Objective-C runtime functions should not be used here, as they will sometimes
+ * call through to special methods (e.g., +initialize), and no autorelease pool
+ * has been set up.
  */
 BOOL ext_addConcreteProtocol (Protocol *protocol, Class methodContainer) {
 	if (!protocol || !methodContainer)

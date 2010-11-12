@@ -67,7 +67,8 @@
  * in categories – it will be executed exactly once per concrete protocol, and
  * is not added to any classes which receive the concrete protocol's methods.
  * Note, however, that the protocol's methods may not have been added to
- * conforming classes at the time that \c +initialize is invoked.
+ * conforming classes at the time that \c +initialize is invoked. If no class
+ * conforms to the concrete protocol, \c +initialize may never be called.
  *
  * @warning You should not invoke methods against \c super in the implementation
  * of a concrete protocol, as the superclass may not be the type you expect (and
@@ -110,15 +111,6 @@
 		 * loading
 		 */ \
 		ext_loadConcreteProtocol(objc_getProtocol(# NAME)); \
-		\
-		/*
-		 * use a message send to invoke +initialize if it's implemented
-		 * set up an autorelease pool so that normal Objective-C stuff can be
-		 * used in such a method
-		 */ \
-		NSAutoreleasePool *pool_ = [NSAutoreleasePool new]; \
-		(void)[NAME ## _MethodContainer class]; \
-		[pool_ drain]; \
 	}
 
 /*** implementation details follow ***/
