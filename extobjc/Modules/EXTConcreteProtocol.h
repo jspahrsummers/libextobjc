@@ -113,8 +113,12 @@
 		\
 		/*
 		 * use a message send to invoke +initialize if it's implemented
+		 * set up an autorelease pool so that normal Objective-C stuff can be
+		 * used in such a method
 		 */ \
+		NSAutoreleasePool *pool_ = [NSAutoreleasePool new]; \
 		(void)[NAME ## _MethodContainer class]; \
+		[pool_ drain]; \
 	}
 
 /*** implementation details follow ***/
