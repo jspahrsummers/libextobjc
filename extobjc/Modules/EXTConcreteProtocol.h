@@ -55,6 +55,13 @@
 
  * @endcode
  *
+ * If a concrete protocol \c X conforms to another concrete protocol \c Y, any
+ * concrete implementations in \c X will be prioritized over those in \c Y. In
+ * other words, if both protocols provide a default implementation for a method,
+ * the one from \c X (the most descendant) is the one that will be loaded into
+ * any class that conforms to \c X. Classes that conform to \c Y will naturally
+ * only use the implementations from \c Y.
+ *
  * @warning You should not invoke methods against \c super in the implementation
  * of a concrete protocol, as the superclass may not be the type you expect (and
  * may not even inherit from \c NSObject).

@@ -23,6 +23,11 @@
 /*** SubProtocol ***/
 @concreteprotocol(SubProtocol)
 - (void)additionalMethod {}
+
+// this should take precedence over the implementation in MyProtocol
+- (NSString *)getSomeString {
+	return @"SubProtocol";
+}
 @end
 
 /*** first test class ***/
@@ -93,7 +98,7 @@
 	
 	obj = [[TestClass3 alloc] init];
 	STAssertNotNil(obj, @"could not allocate concreteprotocol'd class");
-	STAssertEqualObjects([obj getSomeString], @"MyProtocol", @"TestClass3 should be using protocol implementation of getSomeString");
+	STAssertEqualObjects([obj getSomeString], @"SubProtocol", @"TestClass3 should be using protocol implementation of getSomeString");
 	STAssertTrue([obj respondsToSelector:@selector(additionalMethod)], @"TestClass3 should have protocol implementation of additionalMethod");
 	STAssertNoThrow([obj release], @"could not deallocate concreteprotocol'd class");
 
@@ -101,7 +106,7 @@
 	
 	obj = [[TestClass4 alloc] init];
 	STAssertNotNil(obj, @"could not allocate concreteprotocol'd subclass");
-	STAssertEqualObjects([obj getSomeString], @"MyProtocol", @"TestClass4 should be using protocol implementation of getSomeString");
+	STAssertEqualObjects([obj getSomeString], @"SubProtocol", @"TestClass4 should be using protocol implementation of getSomeString");
 	STAssertTrue([obj respondsToSelector:@selector(additionalMethod)], @"TestClass4 should have protocol implementation of additionalMethod");
 	STAssertNoThrow([obj release], @"could not deallocate concreteprotocol'd subclass");
 }
