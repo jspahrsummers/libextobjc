@@ -62,6 +62,13 @@
  * any class that conforms to \c X. Classes that conform to \c Y will naturally
  * only use the implementations from \c Y.
  *
+ * To perform tasks when a concrete protocol is loaded, use the \c +initialize
+ * method. This method in a concrete protocol is treated similarly to \c +load
+ * in categories – it will be executed exactly once per concrete protocol, and
+ * is not added to any classes which receive the concrete protocol's methods.
+ * Note, however, that the protocol's methods may not have been added to
+ * conforming classes at the time that \c +initialize is invoked.
+ *
  * @warning You should not invoke methods against \c super in the implementation
  * of a concrete protocol, as the superclass may not be the type you expect (and
  * may not even inherit from \c NSObject).
@@ -103,6 +110,11 @@
 		 * loading
 		 */ \
 		ext_loadConcreteProtocol(objc_getProtocol(# NAME)); \
+		\
+		/*
+		 * use a message send to invoke +initialize if it's implemented
+		 */ \
+		(void)[NAME ## _MethodContainer class]; \
 	}
 
 /*** implementation details follow ***/

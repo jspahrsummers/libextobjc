@@ -8,8 +8,16 @@
 
 #import "EXTConcreteProtocolTest.h"
 
+static BOOL MyProtocolInitialized = NO;
+static BOOL SubProtocolInitialized = NO;
+
 /*** MyProtocol ***/
 @concreteprotocol(MyProtocol)
++ (void)initialize {
+	STAssertFalse(MyProtocolInitialized, @"+initialize should only be invoked once per concrete protocol");
+	MyProtocolInitialized = YES;
+}
+
 + (NSUInteger)meaningfulNumber {
 	return 42;
 }
@@ -22,6 +30,11 @@
 
 /*** SubProtocol ***/
 @concreteprotocol(SubProtocol)
++ (void)initialize {
+	STAssertFalse(SubProtocolInitialized, @"+initialize should only be invoked once per concrete protocol");
+	SubProtocolInitialized = YES;
+}
+
 - (void)additionalMethod {}
 
 // this should take precedence over the implementation in MyProtocol
@@ -74,6 +87,11 @@
 
 /*** logic test code ***/
 @implementation EXTConcreteProtocolTest
+- (void)tearDown {
+	STAssertTrue(MyProtocolInitialized, @"+initialize should have been invoked on MyProtocol");
+	STAssertTrue(SubProtocolInitialized, @"+initialize should have been invoked on SubProtocol");
+}
+
 - (void)testImplementations {
   	id<MyProtocol> obj;
 	

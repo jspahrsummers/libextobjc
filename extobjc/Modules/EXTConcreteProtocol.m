@@ -183,6 +183,14 @@ void ext_injectConcreteProtocols (void) {
 				Method method = cmethodList[methodIndex];
 				SEL selector = method_getName(method);
 
+				// +initialize is a special case that should never be copied
+				// into a class, as it performs initialization for the concrete
+				// protocol
+				if (selector == @selector(initialize)) {
+					// so just continue looking through the rest of the methods
+					continue;
+				}
+
 				// first, check to see if a class method already eixsts (on this
 				// class or on a superclass)
 				//
