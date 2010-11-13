@@ -7,7 +7,7 @@
 //
 
 #import <SenTestingKit/SenTestingKit.h>
-#import "EXTConcreteProtocol.h"
+#import "extobjc.h"
 
 @protocol MyProtocol <NSObject>
 @concrete

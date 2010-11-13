@@ -82,10 +82,10 @@
 	 * instance, calling another protocol'd method on self) – this doesn't cause
 	 * any problems with the injection, since it's always done non-destructively
 	 */ \
-	interface NAME ## _MethodContainer : NSObject < NAME > {} \
+	interface NAME ## _ProtocolMethodContainer : NSObject < NAME > {} \
 	@end \
 	\
-	@implementation NAME ## _MethodContainer \
+	@implementation NAME ## _ProtocolMethodContainer \
 	/*
 	 * when this class is loaded into the runtime, add the concrete protocol
 	 * into the list we have of them
@@ -96,7 +96,7 @@
 		 * the second
 		 */ \
 		if (!ext_addConcreteProtocol(objc_getProtocol(# NAME), self)) \
-			fprintf(stderr, "ERROR: Could not load concrete protocol %s", # NAME); \
+			fprintf(stderr, "ERROR: Could not load concrete protocol %s\n", # NAME); \
 	} \
 	\
 	/*

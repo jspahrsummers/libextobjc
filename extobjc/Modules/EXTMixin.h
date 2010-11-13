@@ -7,6 +7,7 @@
  */
 
 #import <objc/runtime.h>
+#import <stdlib.h>
 
 /**
  * "Mixes in" the class and instance methods of \a CLASS into pre-existing class
@@ -54,6 +55,6 @@
 			class_replaceMethod(metaclass, selector, imp, types); \
 		} \
 		\
-		free(cmethodList); cmethodList = NULL;
+		free(cmethodList); cmethodList = NULL; \
 	}
 

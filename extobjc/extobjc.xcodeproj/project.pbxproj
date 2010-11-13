@@ -22,6 +22,10 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
+		D03025FC128E8D9800638FD4 /* EXTSafeCategory.h in Headers */ = {isa = PBXBuildFile; fileRef = D03025FA128E8D9800638FD4 /* EXTSafeCategory.h */; };
+		D03025FD128E8D9800638FD4 /* EXTSafeCategory.m in Sources */ = {isa = PBXBuildFile; fileRef = D03025FB128E8D9800638FD4 /* EXTSafeCategory.m */; };
+		D03025FE128E8D9800638FD4 /* EXTSafeCategory.h in Headers */ = {isa = PBXBuildFile; fileRef = D03025FA128E8D9800638FD4 /* EXTSafeCategory.h */; };
+		D03025FF128E8D9800638FD4 /* EXTSafeCategory.m in Sources */ = {isa = PBXBuildFile; fileRef = D03025FB128E8D9800638FD4 /* EXTSafeCategory.m */; };
 		D0A8B04F128A42F4004AACE0 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0867D69BFE84028FC02AAC07 /* Foundation.framework */; };
 		D0A8B188128A4303004AACE0 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D0A8B187128A4303004AACE0 /* Foundation.framework */; };
 		D0A8B28D128A46B0004AACE0 /* algorithm.c in Sources */ = {isa = PBXBuildFile; fileRef = D0A8B286128A46B0004AACE0 /* algorithm.c */; };
@@ -120,6 +124,8 @@
 /* Begin PBXFileReference section */
 		0867D69BFE84028FC02AAC07 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
 		32DBCF5E0370ADEE00C91783 /* extobjc_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = extobjc_Prefix.pch; sourceTree = "<group>"; };
+		D03025FA128E8D9800638FD4 /* EXTSafeCategory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXTSafeCategory.h; sourceTree = "<group>"; };
+		D03025FB128E8D9800638FD4 /* EXTSafeCategory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXTSafeCategory.m; sourceTree = "<group>"; };
 		D0A8B029128A4261004AACE0 /* libextobjc_iOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libextobjc_iOS.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		D0A8B187128A4303004AACE0 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		D0A8B286128A46B0004AACE0 /* algorithm.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = algorithm.c; path = libextc/src/algorithm.c; sourceTree = "<group>"; };
@@ -310,6 +316,8 @@
 				D0A8B336128A5185004AACE0 /* EXTConcreteProtocol.h */,
 				D0B6C99C128B121B00137E97 /* EXTConcreteProtocol.m */,
 				D0CFB5EB128A8A62006DC377 /* EXTMixin.h */,
+				D03025FA128E8D9800638FD4 /* EXTSafeCategory.h */,
+				D03025FB128E8D9800638FD4 /* EXTSafeCategory.m */,
 				D0A8B2F7128A49E9004AACE0 /* EXTSwizzle.h */,
 			);
 			path = Modules;
@@ -340,6 +348,7 @@
 				D0A8B33A128A5185004AACE0 /* EXTConcreteProtocol.h in Headers */,
 				D0CFB5CF128A8109006DC377 /* EXTMultiObject.h in Headers */,
 				D0CFB5EC128A8A62006DC377 /* EXTMixin.h in Headers */,
+				D03025FE128E8D9800638FD4 /* EXTSafeCategory.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -365,6 +374,7 @@
 				D0A8B338128A5185004AACE0 /* EXTConcreteProtocol.h in Headers */,
 				D0CFB5D1128A8109006DC377 /* EXTMultiObject.h in Headers */,
 				D0CFB5ED128A8A62006DC377 /* EXTMixin.h in Headers */,
+				D03025FC128E8D9800638FD4 /* EXTSafeCategory.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -534,6 +544,7 @@
 				D0A8B29A128A46B0004AACE0 /* vector.c in Sources */,
 				D0CFB5D0128A8109006DC377 /* EXTMultiObject.m in Sources */,
 				D0B6C99D128B121B00137E97 /* EXTConcreteProtocol.m in Sources */,
+				D03025FF128E8D9800638FD4 /* EXTSafeCategory.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -568,6 +579,7 @@
 				D0A8B293128A46B0004AACE0 /* vector.c in Sources */,
 				D0CFB5D2128A8109006DC377 /* EXTMultiObject.m in Sources */,
 				D0B6C99E128B121B00137E97 /* EXTConcreteProtocol.m in Sources */,
+				D03025FD128E8D9800638FD4 /* EXTSafeCategory.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

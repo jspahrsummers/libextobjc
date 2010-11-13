@@ -7,7 +7,7 @@
 //
 
 #import <SenTestingKit/SenTestingKit.h>
-#import "EXTSwizzle.h"
+#import "extobjc.h"
 
 @interface EXTSwizzleTests : SenTestCase {
 
