@@ -233,6 +233,16 @@ void ext_injectConcreteProtocols (void) {
 
 	// free the allocated class list
 	free(allClasses);
+
+	// now that everything's injected, the concrete protocol list can also be
+	// destroyed
+	//
+	// in the future, it may actually be valuable to keep the list around so it
+	// can be queried
+	free(concreteProtocols); concreteProtocols = NULL;
+	concreteProtocolCount = 0;
+	concreteProtocolCapacity = 0;
+	concreteProtocolsLoaded = 0;
 }
 
 /**
