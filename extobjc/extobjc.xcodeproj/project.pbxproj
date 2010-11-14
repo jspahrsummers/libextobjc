@@ -88,8 +88,6 @@
 		D0CFB5ED128A8A62006DC377 /* EXTMixin.h in Headers */ = {isa = PBXBuildFile; fileRef = D0CFB5EB128A8A62006DC377 /* EXTMixin.h */; };
 		D0CFB61F128A8F12006DC377 /* EXTConcreteProtocolTest.m in Sources */ = {isa = PBXBuildFile; fileRef = D0C1D917128A57B600E96C0F /* EXTConcreteProtocolTest.m */; };
 		D0CFB620128A8F12006DC377 /* EXTSwizzleTest.m in Sources */ = {isa = PBXBuildFile; fileRef = D0A8B30D128A4B56004AACE0 /* EXTSwizzleTest.m */; };
-		D0E7E83B128F7F2E00FE0263 /* EXTSafeCategoryTest.h in Headers */ = {isa = PBXBuildFile; fileRef = D0E7E839128F7F2E00FE0263 /* EXTSafeCategoryTest.h */; };
-		D0E7E83D128F7F2E00FE0263 /* EXTSafeCategoryTest.h in Headers */ = {isa = PBXBuildFile; fileRef = D0E7E839128F7F2E00FE0263 /* EXTSafeCategoryTest.h */; };
 		D0E7E85A128F81FA00FE0263 /* EXTSafeCategoryTest.m in Sources */ = {isa = PBXBuildFile; fileRef = D0E7E83A128F7F2E00FE0263 /* EXTSafeCategoryTest.m */; };
 		D0E7E85B128F81FA00FE0263 /* EXTSafeCategoryTest.m in Sources */ = {isa = PBXBuildFile; fileRef = D0E7E83A128F7F2E00FE0263 /* EXTSafeCategoryTest.m */; };
 /* End PBXBuildFile section */
@@ -357,7 +355,6 @@
 				D0CFB5CF128A8109006DC377 /* EXTMultiObject.h in Headers */,
 				D0CFB5EC128A8A62006DC377 /* EXTMixin.h in Headers */,
 				D03025FE128E8D9800638FD4 /* EXTSafeCategory.h in Headers */,
-				D0E7E83D128F7F2E00FE0263 /* EXTSafeCategoryTest.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -384,7 +381,6 @@
 				D0CFB5D1128A8109006DC377 /* EXTMultiObject.h in Headers */,
 				D0CFB5ED128A8A62006DC377 /* EXTMixin.h in Headers */,
 				D03025FC128E8D9800638FD4 /* EXTSafeCategory.h in Headers */,
-				D0E7E83B128F7F2E00FE0263 /* EXTSafeCategoryTest.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
