@@ -223,7 +223,7 @@ void ext_injectConcreteProtocols (void) {
 			// use [containerClass class] and discard the result to call +initialize
 			// on containerClass if it hasn't been called yet
 			//
-			// this is to allow the concrete protcool to perform custom initialization
+			// this is to allow the concrete protocol to perform custom initialization
 			(void)[containerClass class];
 		}
 	}

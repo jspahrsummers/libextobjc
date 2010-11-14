@@ -9,6 +9,7 @@
 #import "EXTConcreteProtocol.h"
 #import "EXTMixin.h"
 #import "EXTMultiObject.h"
+#import "EXTProtocolCategory.h"
 #import "EXTSafeCategory.h"
 #import "EXTSwizzle.h"
 
