@@ -13,10 +13,10 @@
 	interface NSObject (CATEGORY)
 
 #define pcategoryimplementation(PROTOCOL, CATEGORY) \
-	interface PROTOCOL ## _ ## CATEGORY ## _ MethodContainer : NSObject < PROTOCOL > {} \
+	interface PROTOCOL ## _ ## CATEGORY ## _MethodContainer : NSObject {} \
 	@end \
 	\
-	@implementation PROTOCOL ## _ ## CATEGORY ## _ MethodContainer \
+	@implementation PROTOCOL ## _ ## CATEGORY ## _MethodContainer \
 	/*
 	 * when this class is loaded into the runtime, add the protocol category
 	 * into the list we have of them
