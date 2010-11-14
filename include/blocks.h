@@ -18,6 +18,8 @@
 #include "config.h"
 #endif
 
+#include "metamacros.h"
+
 /**
  * Defines a block that will execute the given one or more expressions only if
  * it is broken out of through use of the 'break' keyword.
@@ -25,7 +27,7 @@
 #define breakable_block(...) \
     for (bool breakable_block_done_ = false; !breakable_block_done_;        \
         breakable_block_done_ = (breakable_block_done_ ||                   \
-        exprify(__VA_ARGS__)))                                              \
+        metamacro_exprify(__VA_ARGS__)))                                    \
         for (; !breakable_block_done_; breakable_block_done_ = true)
 
 /**
@@ -36,7 +38,7 @@
  */
 #define execute_after(...) \
     for (bool execute_after_done_ = false; !execute_after_done_;    \
-        execute_after_done_ = exprify(__VA_ARGS__))
+        execute_after_done_ = metamacro_exprify(__VA_ARGS__))
 
 /**
  * Allows you to define or initialize a variable for use with a given block of
