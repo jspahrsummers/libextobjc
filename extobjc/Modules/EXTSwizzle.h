@@ -1,6 +1,6 @@
 /*
  *  EXTSwizzle.h
- *  libextobjc
+ *  extobjc
  *
  *  Created by Justin Spahr-Summers on 04.08.10.
  *  Released into the public domain.

@@ -171,7 +171,7 @@ void ext_injectConcreteProtocols (void) {
 				IMP imp = method_getImplementation(method);
 				const char *types = method_getTypeEncoding(method);
 				if (!class_addMethod(class, selector, imp, types)) {
-					fprintf(stderr, "ERROR: Could not implement instance method %s from concrete protocol %s on class %s\n",
+					fprintf(stderr, "ERROR: Could not implement instance method -%s from concrete protocol %s on class %s\n",
 						sel_getName(selector), protocol_getName(protocol), class_getName(class));
 				}
 			}
@@ -212,7 +212,7 @@ void ext_injectConcreteProtocols (void) {
 				IMP imp = method_getImplementation(method);
 				const char *types = method_getTypeEncoding(method);
 				if (!class_addMethod(metaclass, selector, imp, types)) {
-					fprintf(stderr, "ERROR: Could not implement class method %s from concrete protocol %s on class %s\n",
+					fprintf(stderr, "ERROR: Could not implement class method +%s from concrete protocol %s on class %s\n",
 						sel_getName(selector), protocol_getName(protocol), class_getName(class));
 				}
 			}

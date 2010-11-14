@@ -31,13 +31,9 @@ BOOL ext_loadSafeCategory (Class methodContainer) {
 		const char *types = method_getTypeEncoding(m);
 		
 		if (!class_addMethod(targetClass, name, impl, types)) {
-			fprintf(stderr, "ERROR: Could not add instance method %s to %s (a method by the same name already exists)\n", sel_getName(name), class_getName(targetClass));
+			fprintf(stderr, "ERROR: Could not add instance method -%s to %s (a method by the same name already exists)\n", sel_getName(name), class_getName(targetClass));
 
-			#if defined(DEBUG) && !defined(NDEBUG)
-			abort();
-			#else
 			success = NO;
-			#endif
 		}
 	}
 
@@ -54,13 +50,9 @@ BOOL ext_loadSafeCategory (Class methodContainer) {
 		const char *types = method_getTypeEncoding(m);
 		
 		if (!class_addMethod(targetMetaclass, name, impl, types)) {
-			fprintf(stderr, "ERROR: Could not add class method %s to %s (a method by the same name already exists)\n", sel_getName(name), class_getName(targetClass));
+			fprintf(stderr, "ERROR: Could not add class method +%s to %s (a method by the same name already exists)\n", sel_getName(name), class_getName(targetClass));
 
-			#if defined(DEBUG) && !defined(NDEBUG)
-			abort();
-			#else
 			success = NO;
-			#endif
 		}
 	}
 

@@ -7,6 +7,7 @@
  */
 
 #import <objc/runtime.h>
+#import "metamacros.h"
 
 #define safecategory(CLASS, CATEGORY) \
 	interface CLASS ## _ ## CATEGORY ## _MethodContainer : CLASS {} \
@@ -23,10 +24,20 @@
 		/*
 		 * use this injection point to load the methods into the target class
 		 */ \
-		if (!ext_loadSafeCategory(self)) \
-			fprintf(stderr, "ERROR: Could not load safe category %s (%s)", # CLASS, # CATEGORY); \
+		const char *className_ = metamacro_stringify(CLASS ## _ ## CATEGORY ## _MethodContainer); \
+		if (!ext_loadSafeCategory(objc_getClass(className_))) {\
+			ext_safecategory_failed(CLASS, CATEGORY); \
+		} \
 	}
 
 /*** implementation details follow ***/
 BOOL ext_loadSafeCategory (Class methodContainer);
+
+#if defined(DEBUG) && !defined(NDEBUG)
+	#define ext_safecategory_failed(CLASS, CATEGORY) \
+		abort()
+#else
+	#define ext_safecategory_failed(CLASS, CATEGORY) \
+		fprintf(stderr, "ERROR: Failed to fully load safe category %s (%s)\n", # CLASS, # CATEGORY)
+#endif
 

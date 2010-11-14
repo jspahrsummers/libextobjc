@@ -1,6 +1,6 @@
 //
 //  EXTSwizzleTest.h
-//  libextobjc
+//  extobjc
 //
 //  Created by Justin Spahr-Summers on 2010-08-15.
 //  Released into the public domain.

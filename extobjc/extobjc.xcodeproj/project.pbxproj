@@ -88,6 +88,10 @@
 		D0CFB5ED128A8A62006DC377 /* EXTMixin.h in Headers */ = {isa = PBXBuildFile; fileRef = D0CFB5EB128A8A62006DC377 /* EXTMixin.h */; };
 		D0CFB61F128A8F12006DC377 /* EXTConcreteProtocolTest.m in Sources */ = {isa = PBXBuildFile; fileRef = D0C1D917128A57B600E96C0F /* EXTConcreteProtocolTest.m */; };
 		D0CFB620128A8F12006DC377 /* EXTSwizzleTest.m in Sources */ = {isa = PBXBuildFile; fileRef = D0A8B30D128A4B56004AACE0 /* EXTSwizzleTest.m */; };
+		D0E7E83B128F7F2E00FE0263 /* EXTSafeCategoryTest.h in Headers */ = {isa = PBXBuildFile; fileRef = D0E7E839128F7F2E00FE0263 /* EXTSafeCategoryTest.h */; };
+		D0E7E83D128F7F2E00FE0263 /* EXTSafeCategoryTest.h in Headers */ = {isa = PBXBuildFile; fileRef = D0E7E839128F7F2E00FE0263 /* EXTSafeCategoryTest.h */; };
+		D0E7E85A128F81FA00FE0263 /* EXTSafeCategoryTest.m in Sources */ = {isa = PBXBuildFile; fileRef = D0E7E83A128F7F2E00FE0263 /* EXTSafeCategoryTest.m */; };
+		D0E7E85B128F81FA00FE0263 /* EXTSafeCategoryTest.m in Sources */ = {isa = PBXBuildFile; fileRef = D0E7E83A128F7F2E00FE0263 /* EXTSafeCategoryTest.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -163,6 +167,8 @@
 		D0CFB5EB128A8A62006DC377 /* EXTMixin.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXTMixin.h; sourceTree = "<group>"; };
 		D0CFB60F128A8EEE006DC377 /* iOS Tests.octest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "iOS Tests.octest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		D0CFB610128A8EEE006DC377 /* iOS-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "iOS-Info.plist"; sourceTree = "<group>"; };
+		D0E7E839128F7F2E00FE0263 /* EXTSafeCategoryTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXTSafeCategoryTest.h; sourceTree = "<group>"; };
+		D0E7E83A128F7F2E00FE0263 /* EXTSafeCategoryTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXTSafeCategoryTest.m; sourceTree = "<group>"; };
 		D2AAC07E0554694100DB518D /* libextobjc_OSX.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libextobjc_OSX.a; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -302,6 +308,8 @@
 			children = (
 				D0C1D916128A57B600E96C0F /* EXTConcreteProtocolTest.h */,
 				D0C1D917128A57B600E96C0F /* EXTConcreteProtocolTest.m */,
+				D0E7E839128F7F2E00FE0263 /* EXTSafeCategoryTest.h */,
+				D0E7E83A128F7F2E00FE0263 /* EXTSafeCategoryTest.m */,
 				D0A8B30C128A4B56004AACE0 /* EXTSwizzleTest.h */,
 				D0A8B30D128A4B56004AACE0 /* EXTSwizzleTest.m */,
 				D0A8B2DD128A495D004AACE0 /* OSX-Info.plist */,
@@ -349,6 +357,7 @@
 				D0CFB5CF128A8109006DC377 /* EXTMultiObject.h in Headers */,
 				D0CFB5EC128A8A62006DC377 /* EXTMixin.h in Headers */,
 				D03025FE128E8D9800638FD4 /* EXTSafeCategory.h in Headers */,
+				D0E7E83D128F7F2E00FE0263 /* EXTSafeCategoryTest.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -375,6 +384,7 @@
 				D0CFB5D1128A8109006DC377 /* EXTMultiObject.h in Headers */,
 				D0CFB5ED128A8A62006DC377 /* EXTMixin.h in Headers */,
 				D03025FC128E8D9800638FD4 /* EXTSafeCategory.h in Headers */,
+				D0E7E83B128F7F2E00FE0263 /* EXTSafeCategoryTest.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -554,6 +564,7 @@
 			files = (
 				D0A8B30E128A4B56004AACE0 /* EXTSwizzleTest.m in Sources */,
 				D0C1D918128A57B600E96C0F /* EXTConcreteProtocolTest.m in Sources */,
+				D0E7E85B128F81FA00FE0263 /* EXTSafeCategoryTest.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -563,6 +574,7 @@
 			files = (
 				D0CFB61F128A8F12006DC377 /* EXTConcreteProtocolTest.m in Sources */,
 				D0CFB620128A8F12006DC377 /* EXTSwizzleTest.m in Sources */,
+				D0E7E85A128F81FA00FE0263 /* EXTSafeCategoryTest.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -612,7 +624,6 @@
 		1DEB921F08733DC00010E9CD /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
 				COPY_PHASE_STRIP = NO;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_FIX_AND_CONTINUE = YES;
@@ -629,7 +640,6 @@
 		1DEB922008733DC00010E9CD /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				GCC_ENABLE_OBJC_GC = supported;
 				GCC_MODEL_TUNING = G5;
@@ -646,6 +656,7 @@
 				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = DEBUG;
 				GCC_STRICT_ALIASING = YES;
 				GCC_THREADSAFE_STATICS = NO;
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
@@ -676,6 +687,7 @@
 				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
+				GCC_PREPROCESSOR_DEFINITIONS = NDEBUG;
 				GCC_STRICT_ALIASING = YES;
 				GCC_THREADSAFE_STATICS = NO;
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
@@ -705,7 +717,6 @@
 		D0A8B02A128A4261004AACE0 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
 				COPY_PHASE_STRIP = NO;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -722,7 +733,6 @@
 		D0A8B02B128A4261004AACE0 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
 				COPY_PHASE_STRIP = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
@@ -771,6 +781,7 @@
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "$(SYSTEM_LIBRARY_DIR)/Frameworks/Cocoa.framework/Headers/Cocoa.h";
+				GCC_PREPROCESSOR_DEFINITIONS = NDEBUG;
 				GCC_WARN_PEDANTIC = NO;
 				INFOPLIST_FILE = "Tests/OSX-Info.plist";
 				INSTALL_PATH = "$(USER_LIBRARY_DIR)/Bundles";
@@ -830,6 +841,7 @@
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
 				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = NDEBUG;
 				GCC_WARN_PEDANTIC = NO;
 				INFOPLIST_FILE = "Tests/iOS-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 3.2;
