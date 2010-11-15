@@ -37,7 +37,7 @@
  *
  * To perform tasks when a protocol category is loaded, use the \c +initialize
  * method. This method in a protocol category is treated similarly to \c +load
- * in regular categories – it will be executed exactly once per protocol
+ * in regular categories – it will be executed at most once per protocol
  * category, and is not added to any classes which receive the protocol
  * category's methods. Note, however, that the category's methods may not have
  * been added to all conforming classes at the time that \c +initialize is

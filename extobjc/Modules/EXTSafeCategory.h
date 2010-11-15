@@ -21,6 +21,11 @@
  * can be used in header files to declare safe categories, as long as the name
  * given in parentheses matches \a CATEGORY.
  *
+ * To perform tasks when a safe category is loaded, use the \c +load method,
+ * which functions identically to \c +load within a regular category. Any \c
+ * +load method will be executed exactly once, and is not added to \a CLASS. \a
+ * CLASS is guaranteed to have been loaded by the time \c +load executes.
+ *
  * @bug Due to an implementation detail, methods invoked against \c super will
  * actually be invoked against \c self.
  */
