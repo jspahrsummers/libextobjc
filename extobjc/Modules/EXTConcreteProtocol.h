@@ -80,7 +80,7 @@
 	/*
 	 * create a class used to contain all the methods used in this protocol
 	 */ \
-	interface NAME ## _ProtocolMethodContainer : NSObject {} \
+	interface NAME ## _ProtocolMethodContainer : NSObject < NAME > {} \
 	@end \
 	\
 	@implementation NAME ## _ProtocolMethodContainer \
