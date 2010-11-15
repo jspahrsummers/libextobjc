@@ -26,6 +26,11 @@
  * +load method will be executed exactly once, and is not added to \a CLASS. \a
  * CLASS is guaranteed to have been loaded by the time \c +load executes.
  *
+ * @note Depending on the protection level for the instance variables of \a
+ * CLASS, a safe category may not be able to access them, even if a regular
+ * category could. In practice, accessing instance variables in a category is
+ * almost always a bad idea.
+ *
  * @bug Due to an implementation detail, methods invoked against \c super will
  * actually be invoked against \c self.
  */

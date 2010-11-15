@@ -47,6 +47,9 @@
  * There is intentionally no supported way to inject an \c +initialize method
  * as part of a protocol category.
  *
+ * @note You cannot access instance variables in a protocol category, except
+ * through defined accessor methods.
+ *
  * @warning You should not invoke methods against \c super in the implementation
  * of a concrete protocol, as the superclass may not be the type you expect (and
  * may not even inherit from \c NSObject).

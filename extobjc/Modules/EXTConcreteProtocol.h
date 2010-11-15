@@ -70,6 +70,8 @@
  * conforming classes at the time that \c +initialize is invoked. If no class
  * conforms to the concrete protocol, \c +initialize may never be called.
  *
+ * @note You cannot define instance variables in a concrete protocol.
+ *
  * @warning You should not invoke methods against \c super in the implementation
  * of a concrete protocol, as the superclass may not be the type you expect (and
  * may not even inherit from \c NSObject).
