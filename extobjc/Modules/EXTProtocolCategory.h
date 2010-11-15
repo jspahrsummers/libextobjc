@@ -55,6 +55,9 @@
  * may not even inherit from \c NSObject).
  */
 #define pcategoryimplementation(PROTOCOL, CATEGORY) \
+	/*
+	 * create a class used to contain all the methods used in this category
+	 */ \
 	interface PROTOCOL ## _ ## CATEGORY ## _MethodContainer : NSObject {} \
 	@end \
 	\

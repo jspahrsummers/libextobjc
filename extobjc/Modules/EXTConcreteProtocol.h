@@ -78,7 +78,7 @@
  */
 #define concreteprotocol(NAME) \
 	/*
-	 * create a class that simply contains all the methods used in this protocol
+	 * create a class used to contain all the methods used in this protocol
 	 */ \
 	interface NAME ## _ProtocolMethodContainer : NSObject {} \
 	@end \
