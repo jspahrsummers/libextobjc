@@ -9,10 +9,55 @@
 #import <objc/runtime.h>
 #import <stdio.h>
 
+/**
+ * Defines the interface for a category named \a CATEGORY on protocol \a
+ * PROTOCOL. Protocol categories contain methods that are automatically applied
+ * to any class that declares itself to conform to \a PROTOCOL. This macro
+ * should be used in header files.
+ *
+ * @note This macro actually defines an interface against \c NSObject, meaning
+ * that classes not inheriting from \c NSObject may cause compiler warnings
+ * about not responding to the category's methods. Such warnings can be
+ * disregarded, as the category will still be loaded normally.
+ *
+ * @warning Protocol categories function similarly to normal categories in that
+ * they will overwrite any existing methods. Just like regular categories, the
+ * order in which conflicting protocols overwrite each other is indeterminate.
+ * These behaviors are even more dangerous in the case of protocols, where the
+ * methods may be applied to many distinct classes. Use with care.
+ */
 #define pcategoryinterface(PROTOCOL, CATEGORY) \
 	interface NSObject (CATEGORY)
 
+/**
+ * Defines the implementation for a category named \a CATEGORY on protocol \a
+ * PROTOCOL. Protocol categories contain methods that are automatically applied
+ * to any class that declares itself to conform to \a PROTOCOL. This macro
+ * should be used in implementation files.
+ *
+ * To perform tasks when a protocol category is loaded, use the \c +initialize
+ * method. This method in a protocol category is treated similarly to \c +load
+ * in regular categories – it will be executed at most once per protocol
+ * category, and is not added to any classes which receive the protocol
+ * category's methods. Note, however, that the category's methods may not have
+ * been added to all conforming classes at the time that \c +initialize is
+ * invoked. If no class conforms to \a PROTOCOL, \c +initialize may never be
+ * called.
+ *
+ * There is intentionally no supported way to inject an \c +initialize method
+ * as part of a protocol category.
+ *
+ * @note You cannot access instance variables in a protocol category, except
+ * through defined accessor methods.
+ *
+ * @warning You should not invoke methods against \c super in the implementation
+ * of a concrete protocol, as the superclass may not be the type you expect (and
+ * may not even inherit from \c NSObject).
+ */
 #define pcategoryimplementation(PROTOCOL, CATEGORY) \
+	/*
+	 * create a class used to contain all the methods used in this category
+	 */ \
 	interface PROTOCOL ## _ ## CATEGORY ## _MethodContainer : NSObject {} \
 	@end \
 	\
