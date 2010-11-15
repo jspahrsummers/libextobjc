@@ -66,7 +66,7 @@
  * method. This method in a concrete protocol is treated similarly to \c +load
  * in categories – it will be executed exactly once per concrete protocol, and
  * is not added to any classes which receive the concrete protocol's methods.
- * Note, however, that the protocol's methods may not have been added to
+ * Note, however, that the protocol's methods may not have been added to all
  * conforming classes at the time that \c +initialize is invoked. If no class
  * conforms to the concrete protocol, \c +initialize may never be called.
  *
