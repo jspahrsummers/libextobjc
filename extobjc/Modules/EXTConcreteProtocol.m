@@ -129,31 +129,42 @@ void ext_injectConcreteProtocols (void) {
 	 */
 	NSAutoreleasePool *pool = [NSAutoreleasePool new];
 
-	// loop through all classes
-	for (int classIndex = 0;classIndex < classCount;++classIndex) {
-		Class class = allClasses[classIndex];
+	// loop through the concrete protocols, and apply each one to all the
+	// classes in turn
+	//
+	// ORDER IS IMPORTANT HERE: protocols have to be injected to all classes in
+	// the order in which they appear in concreteProtocols. Consider classes
+	// X and Y that implement protocols A and B, respectively. B needs to get
+	// its implementation into Y before A gets into X (which would block the
+	// injection of B).
+	for (size_t i = 0;i < concreteProtocolCount;++i) {
+		Protocol *protocol = concreteProtocols[i].protocol;
 
-		// get the metaclass of this class (the object on which class
-		// methods are implemented)
-		Class metaclass = object_getClass(class);
+		// get the class containing the methods of this concrete protocol
+		Class containerClass = concreteProtocols[i].methodContainer;
 
-		// now, loop through the concrete protocols, and apply each one to this
-		// class in turn
-		for (size_t i = 0;i < concreteProtocolCount;++i) {
-			Protocol *protocol = concreteProtocols[i].protocol;
+		// get the full list of instance methods implemented by the concrete
+		// protocol
+		unsigned imethodCount = 0;
+		Method *imethodList = class_copyMethodList(containerClass, &imethodCount);
+
+		// get the full list of class methods implemented by the concrete
+		// protocol
+		unsigned cmethodCount = 0;
+		Method *cmethodList = class_copyMethodList(object_getClass(containerClass), &cmethodCount);
+
+		// loop through all classes
+		for (int classIndex = 0;classIndex < classCount;++classIndex) {
+			Class class = allClasses[classIndex];
 			
 			// if this class doesn't conform to the protocol, continue to the
-			// next protocol immediately
+			// next class immediately
 			if (!class_conformsToProtocol(class, protocol))
 				continue;
 
-			// get the class containing the methods of this concrete protocol
-			Class containerClass = concreteProtocols[i].methodContainer;
-
-			// get the full list of instance methods implemented by the concrete
-			// protocol
-			unsigned imethodCount = 0;
-			Method *imethodList = class_copyMethodList(containerClass, &imethodCount);
+			// get the metaclass of this class (the object on which class
+			// methods are implemented)
+			Class metaclass = object_getClass(class);
 
 			// inject all instance methods in the concrete protocol
 			for (unsigned methodIndex = 0;methodIndex < imethodCount;++methodIndex) {
@@ -175,14 +186,6 @@ void ext_injectConcreteProtocols (void) {
 						sel_getName(selector), protocol_getName(protocol), class_getName(class));
 				}
 			}
-
-			// free the instance method list
-			free(imethodList); imethodList = NULL;
-
-			// get the full list of class methods implemented by the concrete
-			// protocol
-			unsigned cmethodCount = 0;
-			Method *cmethodList = class_copyMethodList(object_getClass(containerClass), &cmethodCount);
 
 			// inject all class methods in the concrete protocol
 			for (unsigned methodIndex = 0;methodIndex < cmethodCount;++methodIndex) {
@@ -216,16 +219,19 @@ void ext_injectConcreteProtocols (void) {
 						sel_getName(selector), protocol_getName(protocol), class_getName(class));
 				}
 			}
-
-			// free the class method list
-			free(cmethodList); cmethodList = NULL;
-
-			// use [containerClass class] and discard the result to call +initialize
-			// on containerClass if it hasn't been called yet
-			//
-			// this is to allow the concrete protocol to perform custom initialization
-			(void)[containerClass class];
 		}
+
+		// free the instance method list
+		free(imethodList); imethodList = NULL;
+
+		// free the class method list
+		free(cmethodList); cmethodList = NULL;
+
+		// use [containerClass class] and discard the result to call +initialize
+		// on containerClass if it hasn't been called yet
+		//
+		// this is to allow the concrete protocol to perform custom initialization
+		(void)[containerClass class];
 	}
 
 	// drain the temporary autorelease pool
