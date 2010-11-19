@@ -44,6 +44,9 @@
  */
 #define EXT_SWIZZLE_INSTANCE_METHODS(CLASS, ORIGINAL, NEW, RENAME) \
 	do { \
+		/*
+		 * look up the target class by name
+		 */ \
 		Class cls_ = objc_getClass(metamacro_stringify(CLASS)); \
 		if (!cls_) { \
 			fprintf(stderr, "ERROR: no class %s exists\n", \
@@ -52,6 +55,14 @@
 			break; \
 		} \
 		\
+		/*
+		 * get a handle to the original method (the one to be moved out of the
+		 * way)
+		 *
+		 * this should use class_getInstanceMethod() so that the "swizzling"
+		 * still works even if implementations actually happen to be on
+		 * a superclass – the only class that will actually be modified is CLASS
+		 */ \
 		Method orig_ = class_getInstanceMethod(cls_, @selector(ORIGINAL)); \
 		if (!orig_) { \
 			fprintf(stderr, "ERROR: class %s and superclasses do not contain an instance method for selector %s\n", \
@@ -61,6 +72,9 @@
 			break; \
 		} \
 		\
+		/*
+		 * get a handle to the new method (the one to replace the original)
+		 */ \
 		Method new_ = class_getInstanceMethod(cls_, @selector(NEW)); \
 		if (!new_) { \
 			fprintf(stderr, "ERROR: class %s and superclasses do not contain an instance method for selector %s\n", \
@@ -70,6 +84,10 @@
 			break; \
 		} \
 		\
+		/*
+		 * add a duplicate of the original method under the new name (which will
+		 * effectively be a rename once the original method is replaced)
+		 */ \
 		IMP origImpl_ = method_getImplementation(orig_); \
 		if (!class_addMethod(cls_, @selector(RENAME), origImpl_, method_getTypeEncoding(orig_))) { \
 			fprintf(stderr, "ERROR: could not add instance method %s on %s\n", \
@@ -79,6 +97,10 @@
 			break; \
 		} \
 		\
+		/*
+		 * replace the original method's implementation with that of a new
+		 * method (but never modifying any superclasses)
+		 */ \
 		IMP newImpl_ = method_getImplementation(new_); \
 		class_replaceMethod(cls_, @selector(ORIGINAL), newImpl_, method_getTypeEncoding(new_)); \
 	} while (0)
@@ -101,6 +123,9 @@
  */
 #define EXT_SWIZZLE_CLASS_METHODS(CLASS, ORIGINAL, NEW, RENAME) \
 	do { \
+		/*
+		 * look up the target class by name
+		 */ \
 		Class cls_ = objc_getClass(metamacro_stringify(CLASS)); \
 		if (!cls_) { \
 			fprintf(stderr, "ERROR: no class %s exists\n", \
@@ -109,7 +134,21 @@
 			break; \
 		} \
 		\
+		/*
+		 * to deal with class methods, we actually need the metaclass (which is
+		 * the class of the class object), upon which we will look up instance
+		 * methods
+		 */ \
 		Class meta_ = object_getClass(cls_); \
+		\
+		/*
+		 * get a handle to the original method (the one to be moved out of the
+		 * way)
+		 *
+		 * this should use class_getInstanceMethod() so that the "swizzling"
+		 * still works even if implementations actually happen to be on
+		 * a superclass – the only class that will actually be modified is CLASS
+		 */ \
 		Method orig_ = class_getClassMethod(cls_, @selector(ORIGINAL)); \
 		if (!orig_) { \
 			fprintf(stderr, "ERROR: class %s and superclasses do not contain a class method for selector %s\n", \
@@ -119,6 +158,9 @@
 			break; \
 		} \
 		\
+		/*
+		 * get a handle to the new method (the one to replace the original)
+		 */ \
 		Method new_ = class_getClassMethod(cls_, @selector(NEW)); \
 		if (!new_) { \
 			fprintf(stderr, "ERROR: class %s and superclasses do not contain a class method for selector %s\n", \
@@ -128,6 +170,10 @@
 			break; \
 		} \
 		\
+		/*
+		 * add a duplicate of the original method under the new name (which will
+		 * effectively be a rename once the original method is replaced)
+		 */ \
 		IMP origImpl_ = method_getImplementation(orig_); \
 		if (!class_addMethod(meta_, @selector(RENAME), origImpl_, \
 			method_getTypeEncoding(orig_))) { \
@@ -138,6 +184,10 @@
 			break; \
 		} \
 		\
+		/*
+		 * replace the original method's implementation with that of a new
+		 * method (but never modifying any superclasses)
+		 */ \
 		IMP newImpl_ = method_getImplementation(new_); \
 		class_replaceMethod(meta_, @selector(ORIGINAL), newImpl_, method_getTypeEncoding(new_)); \
 	} while (0)
