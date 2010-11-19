@@ -10,6 +10,15 @@
 #import <pthread.h>
 #import <stdlib.h>
 
+/*
+ * The implementation in this file is very similar in concept to that of
+ * EXTConcreteProtocol, except that there is no inheritance between
+ * EXTProtocolCategories, and methods are injected DESTRUCTIVELY (rather than
+ * non-destructively in all cases). If the code here doesn't make much sense or
+ * isn't commented well-enough, see EXTConcreteProtocol for a more thorough
+ * explanation.
+ */
+
 typedef struct {
 	Class methodContainer;
 	Protocol *protocol;
