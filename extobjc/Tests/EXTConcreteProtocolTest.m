@@ -85,6 +85,15 @@ static BOOL SubProtocolInitialized = NO;
 @implementation TestClass4
 @end
 
+/*** fifth test class ***/
+// inherits from TestClass (thus conforming to MyProtocol implicitly) and
+// conforms to SubProtocol
+@interface TestClass5 : TestClass <SubProtocol> {}
+@end
+
+@implementation TestClass5
+@end
+
 /*** logic test code ***/
 @implementation EXTConcreteProtocolTest
 - (void)tearDown {
@@ -109,7 +118,7 @@ static BOOL SubProtocolInitialized = NO;
 	STAssertEquals([TestClass2 meaningfulNumber], (NSUInteger)42, @"TestClass2 should be using protocol implementation of meaningfulNumber");
 }
 
-- (void)testInheritance {
+- (void)testSimpleInheritance {
 	TestClass3 *obj;
 
 	STAssertEquals([TestClass3 meaningfulNumber], (NSUInteger)0, @"TestClass3 should not be using protocol implementation of meaningfulNumber");
@@ -127,6 +136,22 @@ static BOOL SubProtocolInitialized = NO;
 	STAssertEqualObjects([obj getSomeString], @"SubProtocol", @"TestClass4 should be using protocol implementation of getSomeString");
 	STAssertTrue([obj respondsToSelector:@selector(additionalMethod)], @"TestClass4 should have protocol implementation of additionalMethod");
 	STAssertNoThrow([obj release], @"could not deallocate concreteprotocol'd subclass");
+}
+
+// protocols have to be injected to all classes in the order of the protocol
+// inheritance
+// 
+// Consider classes X and Y that implement protocols A and B, respectively.
+// B needs to get its implementation into Y before A gets into X (which would
+// block the injection of B).
+- (void)testClassInheritanceWithProtocolInheritance {
+	TestClass5 *obj = [[TestClass5 alloc] init];
+	STAssertNotNil(obj, @"could not allocate concreteprotocol'd class");
+	STAssertTrue([obj respondsToSelector:@selector(additionalMethod)], @"TestClass5 should have protocol implementation of additionalMethod");
+	STAssertEqualObjects([obj getSomeString], @"SubProtocol", @"TestClass5 should be using SubProtocol implementation of getSomeString");
+	STAssertNoThrow([obj release], @"could not deallocate concreteprotocol'd subclass");
+
+	STAssertEquals([TestClass5 meaningfulNumber], (NSUInteger)0, @"TestClass5 should not be using protocol implementation of meaningfulNumber");
 }
 
 @end

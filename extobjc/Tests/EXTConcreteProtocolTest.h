@@ -25,6 +25,7 @@
 }
 
 - (void)testImplementations;
-- (void)testInheritance;
+- (void)testSimpleInheritance;
+- (void)testClassInheritanceWithProtocolInheritance;
 
 @end
