@@ -90,6 +90,6 @@ BOOL ext_loadSafeCategory (Class methodContainer, Class targetClass);
 #else
 	// otherwise, just print an error message
 	#define ext_safeCategoryFailed(CLASS, CATEGORY) \
-		fprintf(stderr, "ERROR: Failed to fully load safe category %s (%s)\n", # CLASS, # CATEGORY)
+		fprintf(stderr, "ERROR: Failed to fully load safe category %s (%s)\n", metamacro_stringify(CLASS), metamacro_stringify(CATEGORY))
 #endif
 

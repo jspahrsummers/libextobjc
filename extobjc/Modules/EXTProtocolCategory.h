@@ -71,8 +71,8 @@
 		 * passes the actual protocol as the first parameter, then this class as
 		 * the second
 		 */ \
-		if (!ext_addProtocolCategory(objc_getProtocol(# PROTOCOL), self)) \
-			fprintf(stderr, "ERROR: Could not load protocol category %s (%s)\n", # PROTOCOL, # CATEGORY); \
+		if (!ext_addProtocolCategory(objc_getProtocol(metamacro_stringify(PROTOCOL)), self)) \
+			fprintf(stderr, "ERROR: Could not load protocol category %s (%s)\n", metamacro_stringify(PROTOCOL), # CATEGORY); \
 	} \
 	\
 	/*
@@ -86,7 +86,7 @@
 		 * use this injection point to mark this protocol category as ready for
 		 * loading
 		 */ \
-		ext_loadProtocolCategory(objc_getProtocol(# PROTOCOL)); \
+		ext_loadProtocolCategory(objc_getProtocol(metamacro_stringify(PROTOCOL))); \
 	}
 
 /*** implementation details follow ***/

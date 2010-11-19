@@ -37,6 +37,8 @@
 
 	NSAssert(count >= 1, @"should be at least one object");
 
+	// allocate an array of object pointers large enough for all of the
+	// arguments
 	id *targets = malloc(sizeof(id) * count);
 	if (!targets) {
 		va_end(argsCopy);
@@ -51,6 +53,7 @@
 
 	va_end(argsCopy);
 
+	// then initialize the actual object and fill in its ivars
 	EXTMultiObject *multiObj = [[[EXTMultiObject alloc] init] autorelease];
 	multiObj->targets = targets;
 	multiObj->targetCount = count;
@@ -62,9 +65,11 @@
 	if (!count)
 		return nil;
 	
+	// copy the object pointers out into a C array for speed
 	id *targets = malloc(sizeof(id) * count);
 	[objects getObjects:targets range:NSMakeRange(0, count)];
 
+	// initialize the object and fill in its ivars
 	EXTMultiObject *multiObj = [[[EXTMultiObject alloc] init] autorelease];
 	multiObj->targets = targets;
 	multiObj->targetCount = count;
@@ -72,6 +77,9 @@
 }
 
 - (void)dealloc {
+	// since we use a simple C array of objects (which are retained), we have to
+	// loop through and release each one individually before destroying the
+	// array
 	for (NSUInteger i = 0;i < targetCount;++i) {
 		[targets[i] release];
 	}
@@ -86,6 +94,11 @@
 #pragma mark Forwarding machinery
 
 - (id)forwardingTargetForSelector:(SEL)aSelector {
+	// find the first target that responds to the specified selector
+	//
+	// this is somewhat unsafe, since method signatures may differ for two
+	// methods with the same selector, but the performance gain from the
+	// optimized forwarding machinery is probably a worthwhile tradeoff
 	for (NSUInteger i = 0;i < targetCount;++i) {
 		if ([targets[i] respondsToSelector:aSelector])
 			return targets[i];
@@ -95,18 +108,24 @@
 }
 
 - (void)forwardInvocation:(NSInvocation *)anInvocation {
+	// find the first target that responds to the specified selector AND returns
+	// the same method signature for that selector
 	SEL selector = [anInvocation selector];
+	NSMethodSignature *signature = [anInvocation methodSignature];
+
 	for (NSUInteger i = 0;i < targetCount;++i) {
-		if ([targets[i] respondsToSelector:selector]) {
+		if ([targets[i] respondsToSelector:selector] && [[targets[i] methodSignatureForSelector:selector] isEqual:signature]) {
 			[anInvocation invokeWithTarget:targets[i]];
 			return;
 		}
 	}
 
+	// none of the targets recognized the selector
 	[self doesNotRecognizeSelector:selector];
 }
 
 - (NSMethodSignature *)methodSignatureForSelector:(SEL)aSelector {
+	// find the first target that responds to the specified selector
 	for (NSUInteger i = 0;i < targetCount;++i) {
 		if ([targets[i] respondsToSelector:aSelector]) {
 			return [targets[i] methodSignatureForSelector:aSelector];
@@ -119,6 +138,7 @@
 #pragma mark NSObject protocol
 
 - (BOOL)conformsToProtocol:(Protocol *)aProtocol {
+	// return YES if any targets conform to the specified protocol
 	for (NSUInteger i = 0;i < targetCount;++i) {
 		if ([targets[i] conformsToProtocol:aProtocol])
 			return YES;
@@ -134,9 +154,12 @@
 }
 
 - (BOOL)isEqual:(id)obj {
+	// short-circuit isEqual: for identity
 	if (obj == self)
 		return YES;
 	
+	// then fall back to a more expensive check – return YES if any one of the
+	// targets are equal to the argument
   	for (NSUInteger i = 0;i < targetCount;++i) {
 		if ([targets[i] isEqual:obj])
 			return YES;
@@ -146,6 +169,7 @@
 }
 
 - (BOOL)isKindOfClass:(Class)cls {
+	// return YES if any targets are a kind of the argument
   	for (NSUInteger i = 0;i < targetCount;++i) {
 		if ([targets[i] isKindOfClass:cls])
 			return YES;
@@ -155,6 +179,7 @@
 }
 
 - (BOOL)isMemberOfClass:(Class)cls {
+	// return YES if any targets are a member of the argument
   	for (NSUInteger i = 0;i < targetCount;++i) {
 		if ([targets[i] isMemberOfClass:cls])
 			return YES;
@@ -164,6 +189,7 @@
 }
 
 - (BOOL)respondsToSelector:(SEL)aSelector {
+	// return YES if any targets respond to the specified selector
 	for (NSUInteger i = 0;i < targetCount;++i) {
 		if ([targets[i] respondsToSelector:aSelector])
 			return YES;

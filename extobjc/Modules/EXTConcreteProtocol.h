@@ -93,8 +93,8 @@
 		 * passes the actual protocol as the first parameter, then this class as
 		 * the second
 		 */ \
-		if (!ext_addConcreteProtocol(objc_getProtocol(# NAME), self)) \
-			fprintf(stderr, "ERROR: Could not load concrete protocol %s\n", # NAME); \
+		if (!ext_addConcreteProtocol(objc_getProtocol(metamacro_stringify(NAME)), self)) \
+			fprintf(stderr, "ERROR: Could not load concrete protocol %s\n", metamacro_stringify(NAME)); \
 	} \
 	\
 	/*
@@ -108,7 +108,7 @@
 		 * use this injection point to mark this concrete protocol as ready for
 		 * loading
 		 */ \
-		ext_loadConcreteProtocol(objc_getProtocol(# NAME)); \
+		ext_loadConcreteProtocol(objc_getProtocol(metamacro_stringify(NAME))); \
 	}
 
 /*** implementation details follow ***/

@@ -10,17 +10,23 @@
 
 /**
  * Implements a primitive form of multiple dispatch by functioning as a proxy
- * object for one or more other objects of any class. To avoid warnings about
- * static typing, refer to instances of this class as \c id or using one of the
- * classes being proxied.
+ * object for one or more other objects of any class. This does not send every
+ * message to each target – instead, it sends a given message to the first
+ * target that responds to it, with some exceptions for reflection functionality
+ * within the \c NSObject protocol. The result is dynamism very much like multiple
+ * inheritance.
+ * 
+ * @note To avoid warnings about static typing, refer to instances of this class as
+ * \c id or using one of the classes being proxied.
  */
 @interface EXTMultiObject : NSObject {
+	// a C array is used rather than an NSArray for performance reasons
 	id *targets;
 	NSUInteger targetCount;
 }
 
 /**
- * Returns an autoreleased object that will dispatch messages to all of the provided
+ * Returns an autoreleased object that will selectively dispatch messages to the provided
  * objects as they are received. The order of the objects in the argument list
  * determines the order in which method lookup and dispatch occurs.
  *
@@ -32,7 +38,7 @@
 + (id)multiObjectForObjects:(id)firstObj, ... NS_REQUIRES_NIL_TERMINATION;
 
 /**
- * Returns an autoreleased object that will dispatch messages to all of the provided
+ * Returns an autoreleased object that will selectively dispatch messages to the provided
  * objects as they are received. The order of the objects in the array determines
  * the order in which method lookup and dispatch occurs.
  *

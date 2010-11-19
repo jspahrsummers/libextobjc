@@ -23,14 +23,27 @@
  * due to the nature of \c objc_msgSendSuper().
  */
 #define EXTMixin(TARGET, CLASS) \
+	/*
+	 * using the "constructor" function attribute, we can ensure that this
+	 * function is executed only AFTER all the Objective-C runtime setup (i.e.,
+	 * after all +load methods have been executed)
+	 */ \
 	__attribute__((constructor)) \
 	static void ext_ ## TARGET ## _ ## CLASS ## _mixin (void) { \
+		/*
+		 * obtain the class to inject into, and the class from which to copy
+		 * methods
+		 */ \
 		Class targetClass = objc_getClass(# TARGET); \
 		Class sourceClass = objc_getClass(# CLASS); \
 		\
+		/* obtain all the instance methods of the source class */ \
 		unsigned imethodCount = 0; \
 		Method *imethodList = class_copyMethodList(sourceClass, &imethodCount); \
 		\
+		/*
+		 * and inject each instance method into the target class DESTRUCTIVELY
+		 */ \
 		for (unsigned methodIndex = 0;methodIndex < imethodCount;++methodIndex) { \
 			Method method = imethodList[methodIndex]; \
 			SEL selector = method_getName(method); \
@@ -40,12 +53,20 @@
 			class_replaceMethod(targetClass, selector, imp, types); \
 		} \
 		\
+		/* then free the copied method list */ \
 		free(imethodList); imethodList = NULL; \
 		\
+		/*
+		 * obtain all the class methods of the source class (which are
+		 * represented as instance methods of the metaclass object)
+		 */ \
 		unsigned cmethodCount = 0; \
 		Method *cmethodList = class_copyMethodList(object_getClass(sourceClass), &cmethodCount); \
 		Class metaclass = object_getClass(targetClass); \
 		\
+		/*
+		 * and inject each class method into the target class DESTRUCTIVELY
+		 */ \
 		for (unsigned methodIndex = 0;methodIndex < cmethodCount;++methodIndex) { \
 			Method method = cmethodList[methodIndex]; \
 			SEL selector = method_getName(method); \
@@ -55,6 +76,7 @@
 			class_replaceMethod(metaclass, selector, imp, types); \
 		} \
 		\
+		/* then free the copied method list */ \
 		free(cmethodList); cmethodList = NULL; \
 	}
 
