@@ -62,6 +62,11 @@ BOOL ext_loadSafeCategory (Class methodContainer, Class targetClass) {
 	for (unsigned i = 0;i < classMethodCount;++i) {
 		Method m = classMethods[i];
 		SEL name = method_getName(m);
+		
+		// don't try to copy +load
+		if (name == @selector(load))
+			continue;
+
 		IMP impl = method_getImplementation(m);
 		const char *types = method_getTypeEncoding(m);
 		
