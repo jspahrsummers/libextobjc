@@ -22,52 +22,14 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
+		D01DC92F12C822110009AB39 /* metamacros.h in Headers */ = {isa = PBXBuildFile; fileRef = D01DC92E12C822110009AB39 /* metamacros.h */; };
+		D01DC93012C822110009AB39 /* metamacros.h in Headers */ = {isa = PBXBuildFile; fileRef = D01DC92E12C822110009AB39 /* metamacros.h */; };
 		D03025FC128E8D9800638FD4 /* EXTSafeCategory.h in Headers */ = {isa = PBXBuildFile; fileRef = D03025FA128E8D9800638FD4 /* EXTSafeCategory.h */; };
 		D03025FD128E8D9800638FD4 /* EXTSafeCategory.m in Sources */ = {isa = PBXBuildFile; fileRef = D03025FB128E8D9800638FD4 /* EXTSafeCategory.m */; };
 		D03025FE128E8D9800638FD4 /* EXTSafeCategory.h in Headers */ = {isa = PBXBuildFile; fileRef = D03025FA128E8D9800638FD4 /* EXTSafeCategory.h */; };
 		D03025FF128E8D9800638FD4 /* EXTSafeCategory.m in Sources */ = {isa = PBXBuildFile; fileRef = D03025FB128E8D9800638FD4 /* EXTSafeCategory.m */; };
 		D0A8B04F128A42F4004AACE0 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0867D69BFE84028FC02AAC07 /* Foundation.framework */; };
 		D0A8B188128A4303004AACE0 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D0A8B187128A4303004AACE0 /* Foundation.framework */; };
-		D0A8B28D128A46B0004AACE0 /* algorithm.c in Sources */ = {isa = PBXBuildFile; fileRef = D0A8B286128A46B0004AACE0 /* algorithm.c */; };
-		D0A8B28E128A46B0004AACE0 /* enum.c in Sources */ = {isa = PBXBuildFile; fileRef = D0A8B287128A46B0004AACE0 /* enum.c */; };
-		D0A8B28F128A46B0004AACE0 /* exception.c in Sources */ = {isa = PBXBuildFile; fileRef = D0A8B288128A46B0004AACE0 /* exception.c */; };
-		D0A8B290128A46B0004AACE0 /* memory.c in Sources */ = {isa = PBXBuildFile; fileRef = D0A8B289128A46B0004AACE0 /* memory.c */; };
-		D0A8B291128A46B0004AACE0 /* refcounted.c in Sources */ = {isa = PBXBuildFile; fileRef = D0A8B28A128A46B0004AACE0 /* refcounted.c */; };
-		D0A8B292128A46B0004AACE0 /* template.c in Sources */ = {isa = PBXBuildFile; fileRef = D0A8B28B128A46B0004AACE0 /* template.c */; };
-		D0A8B293128A46B0004AACE0 /* vector.c in Sources */ = {isa = PBXBuildFile; fileRef = D0A8B28C128A46B0004AACE0 /* vector.c */; };
-		D0A8B294128A46B0004AACE0 /* algorithm.c in Sources */ = {isa = PBXBuildFile; fileRef = D0A8B286128A46B0004AACE0 /* algorithm.c */; };
-		D0A8B295128A46B0004AACE0 /* enum.c in Sources */ = {isa = PBXBuildFile; fileRef = D0A8B287128A46B0004AACE0 /* enum.c */; };
-		D0A8B296128A46B0004AACE0 /* exception.c in Sources */ = {isa = PBXBuildFile; fileRef = D0A8B288128A46B0004AACE0 /* exception.c */; };
-		D0A8B297128A46B0004AACE0 /* memory.c in Sources */ = {isa = PBXBuildFile; fileRef = D0A8B289128A46B0004AACE0 /* memory.c */; };
-		D0A8B298128A46B0004AACE0 /* refcounted.c in Sources */ = {isa = PBXBuildFile; fileRef = D0A8B28A128A46B0004AACE0 /* refcounted.c */; };
-		D0A8B299128A46B0004AACE0 /* template.c in Sources */ = {isa = PBXBuildFile; fileRef = D0A8B28B128A46B0004AACE0 /* template.c */; };
-		D0A8B29A128A46B0004AACE0 /* vector.c in Sources */ = {isa = PBXBuildFile; fileRef = D0A8B28C128A46B0004AACE0 /* vector.c */; };
-		D0A8B2BB128A48ED004AACE0 /* algorithm.h in Headers */ = {isa = PBXBuildFile; fileRef = D0A8B2A2128A47CE004AACE0 /* algorithm.h */; };
-		D0A8B2BC128A48ED004AACE0 /* blocks.h in Headers */ = {isa = PBXBuildFile; fileRef = D0A8B2A3128A47CE004AACE0 /* blocks.h */; };
-		D0A8B2BD128A48ED004AACE0 /* contracts.h in Headers */ = {isa = PBXBuildFile; fileRef = D0A8B2A4128A47CE004AACE0 /* contracts.h */; };
-		D0A8B2BE128A48ED004AACE0 /* enum.h in Headers */ = {isa = PBXBuildFile; fileRef = D0A8B2A5128A47CE004AACE0 /* enum.h */; };
-		D0A8B2BF128A48ED004AACE0 /* exception.h in Headers */ = {isa = PBXBuildFile; fileRef = D0A8B2A6128A47CE004AACE0 /* exception.h */; };
-		D0A8B2C0128A48ED004AACE0 /* extc.h in Headers */ = {isa = PBXBuildFile; fileRef = D0A8B2A7128A47CE004AACE0 /* extc.h */; };
-		D0A8B2C1128A48ED004AACE0 /* memory.h in Headers */ = {isa = PBXBuildFile; fileRef = D0A8B2A8128A47CE004AACE0 /* memory.h */; };
-		D0A8B2C2128A48ED004AACE0 /* metamacros.h in Headers */ = {isa = PBXBuildFile; fileRef = D0A8B2A9128A47CE004AACE0 /* metamacros.h */; };
-		D0A8B2C3128A48ED004AACE0 /* refcounted.h in Headers */ = {isa = PBXBuildFile; fileRef = D0A8B2AA128A47CE004AACE0 /* refcounted.h */; };
-		D0A8B2C4128A48ED004AACE0 /* scope.h in Headers */ = {isa = PBXBuildFile; fileRef = D0A8B2AB128A47CE004AACE0 /* scope.h */; };
-		D0A8B2C5128A48ED004AACE0 /* static_assert.h in Headers */ = {isa = PBXBuildFile; fileRef = D0A8B2AC128A47CE004AACE0 /* static_assert.h */; };
-		D0A8B2C6128A48ED004AACE0 /* template.h in Headers */ = {isa = PBXBuildFile; fileRef = D0A8B2AD128A47CE004AACE0 /* template.h */; };
-		D0A8B2C7128A48ED004AACE0 /* vector.h in Headers */ = {isa = PBXBuildFile; fileRef = D0A8B2AE128A47CE004AACE0 /* vector.h */; };
-		D0A8B2C8128A48EE004AACE0 /* algorithm.h in Headers */ = {isa = PBXBuildFile; fileRef = D0A8B2A2128A47CE004AACE0 /* algorithm.h */; };
-		D0A8B2C9128A48EE004AACE0 /* blocks.h in Headers */ = {isa = PBXBuildFile; fileRef = D0A8B2A3128A47CE004AACE0 /* blocks.h */; };
-		D0A8B2CA128A48EE004AACE0 /* contracts.h in Headers */ = {isa = PBXBuildFile; fileRef = D0A8B2A4128A47CE004AACE0 /* contracts.h */; };
-		D0A8B2CB128A48EE004AACE0 /* enum.h in Headers */ = {isa = PBXBuildFile; fileRef = D0A8B2A5128A47CE004AACE0 /* enum.h */; };
-		D0A8B2CC128A48EE004AACE0 /* exception.h in Headers */ = {isa = PBXBuildFile; fileRef = D0A8B2A6128A47CE004AACE0 /* exception.h */; };
-		D0A8B2CD128A48EE004AACE0 /* extc.h in Headers */ = {isa = PBXBuildFile; fileRef = D0A8B2A7128A47CE004AACE0 /* extc.h */; };
-		D0A8B2CE128A48EE004AACE0 /* memory.h in Headers */ = {isa = PBXBuildFile; fileRef = D0A8B2A8128A47CE004AACE0 /* memory.h */; };
-		D0A8B2CF128A48EE004AACE0 /* metamacros.h in Headers */ = {isa = PBXBuildFile; fileRef = D0A8B2A9128A47CE004AACE0 /* metamacros.h */; };
-		D0A8B2D0128A48EE004AACE0 /* refcounted.h in Headers */ = {isa = PBXBuildFile; fileRef = D0A8B2AA128A47CE004AACE0 /* refcounted.h */; };
-		D0A8B2D1128A48EE004AACE0 /* scope.h in Headers */ = {isa = PBXBuildFile; fileRef = D0A8B2AB128A47CE004AACE0 /* scope.h */; };
-		D0A8B2D2128A48EE004AACE0 /* static_assert.h in Headers */ = {isa = PBXBuildFile; fileRef = D0A8B2AC128A47CE004AACE0 /* static_assert.h */; };
-		D0A8B2D3128A48EE004AACE0 /* template.h in Headers */ = {isa = PBXBuildFile; fileRef = D0A8B2AD128A47CE004AACE0 /* template.h */; };
-		D0A8B2D4128A48EE004AACE0 /* vector.h in Headers */ = {isa = PBXBuildFile; fileRef = D0A8B2AE128A47CE004AACE0 /* vector.h */; };
 		D0A8B2F8128A49E9004AACE0 /* EXTSwizzle.h in Headers */ = {isa = PBXBuildFile; fileRef = D0A8B2F7128A49E9004AACE0 /* EXTSwizzle.h */; };
 		D0A8B2F9128A49E9004AACE0 /* EXTSwizzle.h in Headers */ = {isa = PBXBuildFile; fileRef = D0A8B2F7128A49E9004AACE0 /* EXTSwizzle.h */; };
 		D0A8B30E128A4B56004AACE0 /* EXTSwizzleTest.m in Sources */ = {isa = PBXBuildFile; fileRef = D0A8B30D128A4B56004AACE0 /* EXTSwizzleTest.m */; };
@@ -133,30 +95,11 @@
 /* Begin PBXFileReference section */
 		0867D69BFE84028FC02AAC07 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
 		32DBCF5E0370ADEE00C91783 /* extobjc_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = extobjc_Prefix.pch; sourceTree = "<group>"; };
+		D01DC92E12C822110009AB39 /* metamacros.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = metamacros.h; sourceTree = "<group>"; };
 		D03025FA128E8D9800638FD4 /* EXTSafeCategory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXTSafeCategory.h; sourceTree = "<group>"; };
 		D03025FB128E8D9800638FD4 /* EXTSafeCategory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXTSafeCategory.m; sourceTree = "<group>"; };
 		D0A8B029128A4261004AACE0 /* libextobjc_iOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libextobjc_iOS.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		D0A8B187128A4303004AACE0 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
-		D0A8B286128A46B0004AACE0 /* algorithm.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = algorithm.c; path = libextc/src/algorithm.c; sourceTree = "<group>"; };
-		D0A8B287128A46B0004AACE0 /* enum.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = enum.c; path = libextc/src/enum.c; sourceTree = "<group>"; };
-		D0A8B288128A46B0004AACE0 /* exception.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = exception.c; path = libextc/src/exception.c; sourceTree = "<group>"; };
-		D0A8B289128A46B0004AACE0 /* memory.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = memory.c; path = libextc/src/memory.c; sourceTree = "<group>"; };
-		D0A8B28A128A46B0004AACE0 /* refcounted.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = refcounted.c; path = libextc/src/refcounted.c; sourceTree = "<group>"; };
-		D0A8B28B128A46B0004AACE0 /* template.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = template.c; path = libextc/src/template.c; sourceTree = "<group>"; };
-		D0A8B28C128A46B0004AACE0 /* vector.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = vector.c; path = libextc/src/vector.c; sourceTree = "<group>"; };
-		D0A8B2A2128A47CE004AACE0 /* algorithm.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = algorithm.h; path = libextc/include/algorithm.h; sourceTree = "<group>"; };
-		D0A8B2A3128A47CE004AACE0 /* blocks.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = blocks.h; path = libextc/include/blocks.h; sourceTree = "<group>"; };
-		D0A8B2A4128A47CE004AACE0 /* contracts.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = contracts.h; path = libextc/include/contracts.h; sourceTree = "<group>"; };
-		D0A8B2A5128A47CE004AACE0 /* enum.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = enum.h; path = libextc/include/enum.h; sourceTree = "<group>"; };
-		D0A8B2A6128A47CE004AACE0 /* exception.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = exception.h; path = libextc/include/exception.h; sourceTree = "<group>"; };
-		D0A8B2A7128A47CE004AACE0 /* extc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = extc.h; path = libextc/include/extc.h; sourceTree = "<group>"; };
-		D0A8B2A8128A47CE004AACE0 /* memory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = memory.h; path = libextc/include/memory.h; sourceTree = "<group>"; };
-		D0A8B2A9128A47CE004AACE0 /* metamacros.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = metamacros.h; path = libextc/include/metamacros.h; sourceTree = "<group>"; };
-		D0A8B2AA128A47CE004AACE0 /* refcounted.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = refcounted.h; path = libextc/include/refcounted.h; sourceTree = "<group>"; };
-		D0A8B2AB128A47CE004AACE0 /* scope.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = scope.h; path = libextc/include/scope.h; sourceTree = "<group>"; };
-		D0A8B2AC128A47CE004AACE0 /* static_assert.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = static_assert.h; path = libextc/include/static_assert.h; sourceTree = "<group>"; };
-		D0A8B2AD128A47CE004AACE0 /* template.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = template.h; path = libextc/include/template.h; sourceTree = "<group>"; };
-		D0A8B2AE128A47CE004AACE0 /* vector.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = vector.h; path = libextc/include/vector.h; sourceTree = "<group>"; };
 		D0A8B2DC128A495D004AACE0 /* Logic Tests.octest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Logic Tests.octest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		D0A8B2DD128A495D004AACE0 /* OSX-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "OSX-Info.plist"; sourceTree = "<group>"; };
 		D0A8B2F7128A49E9004AACE0 /* EXTSwizzle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXTSwizzle.h; sourceTree = "<group>"; };
@@ -246,7 +189,6 @@
 		0867D69AFE84028FC02AAC07 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				D0A8B25C128A4694004AACE0 /* libextc */,
 				D0A8B20B128A430D004AACE0 /* iOS */,
 				D0A8B20A128A430A004AACE0 /* Mac OS X */,
 			);
@@ -265,6 +207,7 @@
 		32C88DFF0371C24200C91783 /* Other Sources */ = {
 			isa = PBXGroup;
 			children = (
+				D01DC92E12C822110009AB39 /* metamacros.h */,
 				D0A8B311128A4BDE004AACE0 /* extobjc.h */,
 				32DBCF5E0370ADEE00C91783 /* extobjc_Prefix.pch */,
 			);
@@ -286,33 +229,6 @@
 				D0A8B187128A4303004AACE0 /* Foundation.framework */,
 			);
 			name = iOS;
-			sourceTree = "<group>";
-		};
-		D0A8B25C128A4694004AACE0 /* libextc */ = {
-			isa = PBXGroup;
-			children = (
-				D0A8B2A2128A47CE004AACE0 /* algorithm.h */,
-				D0A8B2A3128A47CE004AACE0 /* blocks.h */,
-				D0A8B2A4128A47CE004AACE0 /* contracts.h */,
-				D0A8B2A5128A47CE004AACE0 /* enum.h */,
-				D0A8B2A6128A47CE004AACE0 /* exception.h */,
-				D0A8B2A7128A47CE004AACE0 /* extc.h */,
-				D0A8B2A8128A47CE004AACE0 /* memory.h */,
-				D0A8B2A9128A47CE004AACE0 /* metamacros.h */,
-				D0A8B2AA128A47CE004AACE0 /* refcounted.h */,
-				D0A8B2AB128A47CE004AACE0 /* scope.h */,
-				D0A8B2AC128A47CE004AACE0 /* static_assert.h */,
-				D0A8B2AD128A47CE004AACE0 /* template.h */,
-				D0A8B2AE128A47CE004AACE0 /* vector.h */,
-				D0A8B286128A46B0004AACE0 /* algorithm.c */,
-				D0A8B287128A46B0004AACE0 /* enum.c */,
-				D0A8B288128A46B0004AACE0 /* exception.c */,
-				D0A8B289128A46B0004AACE0 /* memory.c */,
-				D0A8B28A128A46B0004AACE0 /* refcounted.c */,
-				D0A8B28B128A46B0004AACE0 /* template.c */,
-				D0A8B28C128A46B0004AACE0 /* vector.c */,
-			);
-			name = libextc;
 			sourceTree = "<group>";
 		};
 		D0A8B2E4128A497A004AACE0 /* Tests */ = {
@@ -354,19 +270,6 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D0A8B2C8128A48EE004AACE0 /* algorithm.h in Headers */,
-				D0A8B2C9128A48EE004AACE0 /* blocks.h in Headers */,
-				D0A8B2CA128A48EE004AACE0 /* contracts.h in Headers */,
-				D0A8B2CB128A48EE004AACE0 /* enum.h in Headers */,
-				D0A8B2CC128A48EE004AACE0 /* exception.h in Headers */,
-				D0A8B2CD128A48EE004AACE0 /* extc.h in Headers */,
-				D0A8B2CE128A48EE004AACE0 /* memory.h in Headers */,
-				D0A8B2CF128A48EE004AACE0 /* metamacros.h in Headers */,
-				D0A8B2D0128A48EE004AACE0 /* refcounted.h in Headers */,
-				D0A8B2D1128A48EE004AACE0 /* scope.h in Headers */,
-				D0A8B2D2128A48EE004AACE0 /* static_assert.h in Headers */,
-				D0A8B2D3128A48EE004AACE0 /* template.h in Headers */,
-				D0A8B2D4128A48EE004AACE0 /* vector.h in Headers */,
 				D0A8B2F9128A49E9004AACE0 /* EXTSwizzle.h in Headers */,
 				D0A8B312128A4BDE004AACE0 /* extobjc.h in Headers */,
 				D0A8B33A128A5185004AACE0 /* EXTConcreteProtocol.h in Headers */,
@@ -374,6 +277,7 @@
 				D0CFB5EC128A8A62006DC377 /* EXTMixin.h in Headers */,
 				D03025FE128E8D9800638FD4 /* EXTSafeCategory.h in Headers */,
 				D0E7E888128F86F800FE0263 /* EXTProtocolCategory.h in Headers */,
+				D01DC93012C822110009AB39 /* metamacros.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -381,19 +285,6 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D0A8B2BB128A48ED004AACE0 /* algorithm.h in Headers */,
-				D0A8B2BC128A48ED004AACE0 /* blocks.h in Headers */,
-				D0A8B2BD128A48ED004AACE0 /* contracts.h in Headers */,
-				D0A8B2BE128A48ED004AACE0 /* enum.h in Headers */,
-				D0A8B2BF128A48ED004AACE0 /* exception.h in Headers */,
-				D0A8B2C0128A48ED004AACE0 /* extc.h in Headers */,
-				D0A8B2C1128A48ED004AACE0 /* memory.h in Headers */,
-				D0A8B2C2128A48ED004AACE0 /* metamacros.h in Headers */,
-				D0A8B2C3128A48ED004AACE0 /* refcounted.h in Headers */,
-				D0A8B2C4128A48ED004AACE0 /* scope.h in Headers */,
-				D0A8B2C5128A48ED004AACE0 /* static_assert.h in Headers */,
-				D0A8B2C6128A48ED004AACE0 /* template.h in Headers */,
-				D0A8B2C7128A48ED004AACE0 /* vector.h in Headers */,
 				D0A8B2F8128A49E9004AACE0 /* EXTSwizzle.h in Headers */,
 				D0A8B313128A4BDE004AACE0 /* extobjc.h in Headers */,
 				D0A8B338128A5185004AACE0 /* EXTConcreteProtocol.h in Headers */,
@@ -401,6 +292,7 @@
 				D0CFB5ED128A8A62006DC377 /* EXTMixin.h in Headers */,
 				D03025FC128E8D9800638FD4 /* EXTSafeCategory.h in Headers */,
 				D0E7E886128F86F800FE0263 /* EXTProtocolCategory.h in Headers */,
+				D01DC92F12C822110009AB39 /* metamacros.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -561,13 +453,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D0A8B294128A46B0004AACE0 /* algorithm.c in Sources */,
-				D0A8B295128A46B0004AACE0 /* enum.c in Sources */,
-				D0A8B296128A46B0004AACE0 /* exception.c in Sources */,
-				D0A8B297128A46B0004AACE0 /* memory.c in Sources */,
-				D0A8B298128A46B0004AACE0 /* refcounted.c in Sources */,
-				D0A8B299128A46B0004AACE0 /* template.c in Sources */,
-				D0A8B29A128A46B0004AACE0 /* vector.c in Sources */,
 				D0CFB5D0128A8109006DC377 /* EXTMultiObject.m in Sources */,
 				D0B6C99D128B121B00137E97 /* EXTConcreteProtocol.m in Sources */,
 				D03025FF128E8D9800638FD4 /* EXTSafeCategory.m in Sources */,
@@ -601,13 +486,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D0A8B28D128A46B0004AACE0 /* algorithm.c in Sources */,
-				D0A8B28E128A46B0004AACE0 /* enum.c in Sources */,
-				D0A8B28F128A46B0004AACE0 /* exception.c in Sources */,
-				D0A8B290128A46B0004AACE0 /* memory.c in Sources */,
-				D0A8B291128A46B0004AACE0 /* refcounted.c in Sources */,
-				D0A8B292128A46B0004AACE0 /* template.c in Sources */,
-				D0A8B293128A46B0004AACE0 /* vector.c in Sources */,
 				D0CFB5D2128A8109006DC377 /* EXTMultiObject.m in Sources */,
 				D0B6C99E128B121B00137E97 /* EXTConcreteProtocol.m in Sources */,
 				D03025FD128E8D9800638FD4 /* EXTSafeCategory.m in Sources */,
@@ -691,7 +569,6 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_LABEL = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				HEADER_SEARCH_PATHS = libextc/include;
 				PREBINDING = NO;
 				RUN_CLANG_STATIC_ANALYZER = YES;
 				SDKROOT = macosx10.6;
@@ -723,7 +600,6 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_LABEL = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				HEADER_SEARCH_PATHS = libextc/include;
 				LLVM_LTO = YES;
 				PREBINDING = NO;
 				RUN_CLANG_STATIC_ANALYZER = YES;
