@@ -41,7 +41,7 @@ finalInstanceMethod(MySuperclass, superclassFinalMethod);
 finalClassMethod(MySubclass, subclassFinalMethod);
 
 // enable to test the erroring out at startup
-#if 0
+#if 1
 - (Class)superclassFinalMethod {
 	return [MySubclass class];
 }
@@ -71,6 +71,18 @@ finalClassMethod(MySubclass, subclassFinalMethod);
 }
 
 - (void)testFinalMethods {
+	MySuperclass *superObj = [[MySuperclass alloc] init];
+	STAssertNotNil(superObj, @"could not allocate instance of class containing final methods");
+	STAssertEqualObjects([superObj superclassFinalMethod], [MySuperclass class], @"could not call final instance method on a superclass");
+	STAssertNil([superObj normalMethod], @"expected normal method to work in a class with final methods");
+	STAssertNoThrow([superObj release], @"could not release instance of class containing final methods");
+
+	STAssertNoThrow([MySubclass subclassFinalMethod], @"could not call final class method on a subclass");
+
+	MySubclass *subObj = [[MySubclass alloc] init];
+	STAssertNotNil(subObj, @"could not allocate instance of subclass containing final methods");
+	STAssertEqualObjects([subObj normalMethod], [MySubclass class], @"expected normal method to work in a subclass with final methods");
+	STAssertNoThrow([subObj release], @"could not release instance of subclass containing final methods");
 }
 
 @end

@@ -612,6 +612,7 @@
 				PREBINDING = NO;
 				RUN_CLANG_STATIC_ANALYZER = YES;
 				SDKROOT = macosx10.6;
+				TEST_AFTER_BUILD = YES;
 				WARNING_CFLAGS = "-Wno-unused-value";
 			};
 			name = Debug;
@@ -644,6 +645,7 @@
 				PREBINDING = NO;
 				RUN_CLANG_STATIC_ANALYZER = YES;
 				SDKROOT = macosx10.6;
+				TEST_AFTER_BUILD = YES;
 				WARNING_CFLAGS = "-Wno-unused-value";
 			};
 			name = Release;
