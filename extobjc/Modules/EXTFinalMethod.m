@@ -89,6 +89,8 @@ BOOL ext_verifyFinalMethod (SEL methodName, Class targetClass) {
 	BOOL success = YES;
 	for (unsigned subclassIndex = 0;subclassIndex < subclassCount;++subclassIndex) {
 		Class cls = subclasses[subclassIndex];
+
+		printf("Checking %s for %s\n", class_getName(cls), sel_getName(methodName));
 		
 		unsigned methodCount = 0;
 		Method *methods = class_copyMethodList(cls, &methodCount);

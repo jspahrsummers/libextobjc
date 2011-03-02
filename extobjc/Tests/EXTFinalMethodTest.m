@@ -40,12 +40,10 @@ finalInstanceMethod(MySuperclass, superclassFinalMethod);
 @implementation MySubclass
 finalClassMethod(MySubclass, subclassFinalMethod);
 
-// enable to test the erroring out at startup
-#if 1
+// this should log an error to the console
 - (Class)superclassFinalMethod {
 	return [MySubclass class];
 }
-#endif
 
 + (void)subclassFinalMethod {}
 
