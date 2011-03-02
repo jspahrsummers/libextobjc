@@ -39,6 +39,11 @@ void ext_injectProtocolCategories (void) {
 	 */
 	
 	int classCount = objc_getClassList(NULL, 0);
+	if (!classCount) {
+		fprintf(stderr, "ERROR: No classes registered with the runtime\n");
+		return;
+	}
+
 	Class *allClasses = malloc(sizeof(Class) * classCount);
 	if (!allClasses) {
 		fprintf(stderr, "ERROR: Could allocate memory for all classes\n");

@@ -112,6 +112,10 @@ void ext_injectConcreteProtocols (void) {
 
 	// get the number of classes registered with the runtime
 	int classCount = objc_getClassList(NULL, 0);
+	if (!classCount) {
+		fprintf(stderr, "ERROR: No classes registered with the runtime\n");
+		return;
+	}
 
 	// allocate space for them
 	Class *allClasses = malloc(sizeof(Class) * classCount);
