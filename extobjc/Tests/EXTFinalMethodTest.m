@@ -10,25 +10,21 @@
 
 /*** test class interfaces ***/
 @interface MySuperclass : NSObject {}
-// should return MySuperclass
-- (Class)superclassFinalMethod;
-
-// returns nil here
-- (Class)normalMethod;
 @end
 
 @interface MySubclass : MySuperclass {}
-+ (void)subclassFinalMethod;
-
-// returns the current class (MySubclass) here
-- (Class)normalMethod;
 @end
 
 /*** test class implementations ***/
 @implementation MySuperclass
 finalInstanceMethod(MySuperclass, superclassFinalMethod);
+finalClassMethod(MySuperclass, superclassFinalClassMethod);
 
 - (Class)superclassFinalMethod {
+  	return [MySuperclass class];
+}
+
++ (Class)superclassFinalClassMethod {
   	return [MySuperclass class];
 }
 
@@ -38,14 +34,19 @@ finalInstanceMethod(MySuperclass, superclassFinalMethod);
 @end
 
 @implementation MySubclass
-finalClassMethod(MySubclass, subclassFinalMethod);
+finalClassMethod(MySubclass, subclassFinalClassMethod);
 
 // this should log an error to the console
 - (Class)superclassFinalMethod {
 	return [MySubclass class];
 }
 
-+ (void)subclassFinalMethod {}
+// this should log an error to the console
++ (Class)superclassFinalClassMethod {
+  	return [MySubclass class];
+}
+
++ (void)subclassFinalClassMethod {}
 
 - (Class)normalMethod {
  	return [self class];
@@ -75,7 +76,8 @@ finalClassMethod(MySubclass, subclassFinalMethod);
 	STAssertNil([superObj normalMethod], @"expected normal method to work in a class with final methods");
 	STAssertNoThrow([superObj release], @"could not release instance of class containing final methods");
 
-	STAssertNoThrow([MySubclass subclassFinalMethod], @"could not call final class method on a subclass");
+	STAssertEqualObjects([MySuperclass superclassFinalClassMethod], [MySuperclass class], @"could not call final class method on superclass");
+	STAssertNoThrow([MySubclass subclassFinalClassMethod], @"could not call final class method on a subclass");
 
 	MySubclass *subObj = [[MySubclass alloc] init];
 	STAssertNotNil(subObj, @"could not allocate instance of subclass containing final methods");
