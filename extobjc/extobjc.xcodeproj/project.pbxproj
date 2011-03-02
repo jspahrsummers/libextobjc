@@ -28,6 +28,12 @@
 		D03025FD128E8D9800638FD4 /* EXTSafeCategory.m in Sources */ = {isa = PBXBuildFile; fileRef = D03025FB128E8D9800638FD4 /* EXTSafeCategory.m */; };
 		D03025FE128E8D9800638FD4 /* EXTSafeCategory.h in Headers */ = {isa = PBXBuildFile; fileRef = D03025FA128E8D9800638FD4 /* EXTSafeCategory.h */; };
 		D03025FF128E8D9800638FD4 /* EXTSafeCategory.m in Sources */ = {isa = PBXBuildFile; fileRef = D03025FB128E8D9800638FD4 /* EXTSafeCategory.m */; };
+		D0337657131E53AB0039ACFD /* EXTPrivateMethod.m in Sources */ = {isa = PBXBuildFile; fileRef = D0337655131E53AB0039ACFD /* EXTPrivateMethod.m */; };
+		D0337658131E53AB0039ACFD /* EXTPrivateMethod.m in Sources */ = {isa = PBXBuildFile; fileRef = D0337655131E53AB0039ACFD /* EXTPrivateMethod.m */; };
+		D0337659131E53AB0039ACFD /* EXTPrivateMethod.h in Headers */ = {isa = PBXBuildFile; fileRef = D0337656131E53AB0039ACFD /* EXTPrivateMethod.h */; };
+		D033765A131E53AB0039ACFD /* EXTPrivateMethod.h in Headers */ = {isa = PBXBuildFile; fileRef = D0337656131E53AB0039ACFD /* EXTPrivateMethod.h */; };
+		D033765D131E53DB0039ACFD /* EXTPrivateMethodTest.m in Sources */ = {isa = PBXBuildFile; fileRef = D033765C131E53DB0039ACFD /* EXTPrivateMethodTest.m */; };
+		D033765E131E53DB0039ACFD /* EXTPrivateMethodTest.m in Sources */ = {isa = PBXBuildFile; fileRef = D033765C131E53DB0039ACFD /* EXTPrivateMethodTest.m */; };
 		D0A8B04F128A42F4004AACE0 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0867D69BFE84028FC02AAC07 /* Foundation.framework */; };
 		D0A8B188128A4303004AACE0 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D0A8B187128A4303004AACE0 /* Foundation.framework */; };
 		D0A8B2F8128A49E9004AACE0 /* EXTSwizzle.h in Headers */ = {isa = PBXBuildFile; fileRef = D0A8B2F7128A49E9004AACE0 /* EXTSwizzle.h */; };
@@ -98,6 +104,10 @@
 		D01DC92E12C822110009AB39 /* metamacros.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = metamacros.h; sourceTree = "<group>"; };
 		D03025FA128E8D9800638FD4 /* EXTSafeCategory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXTSafeCategory.h; sourceTree = "<group>"; };
 		D03025FB128E8D9800638FD4 /* EXTSafeCategory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXTSafeCategory.m; sourceTree = "<group>"; };
+		D0337655131E53AB0039ACFD /* EXTPrivateMethod.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXTPrivateMethod.m; sourceTree = "<group>"; };
+		D0337656131E53AB0039ACFD /* EXTPrivateMethod.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXTPrivateMethod.h; sourceTree = "<group>"; };
+		D033765B131E53DB0039ACFD /* EXTPrivateMethodTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXTPrivateMethodTest.h; sourceTree = "<group>"; };
+		D033765C131E53DB0039ACFD /* EXTPrivateMethodTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXTPrivateMethodTest.m; sourceTree = "<group>"; };
 		D0A8B029128A4261004AACE0 /* libextobjc_iOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libextobjc_iOS.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		D0A8B187128A4303004AACE0 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		D0A8B2DC128A495D004AACE0 /* Logic Tests.octest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Logic Tests.octest"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -236,6 +246,8 @@
 			children = (
 				D0C1D916128A57B600E96C0F /* EXTConcreteProtocolTest.h */,
 				D0C1D917128A57B600E96C0F /* EXTConcreteProtocolTest.m */,
+				D033765B131E53DB0039ACFD /* EXTPrivateMethodTest.h */,
+				D033765C131E53DB0039ACFD /* EXTPrivateMethodTest.m */,
 				D0E7E907128F8DD200FE0263 /* EXTProtocolCategoryTest.h */,
 				D0E7E908128F8DD200FE0263 /* EXTProtocolCategoryTest.m */,
 				D0E7E839128F7F2E00FE0263 /* EXTSafeCategoryTest.h */,
@@ -254,6 +266,8 @@
 				D0A8B336128A5185004AACE0 /* EXTConcreteProtocol.h */,
 				D0B6C99C128B121B00137E97 /* EXTConcreteProtocol.m */,
 				D0CFB5EB128A8A62006DC377 /* EXTMixin.h */,
+				D0337656131E53AB0039ACFD /* EXTPrivateMethod.h */,
+				D0337655131E53AB0039ACFD /* EXTPrivateMethod.m */,
 				D0E7E884128F86F800FE0263 /* EXTProtocolCategory.h */,
 				D0E7E885128F86F800FE0263 /* EXTProtocolCategory.m */,
 				D03025FA128E8D9800638FD4 /* EXTSafeCategory.h */,
@@ -278,6 +292,7 @@
 				D03025FE128E8D9800638FD4 /* EXTSafeCategory.h in Headers */,
 				D0E7E888128F86F800FE0263 /* EXTProtocolCategory.h in Headers */,
 				D01DC93012C822110009AB39 /* metamacros.h in Headers */,
+				D033765A131E53AB0039ACFD /* EXTPrivateMethod.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -293,6 +308,7 @@
 				D03025FC128E8D9800638FD4 /* EXTSafeCategory.h in Headers */,
 				D0E7E886128F86F800FE0263 /* EXTProtocolCategory.h in Headers */,
 				D01DC92F12C822110009AB39 /* metamacros.h in Headers */,
+				D0337659131E53AB0039ACFD /* EXTPrivateMethod.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -457,6 +473,7 @@
 				D0B6C99D128B121B00137E97 /* EXTConcreteProtocol.m in Sources */,
 				D03025FF128E8D9800638FD4 /* EXTSafeCategory.m in Sources */,
 				D0E7E889128F86F800FE0263 /* EXTProtocolCategory.m in Sources */,
+				D0337658131E53AB0039ACFD /* EXTPrivateMethod.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -468,6 +485,7 @@
 				D0C1D918128A57B600E96C0F /* EXTConcreteProtocolTest.m in Sources */,
 				D0E7E85B128F81FA00FE0263 /* EXTSafeCategoryTest.m in Sources */,
 				D0E7E909128F8DD200FE0263 /* EXTProtocolCategoryTest.m in Sources */,
+				D033765D131E53DB0039ACFD /* EXTPrivateMethodTest.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -479,6 +497,7 @@
 				D0CFB620128A8F12006DC377 /* EXTSwizzleTest.m in Sources */,
 				D0E7E85A128F81FA00FE0263 /* EXTSafeCategoryTest.m in Sources */,
 				D0E7E90A128F8DD200FE0263 /* EXTProtocolCategoryTest.m in Sources */,
+				D033765E131E53DB0039ACFD /* EXTPrivateMethodTest.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -490,6 +509,7 @@
 				D0B6C99E128B121B00137E97 /* EXTConcreteProtocol.m in Sources */,
 				D03025FD128E8D9800638FD4 /* EXTSafeCategory.m in Sources */,
 				D0E7E887128F86F800FE0263 /* EXTProtocolCategory.m in Sources */,
+				D0337657131E53AB0039ACFD /* EXTPrivateMethod.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
