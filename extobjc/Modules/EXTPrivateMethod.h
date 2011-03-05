@@ -6,4 +6,6 @@
 //  Released into the public domain.
 //
 
+#import <objc/runtime.h>
 
+BOOL ext_makeMethodPrivate (Class targetClass, SEL methodName);
