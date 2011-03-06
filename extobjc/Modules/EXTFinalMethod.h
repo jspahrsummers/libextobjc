@@ -9,50 +9,6 @@
 #import <objc/runtime.h>
 #import "metamacros.h"
 
-#if 0
-/**
- * Declares \a METHOD, which should be an instance method, in \a class, as being final,
- * unable to be overridden. If \c DEBUG is defined and \c NDEBUG is not defined, any
- * overriding of final methods will abort the application at startup; otherwise, any
- * overriding is simply logged and execution continues using the overriding
- * behavior.
- */
-#define finalInstanceMethod(CLASS, METHOD) \
-	/*
-	 * using the "constructor" function attribute, we can ensure that this
-	 * function is executed only AFTER all the Objective-C runtime setup (i.e.,
-	 * after all +load methods have been executed)
-	 */ \
-	__attribute__((constructor)) \
-	static void metamacro_concat(ext_checkFinalMethods_, __LINE__) (void) { \
-		Class targetClass = objc_getClass(metamacro_stringify(CLASS)); \
-		if (!ext_verifyFinalMethod(@selector(METHOD), targetClass)) \
-			ext_finalMethodFailed(CLASS, METHOD); \
-	}
-
-/**
- * Declares \a METHOD, which should be a class method, in \a class, as being final,
- * unable to be overridden. If \c DEBUG is defined and \c NDEBUG is not defined, any
- * overriding of final methods will abort the application at startup; otherwise, any
- * overriding is simply logged and execution continues using the overriding
- * behavior.
- */
-#define finalClassMethod(CLASS, METHOD) \
-	/*
-	 * using the "constructor" function attribute, we can ensure that this
-	 * function is executed only AFTER all the Objective-C runtime setup (i.e.,
-	 * after all +load methods have been executed)
-	 */ \
-	__attribute__((constructor)) \
-	static void metamacro_concat(ext_checkFinalMethods_, __LINE__) (void) { \
-		Class targetClass = objc_getClass(metamacro_stringify(CLASS)); \
-		\
-		targetClass = object_getClass(targetClass); \
-		if (!ext_verifyFinalMethod(@selector(METHOD), targetClass)) \
-			ext_finalMethodFailed(CLASS, METHOD); \
-	}
-#endif
-
 /**
  * Declares final methods for \a CLASS. Any methods declared in this block
  * cannot be overridden by subclasses. If \c DEBUG is defined and \c NDEBUG is
@@ -83,6 +39,12 @@
 	\
 	@protocol ext_ ## CLASS ## _FinalMethods
 
+/**
+ * Ends a set of final method declarations. This must be used instead of \c
+ * @end.
+ *
+ * @note This macro should only be used in an implementation file.
+ */
 #define endfinal \
 	end \
 	\
