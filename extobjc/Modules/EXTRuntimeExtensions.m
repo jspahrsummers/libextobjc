@@ -447,6 +447,33 @@ Method ext_getImmediateInstanceMethod (Class aClass, SEL aSelector) {
 	return foundMethod;
 }
 
+BOOL ext_getPropertyAccessorsForClass (objc_property_t property, Class aClass, Method *getter, Method *setter) {
+	ext_propertyAttributes *attributes = ext_copyPropertyAttributes(property);
+	if (!attributes)
+		return NO;
+
+	SEL getterName = attributes->getter;
+	SEL setterName = attributes->setter;
+	
+	free(attributes);
+	attributes = NO;
+
+	Method foundGetter = class_getInstanceMethod(aClass, getterName);
+	if (!foundGetter)
+		return NO;
+	
+	if (getter)
+		*getter = foundGetter;
+
+	if (setter) {
+		Method foundSetter = class_getInstanceMethod(aClass, setterName);
+		if (foundSetter)
+			*setter = foundSetter;
+	}
+	
+	return YES;
+}
+
 void ext_removeMethod (Class aClass, SEL methodName) {
 	Method existingMethod = ext_getImmediateInstanceMethod(aClass, methodName);
 	if (!existingMethod)

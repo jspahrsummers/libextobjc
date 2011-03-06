@@ -236,6 +236,18 @@ Method ext_getImmediateInstanceMethod (Class aClass, SEL aSelector);
 	ext_getIvar((OBJ), class_getInstanceVariable(object_getClass((OBJ)), (NAME)), TYPE)
 
 /**
+ * Returns the accessor methods for \a property, as implemented in \a aClass or
+ * any of its superclasses. The getter, if implemented, is returned in \a
+ * getter, and the setter, if implemented, is returned in \a setter. If either
+ * \a getter or \a setter are \c NULL, that accessor is not returned. If either
+ * accessor is not implemented, the argument is left unmodified.
+ *
+ * Returns \c YES if a valid accessor was found, or \c NO if \a aClass and its
+ * superclasses do not implement \a property or if an error occurs.
+ */
+BOOL ext_getPropertyAccessorsForClass (objc_property_t property, Class aClass, Method *getter, Method *setter);
+
+/**
  * Highly-configurable method injection. Adds the first \a count entries from \a
  * methods into \a aClass according to \a behavior.
  *
