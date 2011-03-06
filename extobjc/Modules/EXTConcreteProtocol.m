@@ -204,7 +204,7 @@ void ext_injectConcreteProtocols (void) {
 					continue;
 				}
 
-				// first, check to see if a class method already eixsts (on this
+				// first, check to see if a class method already exists (on this
 				// class or on a superclass)
 				//
 				// since 'class' is considered to be an instance of 'metaclass',

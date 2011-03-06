@@ -9,6 +9,29 @@
 #import "EXTRuntimeExtensions.h"
 #import <stdio.h>
 
+unsigned ext_addMethods (Class aClass, Method *methods, unsigned count, BOOL checkSuperclasses) {
+	unsigned successes = 0;
+	for (unsigned methodIndex = 0;methodIndex < count;++methodIndex) {
+		Method method = methods[methodIndex];
+		SEL methodName = method_getName(method);
+
+		BOOL success = YES;
+		if (checkSuperclasses) {
+			if (class_getInstanceMethod(aClass, methodName))
+				success = NO;
+			else
+				class_replaceMethod(aClass, methodName, method_getImplementation(method), method_getTypeEncoding(method));
+		} else {
+			success = class_addMethod(aClass, methodName, method_getImplementation(method), method_getTypeEncoding(method));
+		}
+
+		if (success)
+			methods[methodIndex] = NULL;
+	}
+
+	return successes;
+}
+
 Class *ext_copySubclassList (Class targetClass, unsigned *subclassCount) {
 	// TODO: this method could use some kinda caching
 
@@ -71,3 +94,20 @@ Class *ext_copySubclassList (Class targetClass, unsigned *subclassCount) {
 	
 	return allClasses;
 }
+
+Method ext_getImmediateInstanceMethod (Class aClass, SEL aSelector) {
+	unsigned methodCount = 0;
+	Method *methods = class_copyMethodList(aClass, &methodCount);
+	Method foundMethod = NULL;
+
+	for (unsigned methodIndex = 0;methodIndex < methodCount;++methodIndex) {
+		if (method_getName(methods[methodIndex]) == aSelector) {
+			foundMethod = methods[methodIndex];
+			break;
+		}
+	}
+
+	free(methods);
+	return foundMethod;
+}
+
