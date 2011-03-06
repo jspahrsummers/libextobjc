@@ -100,6 +100,46 @@ unsigned ext_injectMethods (
 	return successes;
 }
 
+static
+unsigned ext_injectMethodsFromClass (
+	Class srcClass,
+	Class dstClass,
+	ext_methodInjectionBehavior behavior,
+	ext_failedMethodCallback failedToAddCallback)
+{
+	unsigned count;
+	unsigned successes = 0;
+
+	count = 0;
+	Method *instanceMethods = class_copyMethodList(srcClass, &count);
+
+	successes += ext_injectMethods(
+		dstClass,
+		instanceMethods,
+		count,
+		behavior,
+		failedToAddCallback
+	);
+
+	free(instanceMethods);
+
+	count = 0;
+	Method *classMethods = class_copyMethodList(object_getClass(srcClass), &count);
+
+	// ignore +load now that we're on class methods
+	behavior |= ext_methodInjectionIgnoreLoad;
+	successes += ext_injectMethods(
+		object_getClass(dstClass),
+		classMethods,
+		count,
+		behavior,
+		failedToAddCallback
+	);
+
+	free(classMethods);
+	return successes;
+}
+
 unsigned ext_addMethods (Class aClass, Method *methods, unsigned count, BOOL checkSuperclasses, ext_failedMethodCallback failedToAddCallback) {
 	ext_methodInjectionBehavior behavior = ext_methodInjectionFailOnExisting;
 	if (checkSuperclasses)
@@ -115,32 +155,11 @@ unsigned ext_addMethods (Class aClass, Method *methods, unsigned count, BOOL che
 }
 
 unsigned ext_addMethodsFromClass (Class srcClass, Class dstClass, BOOL checkSuperclasses, ext_failedMethodCallback failedToAddCallback) {
-	unsigned count;
-	unsigned successes = 0;
-
-	count = 0;
-	Method *instanceMethods = class_copyMethodList(srcClass, &count);
-
-	successes += ext_addMethods(dstClass, instanceMethods, count, checkSuperclasses, failedToAddCallback);
-	free(instanceMethods);
-
-	count = 0;
-	Method *classMethods = class_copyMethodList(object_getClass(srcClass), &count);
-
-	ext_methodInjectionBehavior behavior = ext_methodInjectionIgnoreLoad | ext_methodInjectionFailOnExisting;
+	ext_methodInjectionBehavior behavior = ext_methodInjectionFailOnExisting;
 	if (checkSuperclasses)
 		behavior |= ext_methodInjectionFailOnSuperclassExisting;
-
-	successes += ext_injectMethods(
-		object_getClass(dstClass),
-		classMethods,
-		count,
-		behavior,
-		failedToAddCallback
-	);
-
-	free(classMethods);
-	return successes;
+	
+	return ext_injectMethodsFromClass(srcClass, dstClass, behavior, failedToAddCallback);
 }
 
 Class *ext_copySubclassList (Class targetClass, unsigned *subclassCount) {
@@ -246,5 +265,9 @@ void ext_replaceMethods (Class aClass, Method *methods, unsigned count) {
 		ext_methodInjectionReplace,
 		NULL
 	);
+}
+
+void ext_replaceMethodsFromClass (Class srcClass, Class dstClass) {
+	ext_injectMethodsFromClass(srcClass, dstClass, ext_methodInjectionReplace, NULL);
 }
 

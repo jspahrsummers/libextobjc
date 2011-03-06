@@ -101,3 +101,12 @@ void ext_removeMethod (Class aClass, SEL methodName);
  */
 void ext_replaceMethods (Class aClass, Method *methods, unsigned count);
 
+/**
+ * Iterates through all instance and class methods of \a srcClass and adds each
+ * one to \a dstClass, replacing any existing implementation.
+ *
+ * @note This ignores any \c +load method on \a srcClass. \a srcClass and \a
+ * dstClass must not be metaclasses.
+ */
+void ext_replaceMethodsFromClass (Class srcClass, Class dstClass);
+
