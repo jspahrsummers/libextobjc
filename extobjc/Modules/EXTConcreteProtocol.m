@@ -7,6 +7,7 @@
  */
 
 #import "EXTConcreteProtocol.h"
+#import "EXTRuntimeExtensions.h"
 #import <pthread.h>
 #import <stdlib.h>
 
@@ -110,22 +111,13 @@ void ext_injectConcreteProtocols (void) {
 		&ext_compareConcreteProtocolLoadPriority
 	);
 
-	// get the number of classes registered with the runtime
-	int classCount = objc_getClassList(NULL, 0);
-	if (!classCount) {
+	unsigned classCount = 0;
+	Class *allClasses = ext_copyClassList(&classCount);
+
+	if (!classCount || !allClasses) {
 		fprintf(stderr, "ERROR: No classes registered with the runtime\n");
 		return;
 	}
-
-	// allocate space for them
-	Class *allClasses = malloc(sizeof(Class) * classCount);
-	if (!allClasses) {
-		fprintf(stderr, "ERROR: Could allocate memory for all classes\n");
-		return;
-	}
-
-	// and then actually pull the list of the class objects
-	classCount = objc_getClassList(allClasses, classCount);
 
 	/*
 	 * set up an autorelease pool in case any Cocoa classes get used during
@@ -158,7 +150,7 @@ void ext_injectConcreteProtocols (void) {
 		Method *cmethodList = class_copyMethodList(object_getClass(containerClass), &cmethodCount);
 
 		// loop through all classes
-		for (int classIndex = 0;classIndex < classCount;++classIndex) {
+		for (unsigned classIndex = 0;classIndex < classCount;++classIndex) {
 			Class class = allClasses[classIndex];
 			
 			// if this class doesn't conform to the protocol, continue to the

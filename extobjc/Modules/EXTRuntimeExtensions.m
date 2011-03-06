@@ -35,13 +35,17 @@ unsigned ext_injectMethods (
 		SEL methodName = method_getName(method);
 
 		if (behavior & ext_methodInjectionIgnoreLoad) {
-			if (methodName == @selector(load))
+			if (methodName == @selector(load)) {
+				++successes;
 				continue;
+			}
 		}
 
 		if (behavior & ext_methodInjectionIgnoreInitialize) {
-			if (methodName == @selector(initialize))
+			if (methodName == @selector(initialize)) {
+				++successes;
 				continue;
+			}
 		}
 
 		BOOL success = YES;
@@ -89,19 +93,19 @@ unsigned ext_injectMethods (
 	return successes;
 }
 
-unsigned ext_injectMethodsFromClass (
+BOOL ext_injectMethodsFromClass (
 	Class srcClass,
 	Class dstClass,
 	ext_methodInjectionBehavior behavior,
 	ext_failedMethodCallback failedToAddCallback)
 {
-	unsigned count;
-	unsigned successes = 0;
+	unsigned count, addedCount;
+	BOOL success = YES;
 
 	count = 0;
 	Method *instanceMethods = class_copyMethodList(srcClass, &count);
 
-	successes += ext_injectMethods(
+	addedCount = ext_injectMethods(
 		dstClass,
 		instanceMethods,
 		count,
@@ -110,13 +114,15 @@ unsigned ext_injectMethodsFromClass (
 	);
 
 	free(instanceMethods);
+	if (addedCount < count)
+		success = NO;
 
 	count = 0;
 	Method *classMethods = class_copyMethodList(object_getClass(srcClass), &count);
 
 	// ignore +load
 	behavior |= ext_methodInjectionIgnoreLoad;
-	successes += ext_injectMethods(
+	addedCount = ext_injectMethods(
 		object_getClass(dstClass),
 		classMethods,
 		count,
@@ -125,7 +131,10 @@ unsigned ext_injectMethodsFromClass (
 	);
 
 	free(classMethods);
-	return successes;
+	if (addedCount < count)
+		success = NO;
+
+	return success;
 }
 
 Class *ext_copyClassList (unsigned *count) {
@@ -172,7 +181,7 @@ unsigned ext_addMethods (Class aClass, Method *methods, unsigned count, BOOL che
 	);
 }
 
-unsigned ext_addMethodsFromClass (Class srcClass, Class dstClass, BOOL checkSuperclasses, ext_failedMethodCallback failedToAddCallback) {
+BOOL ext_addMethodsFromClass (Class srcClass, Class dstClass, BOOL checkSuperclasses, ext_failedMethodCallback failedToAddCallback) {
 	ext_methodInjectionBehavior behavior = ext_methodInjectionFailOnExisting;
 	if (checkSuperclasses)
 		behavior |= ext_methodInjectionFailOnSuperclassExisting;

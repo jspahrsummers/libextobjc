@@ -79,13 +79,13 @@ unsigned ext_addMethods (Class aClass, Method *methods, unsigned count, BOOL che
  * a method by the same name already exists on any superclass of \a aClass, it
  * is not overridden.
  *
- * Returns the number of methods added successfully. For each method that fails
+ * Returns whether all methods were added successfully. For each method that fails
  * to be added, \a failedToAddCallback (if provided) is invoked.
  *
  * @note This ignores any \c +load method on \a srcClass. \a srcClass and \a
  * dstClass must not be metaclasses.
  */
-unsigned ext_addMethodsFromClass (Class srcClass, Class dstClass, BOOL checkSuperclasses, ext_failedMethodCallback failedToAddCallback);
+BOOL ext_addMethodsFromClass (Class srcClass, Class dstClass, BOOL checkSuperclasses, ext_failedMethodCallback failedToAddCallback);
 
 /**
  * Returns the full list of classes registered with the runtime, terminated with
@@ -154,6 +154,9 @@ Method ext_getImmediateInstanceMethod (Class aClass, SEL aSelector);
  *
  * Returns the number of methods added successfully. For each method that fails
  * to be added, \a failedToAddCallback (if provided) is invoked.
+ *
+ * @note \c +load and \c +initialize methods are included in the number of
+ * successful methods when ignored for injection.
  */
 unsigned ext_injectMethods (Class aClass, Method *methods, unsigned count, ext_methodInjectionBehavior behavior, ext_failedMethodCallback failedToAddCallback);
 
@@ -162,10 +165,13 @@ unsigned ext_injectMethods (Class aClass, Method *methods, unsigned count, ext_m
  * \a srcClass. #ext_methodInjectionIgnoreLoad is added to #behavior for class
  * method injection.
  *
- * Returns the number of methods added successfully. For each method that fails
+ * Returns whether all methods were added successfully. For each method that fails
  * to be added, \a failedToAddCallback (if provided) is invoked.
+ *
+ * @note \c +load and \c +initialize methods are considered to be added
+ * successfully when ignored for injection.
  */
-unsigned ext_injectMethodsFromClass (Class srcClass, Class dstClass, ext_methodInjectionBehavior behavior, ext_failedMethodCallback failedToAddCallback);
+BOOL ext_injectMethodsFromClass (Class srcClass, Class dstClass, ext_methodInjectionBehavior behavior, ext_failedMethodCallback failedToAddCallback);
 
 /**
  * "Removes" any instance method matching \a methodName from \a aClass. This

@@ -8,6 +8,7 @@
 
 #import <objc/runtime.h>
 #import <stdlib.h>
+#import "EXTRuntimeExtensions.h"
 
 /**
  * "Mixes in" the class and instance methods of \a CLASS into pre-existing class
@@ -37,46 +38,6 @@
 		Class targetClass = objc_getClass(# TARGET); \
 		Class sourceClass = objc_getClass(# CLASS); \
 		\
-		/* obtain all the instance methods of the source class */ \
-		unsigned imethodCount = 0; \
-		Method *imethodList = class_copyMethodList(sourceClass, &imethodCount); \
-		\
-		/*
-		 * and inject each instance method into the target class DESTRUCTIVELY
-		 */ \
-		for (unsigned methodIndex = 0;methodIndex < imethodCount;++methodIndex) { \
-			Method method = imethodList[methodIndex]; \
-			SEL selector = method_getName(method); \
-			IMP imp = method_getImplementation(method); \
-			const char *types = method_getTypeEncoding(method); \
-			\
-			class_replaceMethod(targetClass, selector, imp, types); \
-		} \
-		\
-		/* then free the copied method list */ \
-		free(imethodList); imethodList = NULL; \
-		\
-		/*
-		 * obtain all the class methods of the source class (which are
-		 * represented as instance methods of the metaclass object)
-		 */ \
-		unsigned cmethodCount = 0; \
-		Method *cmethodList = class_copyMethodList(object_getClass(sourceClass), &cmethodCount); \
-		Class metaclass = object_getClass(targetClass); \
-		\
-		/*
-		 * and inject each class method into the target class DESTRUCTIVELY
-		 */ \
-		for (unsigned methodIndex = 0;methodIndex < cmethodCount;++methodIndex) { \
-			Method method = cmethodList[methodIndex]; \
-			SEL selector = method_getName(method); \
-			IMP imp = method_getImplementation(method); \
-			const char *types = method_getTypeEncoding(method); \
-			\
-			class_replaceMethod(metaclass, selector, imp, types); \
-		} \
-		\
-		/* then free the copied method list */ \
-		free(cmethodList); cmethodList = NULL; \
+		ext_replaceMethodsFromClass(sourceClass, targetClass); \
 	}
 

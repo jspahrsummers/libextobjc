@@ -7,6 +7,7 @@
  */
 
 #import "EXTProtocolCategory.h"
+#import "EXTRuntimeExtensions.h"
 #import <pthread.h>
 #import <stdlib.h>
 
@@ -38,19 +39,13 @@ void ext_injectProtocolCategories (void) {
 	 * from public functions which already perform the synchronization
 	 */
 	
-	int classCount = objc_getClassList(NULL, 0);
-	if (!classCount) {
+	unsigned classCount = 0;
+	Class *allClasses = ext_copyClassList(&classCount);
+
+	if (!classCount || !allClasses) {
 		fprintf(stderr, "ERROR: No classes registered with the runtime\n");
 		return;
 	}
-
-	Class *allClasses = malloc(sizeof(Class) * classCount);
-	if (!allClasses) {
-		fprintf(stderr, "ERROR: Could allocate memory for all classes\n");
-		return;
-	}
-
-	classCount = objc_getClassList(allClasses, classCount);
 
 	/*
 	 * set up an autorelease pool in case any Cocoa classes get used during
@@ -58,9 +53,8 @@ void ext_injectProtocolCategories (void) {
 	 */
 	NSAutoreleasePool *pool = [NSAutoreleasePool new];
 
-	for (int classIndex = 0;classIndex < classCount;++classIndex) {
+	for (unsigned classIndex = 0;classIndex < classCount;++classIndex) {
 		Class class = allClasses[classIndex];
-		Class metaclass = object_getClass(class);
 
 		for (size_t i = 0;i < protocolCategoryCount;++i) {
 			Protocol *protocol = protocolCategories[i].protocol;
@@ -69,41 +63,16 @@ void ext_injectProtocolCategories (void) {
 
 			Class containerClass = protocolCategories[i].methodContainer;
 
-			unsigned imethodCount = 0;
-			Method *imethodList = class_copyMethodList(containerClass, &imethodCount);
-
-			for (unsigned methodIndex = 0;methodIndex < imethodCount;++methodIndex) {
-				Method method = imethodList[methodIndex];
-				SEL selector = method_getName(method);
-				IMP imp = method_getImplementation(method);
-				const char *types = method_getTypeEncoding(method);
-
-				class_replaceMethod(class, selector, imp, types);
-			}
-
-			free(imethodList); imethodList = NULL;
-
-			unsigned cmethodCount = 0;
-			Method *cmethodList = class_copyMethodList(object_getClass(containerClass), &cmethodCount);
-
-			for (unsigned methodIndex = 0;methodIndex < cmethodCount;++methodIndex) {
-				Method method = cmethodList[methodIndex];
-				SEL selector = method_getName(method);
+			ext_injectMethodsFromClass(
+				containerClass,
+				class,
 
 				// +initialize is a special case that should never be copied
 				// into a class, as it performs initialization for the protocol
 				// category
-				if (selector == @selector(initialize)) {
-					continue;
-				}
-
-				IMP imp = method_getImplementation(method);
-				const char *types = method_getTypeEncoding(method);
-				
-				class_replaceMethod(metaclass, selector, imp, types);
-			}
-
-			free(cmethodList); cmethodList = NULL;
+				ext_methodInjectionIgnoreInitialize,
+				NULL
+			);
 
 			// use [containerClass class] and discard the result to call +initialize
 			// on containerClass if it hasn't been called yet
