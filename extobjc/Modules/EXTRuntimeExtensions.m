@@ -9,6 +9,7 @@
 #import "EXTRuntimeExtensions.h"
 #import <stdio.h>
 
+static
 id ext_removedMethodCalled (id self, SEL _cmd, ...) {
 	[self doesNotRecognizeSelector:_cmd];
 	return nil;
