@@ -56,6 +56,83 @@ typedef enum {
 } ext_methodInjectionBehavior;
 
 /**
+ * Describes the memory management policy of a property.
+ */
+typedef enum {
+	/**
+	 * The value is assigned.
+	 */
+	ext_propertyMemoryManagementPolicyAssign = 0,
+
+	/**
+	 * The value is retained.
+	 */
+	ext_propertyMemoryManagementPolicyRetain,
+
+	/**
+	 * The value is copied.
+	 */
+	ext_propertyMemoryManagementPolicyCopy
+} ext_propertyMemoryManagementPolicy;
+
+/**
+ * Describes the attributes and type information of a property.
+ */
+typedef struct {
+	/**
+	 * Whether this property was declared with the \c readonly attribute.
+	 */
+	BOOL readonly;
+
+	/**
+	 * Whether this property was declared with the \c nonatomic attribute.
+	 */
+	BOOL nonatomic;
+
+	/**
+	 * Whether the property is a weak reference.
+	 */
+	BOOL weak;
+
+	/**
+	 * Whether the property is eligible for garbage collection.
+	 */
+	BOOL canBeCollected;
+
+	/**
+	 * The memory management policy for this property.
+	 */
+	ext_propertyMemoryManagementPolicy memoryManagementPolicy;
+
+	/**
+	 * The selector for the getter of this property. This will reflect any
+	 * custom \c getter= attribute provided in the property declaration.
+	 */
+	SEL getter;
+
+	/**
+	 * The selector for the setter of this property. This will reflect any
+	 * custom \c setter= attribute provided in the property declaration.
+	 *
+	 * @note If #readonly is \c YES, this value will represent what the setter
+	 * \e would be, if the property were writable.
+	 */
+	SEL setter;
+
+	/**
+	 * The backing instance variable for this property, or \c NULL if the
+	 * property is implemented dynamically.
+	 */
+	const char *ivar;
+
+	/**
+	 * The type encoding for the value of this property. This is the type as it
+	 * would be returned by the \c @encode() directive.
+	 */
+	char type[];
+} ext_propertyAttributes;
+
+/**
  * A mask for the overwriting behavior flags of #ext_methodInjectionBehavior.
  */
 static const ext_methodInjectionBehavior ext_methodInjectionOverwriteBehaviorMask = 0x3;
@@ -103,6 +180,13 @@ Class *ext_copyClassList (unsigned *count);
  * @note \a count may be \c NULL.
  */
 Class *ext_copyClassListConformingToProtocol (Protocol *protocol, unsigned *count);
+
+/**
+ * Returns a pointer to a structure containing information about \a property.
+ * You must \c free() the returned pointer. Returns \c NULL if there is an error
+ * obtaining information from \a property.
+ */
+ext_propertyAttributes *ext_copyPropertyAttributes (objc_property_t property);
 
 /**
  * Looks through the complete list of classes registered with the runtime and
