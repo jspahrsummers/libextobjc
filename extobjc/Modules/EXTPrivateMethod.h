@@ -19,11 +19,11 @@
 	@interface NSObject (CLASS ## _PrivateMethodsProtocol) <ext_ ## CLASS ## _FakeProtocol> \
 	@end \
 	\
-	static Class ext_privateMethodsClass_ = nil; \
-	static Protocol *ext_privateMethodsFakeProtocol_ = NULL; \
+	extern Class ext_privateMethodsClass_; \
+	extern Protocol *ext_privateMethodsFakeProtocol_; \
 	\
 	__attribute__((constructor)) \
-	static void ext_injectPrivateMethods1 (void) { \
+	static void ext_ ## CLASS ## _preparePrivateMethods (void) { \
 		ext_privateMethodsClass_ = objc_getClass(# CLASS); \
 		ext_privateMethodsFakeProtocol_ = @protocol(ext_ ## CLASS ## _FakeProtocol); \
 	} \
@@ -34,7 +34,7 @@
 	end \
 	\
 	__attribute__((constructor)) \
-	static void ext_injectPrivateMethods (void) { \
+	static void metamacro_concat(ext_injectPrivateMethods_, __LINE__) (void) { \
 		Class targetClass = ext_privateMethodsClass_; \
 		\
 		unsigned listCount = 0; \

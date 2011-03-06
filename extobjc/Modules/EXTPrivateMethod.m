@@ -10,6 +10,15 @@
 #import "EXTRuntimeExtensions.h"
 #import <string.h>
 
+Class ext_privateMethodsClass_ = nil;
+Protocol *ext_privateMethodsFakeProtocol_ = NULL;
+
+static
+id ext_removedMethodCalled (id self, SEL _cmd, ...) {
+	[self doesNotRecognizeSelector:_cmd];
+	return nil;
+}
+
 BOOL ext_makeProtocolMethodsPrivate (Class targetClass, Protocol *protocol) {
 	const char *className = class_getName(targetClass);
 
@@ -39,13 +48,16 @@ BOOL ext_makeProtocolMethodsPrivate (Class targetClass, Protocol *protocol) {
 			continue;
 		}
 
-		if (!class_addMethod(superclass, name, method_getImplementation(foundMethod), method_getTypeEncoding(foundMethod))) {
-			fprintf(stderr, "ERROR: Private method name %s is already taken on class %s", selectorName, class_getName(superclass));
+		Method originalMethod = ext_getImmediateInstanceMethod(superclass, name);
+		if (originalMethod && method_getImplementation(originalMethod) != (IMP)&ext_removedMethodCalled) {
+			fprintf(stderr, "ERROR: Method %s already exists on class %s\n", selectorName, class_getName(superclass));
 			success = NO;
 			continue;
 		}
-
-		ext_removeMethod(targetClass, name);
+		
+		class_replaceMethod(superclass, name, method_getImplementation(foundMethod), method_getTypeEncoding(foundMethod));
+		method_setImplementation(foundMethod, (IMP)&ext_removedMethodCalled);
+	//	ext_removeMethod(targetClass, name);
 	}
 
 	return success;
