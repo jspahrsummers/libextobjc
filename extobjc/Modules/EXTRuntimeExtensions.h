@@ -177,7 +177,7 @@ Class *ext_copyClassList (unsigned *count);
 /**
  * Looks through the complete list of classes registered with the runtime and
  * finds all classes which conform to \a protocol. Returns \c *count classes
- * termined by a \c NULL. You must \c free() the returned array. If there are no
+ * terminated by a \c NULL. You must \c free() the returned array. If there are no
  * classes conforming to \a protocol, \c NULL is returned.
  *
  * @note \a count may be \c NULL.
