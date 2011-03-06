@@ -79,3 +79,9 @@ Method ext_getImmediateInstanceMethod (Class aClass, SEL aSelector);
  */
 void ext_removeMethod (Class aClass, SEL methodName);
 
+/**
+ * Iterates through the first \a count entries in \a methods and adds each one
+ * to \a aClass, replacing any existing implementation.
+ */
+void ext_replaceMethods (Class aClass, Method *methods, unsigned count);
+

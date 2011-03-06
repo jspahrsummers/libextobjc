@@ -133,3 +133,16 @@ void ext_removeMethod (Class aClass, SEL methodName) {
 		method_setImplementation(existingMethod, (IMP)&ext_removedMethodCalled);
 }
 
+void ext_replaceMethods (Class aClass, Method *methods, unsigned count) {
+	for (unsigned methodIndex = 0;methodIndex < count;++methodIndex) {
+		Method method = methods[methodIndex];
+
+		class_replaceMethod(
+			aClass,
+			method_getName(method),
+			method_getImplementation(method),
+			method_getTypeEncoding(method)
+		);
+	}
+}
+
