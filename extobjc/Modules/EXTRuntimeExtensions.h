@@ -72,8 +72,9 @@ Method ext_getImmediateInstanceMethod (Class aClass, SEL aSelector);
 	((TYPE (*)(id, Ivar)object_getIvar)((OBJ), (IVAR)))
 
 /**
- * Returns the value of the instance variable named \a NAME from instance \a
- * OBJ. The instance variable must be of type \a TYPE, and is returned as such.
+ * Returns the value of the instance variable identified by the string \a NAME
+ * from instance \a OBJ. The instance variable must be of type \a TYPE, and is
+ * returned as such.
  *
  * @note \a OBJ is evaluated twice.
  *
