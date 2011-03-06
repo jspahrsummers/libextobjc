@@ -11,28 +11,28 @@
 #import "metamacros.h"
 
 #define private(CLASS) \
-	protocol ext_privateMethodProtocolName(CLASS)
+	protocol ext_ ## CLASS ## _PrivateMethods
 
-#define public(CLASS) \
-	interface NSObject (metamacro_concat(CLASS, _PrivateMethodsProtocol)) <ext_privateMethodProtocolName(CLASS)> \
+#define endprivate(CLASS) \
+	end \
+	\
+	@interface NSObject (CLASS ## _PrivateMethodsProtocol) <ext_ ## CLASS ## _PrivateMethods> \
 	@end \
 	\
 	__attribute__((constructor)) \
 	static void ext_ ## CLASS ## _injectPrivateMethods (void) { \
 		Class targetClass = objc_getClass(# CLASS); \
-		Protocol *protocol = @protocol(ext_privateMethodProtocolName(CLASS)); \
+		Protocol *protocol = @protocol(ext_ ## CLASS ## _PrivateMethods); \
 		\
 		if (!ext_makeProtocolMethodsPrivate(targetClass, protocol)) { \
 			fprintf(stderr, "ERROR: Could not add private methods for class %s\n", # CLASS); \
 		} \
-	} \
-	\
-	@implementation CLASS
+	}
 
 #define privateSelf super
 
 /*** implementation details follow ***/
 #define ext_privateMethodProtocolName(CLASS) \
-	ext_ ## CLASS ## _PrivateMethods
+	
 
 BOOL ext_makeProtocolMethodsPrivate (Class targetClass, Protocol *protocol);

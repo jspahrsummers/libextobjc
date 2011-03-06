@@ -17,9 +17,9 @@
 
 @private (PrivateTestClass)
 - (int)privateValue;
-@end
+@endprivate (PrivateTestClass)
 
-@public (PrivateTestClass)
+@implementation PrivateTestClass
 - (int)stuff {
   	return [privateSelf privateValue];
 }
