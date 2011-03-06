@@ -71,8 +71,9 @@
 	}
 
 /**
- * Required to invoke a private method. If this keyword is not used, method
- * lookup may fail.
+ * Required to invoke a private method against \c self. If this keyword is not
+ * used, method lookup may fail. Note that you cannot invoke a private class
+ * method from an instance method.
  */
 #define privateSelf super
 
