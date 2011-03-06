@@ -9,6 +9,12 @@
 #import "EXTRuntimeExtensions.h"
 #import <stdio.h>
 
+static
+id ext_removedMethodCalled (id self, SEL _cmd, ...) {
+	[self doesNotRecognizeSelector:_cmd];
+	return nil;
+}
+
 unsigned ext_addMethods (Class aClass, Method *methods, unsigned count, BOOL checkSuperclasses) {
 	unsigned successes = 0;
 	for (unsigned methodIndex = 0;methodIndex < count;++methodIndex) {
@@ -109,5 +115,21 @@ Method ext_getImmediateInstanceMethod (Class aClass, SEL aSelector) {
 
 	free(methods);
 	return foundMethod;
+}
+
+void ext_removeMethod (Class aClass, SEL methodName) {
+	Method existingMethod = ext_getImmediateInstanceMethod(aClass, methodName);
+	if (!existingMethod)
+		return;
+	
+	Method superclassMethod = NULL;
+	Class superclass = class_getSuperclass(aClass);
+	if (superclass)
+		superclassMethod = class_getInstanceMethod(superclass, methodName);
+	
+	if (superclassMethod)
+		method_setImplementation(existingMethod, method_getImplementation(superclassMethod));
+	else
+		method_setImplementation(existingMethod, (IMP)&ext_removedMethodCalled);
 }
 

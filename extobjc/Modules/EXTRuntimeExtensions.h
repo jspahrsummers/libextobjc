@@ -67,3 +67,15 @@ Method ext_getImmediateInstanceMethod (Class aClass, SEL aSelector);
 #define ext_getIvarByName(OBJ, NAME, TYPE) \
 	ext_getIvar((OBJ), class_getInstanceVariable(object_getClass((OBJ)), (NAME)), TYPE)
 
+/**
+ * "Removes" any instance method matching \a methodName from \a aClass. This
+ * removal can mean one of two things:
+ *
+ * @li If any superclass of \a aClass implements a method by the same name, the
+ * implementation of the closest such superclass is used.
+ * @li If no superclasses of \a aClass implement a method by the same name, the
+ * method is replaced with a call to \c doesNotRecognizeSelector:. The \c
+ * forwardInvocation: machinery is not invoked.
+ */
+void ext_removeMethod (Class aClass, SEL methodName);
+
