@@ -9,10 +9,9 @@
 #import <Foundation/Foundation.h>
 
 /**
- * Implements a primitive form of multiple dispatch by functioning as a proxy
- * object for one or more other objects of any class. This does not send every
- * message to each target – instead, it sends a given message to the first
- * target that responds to it, with some exceptions for reflection functionality
+ * Functions as a proxy for one or more other objects of any class and forwards
+ * each message to the first proxied object that responds to it. This does not send
+ * every message to each target, with some exceptions for reflection functionality
  * within the \c NSObject protocol. The result is dynamism very much like multiple
  * inheritance.
  * 
