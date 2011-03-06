@@ -18,6 +18,9 @@
  *
  * Final method declarations must be followed by \c @endfinal. This macro
  * should only be used in an implementation file.
+ *
+ * @todo \c @property declarations are currently not supported within \c @final
+ * blocks.
  */
 #define final(CLASS) \
 	protocol ext_ ## CLASS ## _FinalMethods; \

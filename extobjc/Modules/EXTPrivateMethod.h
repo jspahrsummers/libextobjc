@@ -34,6 +34,9 @@
  *
  * @warning Private methods will not be available at the point of \c +load, and
  * possibly not even by \c +initialize.
+ *
+ * @todo \c @property declarations are currently not supported within \c @final
+ * blocks.
  */
 #define private(CLASS) \
 	protocol ext_ ## CLASS ## _PrivateMethods; \
