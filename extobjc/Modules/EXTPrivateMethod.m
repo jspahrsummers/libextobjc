@@ -28,6 +28,9 @@ BOOL ext_makeProtocolMethodsPrivate (Class targetClass, Protocol *protocol) {
 		&methodCount
 	);
 
+	printf("methodCount: %u\n", methodCount);
+	fflush(stdout);
+
 	BOOL success = YES;
 	for (unsigned methodIndex = 0;methodIndex < methodCount;++methodIndex) {
 		SEL name = methods[methodIndex].name;

@@ -11,13 +11,17 @@
 #import "metamacros.h"
 
 #define private(CLASS) \
-	protocol ext_ ## CLASS ## _PrivateMethods
+	protocol ext_ ## CLASS ## _PrivateMethods; \
+	@protocol ext_ ## CLASS ## _FakeProtocol <ext_ ## CLASS ## _PrivateMethods> \
+	@end \
+	\
+	@interface NSObject (CLASS ## _PrivateMethodsProtocol) <ext_ ## CLASS ## _FakeProtocol> \
+	@end \
+	\
+	@protocol ext_ ## CLASS ## _PrivateMethods
 
 #define endprivate(CLASS) \
 	end \
-	\
-	@interface NSObject (CLASS ## _PrivateMethodsProtocol) <ext_ ## CLASS ## _PrivateMethods> \
-	@end \
 	\
 	__attribute__((constructor)) \
 	static void ext_ ## CLASS ## _injectPrivateMethods (void) { \
