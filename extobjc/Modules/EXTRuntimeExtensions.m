@@ -9,30 +9,12 @@
 #import "EXTRuntimeExtensions.h"
 #import <stdio.h>
 
-typedef enum {
-	// the first two bits are used to determine overwriting behavior
-	ext_methodInjectionReplace                  = 0x00,
-	ext_methodInjectionFailOnExisting           = 0x01,
-	ext_methodInjectionFailOnSuperclassExisting = 0x02,
-	ext_methodInjectionFailOnAnyExisting        = 0x03,
-
-	// whether to ignore methods named 'load'
-	ext_methodInjectionIgnoreLoad = 1U << 2,
-
-	// whether to ignore methods named 'initialize'
-	ext_methodInjectionIgnoreInitialize = 1U << 3
-} ext_methodInjectionBehavior;
-
-// a mask to get the first two bits of ext_methodInjectionBehavior
-static const ext_methodInjectionBehavior ext_methodInjectionOverwriteBehaviorMask = 0x3;
-
 static
 id ext_removedMethodCalled (id self, SEL _cmd, ...) {
 	[self doesNotRecognizeSelector:_cmd];
 	return nil;
 }
 
-static
 unsigned ext_injectMethods (
 	Class aClass,
 	Method *methods,
@@ -41,6 +23,13 @@ unsigned ext_injectMethods (
 	ext_failedMethodCallback failedToAddCallback
 ) {
 	unsigned successes = 0;
+	BOOL isMeta = class_isMetaClass(aClass);
+
+	if (!isMeta) {
+		// clear any +load and +initialize ignore flags
+		behavior &= ~(ext_methodInjectionIgnoreLoad | ext_methodInjectionIgnoreInitialize);
+	}
+
 	for (unsigned methodIndex = 0;methodIndex < count;++methodIndex) {
 		Method method = methods[methodIndex];
 		SEL methodName = method_getName(method);
@@ -100,7 +89,6 @@ unsigned ext_injectMethods (
 	return successes;
 }
 
-static
 unsigned ext_injectMethodsFromClass (
 	Class srcClass,
 	Class dstClass,
@@ -126,7 +114,7 @@ unsigned ext_injectMethodsFromClass (
 	count = 0;
 	Method *classMethods = class_copyMethodList(object_getClass(srcClass), &count);
 
-	// ignore +load now that we're on class methods
+	// ignore +load
 	behavior |= ext_methodInjectionIgnoreLoad;
 	successes += ext_injectMethods(
 		object_getClass(dstClass),

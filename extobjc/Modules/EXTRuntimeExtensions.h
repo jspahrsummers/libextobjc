@@ -15,6 +15,52 @@
 typedef void (*ext_failedMethodCallback)(Class, Method);
 
 /**
+ * Used with #ext_injectMethods to determine injection behavior.
+ */
+typedef enum {
+	/**
+	 * Indicates that any existing methods on the destination class should be
+	 * overwritten.
+	 */
+	ext_methodInjectionReplace                  = 0x00,
+
+	/**
+	 * Avoid overwriting methods on the immediate destination class.
+	 */
+	ext_methodInjectionFailOnExisting           = 0x01,
+	
+	/**
+	 * Avoid overriding methods implemented in any superclass of the destination
+	 * class.
+	 */
+	ext_methodInjectionFailOnSuperclassExisting = 0x02,
+
+	/**
+	 * Avoid overwriting methods implemented in the immediate destination class
+	 * or any superclass. This is equivalent to
+	 * <tt>ext_methodInjectionFailOnExisting | ext_methodInjectionFailOnSuperclassExisting</tt>.
+	 */
+	ext_methodInjectionFailOnAnyExisting        = 0x03,
+
+	/**
+	 * Ignore the \c +load class method. This does not affect instance method
+	 * injection.
+	 */
+	ext_methodInjectionIgnoreLoad = 1U << 2,
+
+	/**
+	 * Ignore the \c +initialize class method. This does not affect instance method
+	 * injection.
+	 */
+	ext_methodInjectionIgnoreInitialize = 1U << 3
+} ext_methodInjectionBehavior;
+
+/**
+ * A mask for the overwriting behavior flags of #ext_methodInjectionBehavior.
+ */
+static const ext_methodInjectionBehavior ext_methodInjectionOverwriteBehaviorMask = 0x3;
+
+/**
  * Iterates through the first \a count entries in \a methods and attempts to add
  * each one to \a aClass. If a method by the same name already exists on \a
  * aClass, it is \e not overridden. If \a checkSuperclasses is \c YES, and
@@ -101,6 +147,25 @@ Method ext_getImmediateInstanceMethod (Class aClass, SEL aSelector);
  */
 #define ext_getIvarByName(OBJ, NAME, TYPE) \
 	ext_getIvar((OBJ), class_getInstanceVariable(object_getClass((OBJ)), (NAME)), TYPE)
+
+/**
+ * Highly-configurable method injection. Adds the first \a count entries from \a
+ * methods into \a aClass according to \a behavior.
+ *
+ * Returns the number of methods added successfully. For each method that fails
+ * to be added, \a failedToAddCallback (if provided) is invoked.
+ */
+unsigned ext_injectMethods (Class aClass, Method *methods, unsigned count, ext_methodInjectionBehavior behavior, ext_failedMethodCallback failedToAddCallback);
+
+/**
+ * Invokes #ext_injectMethods with the instance methods and class methods from
+ * \a srcClass. #ext_methodInjectionIgnoreLoad is added to #behavior for class
+ * method injection.
+ *
+ * Returns the number of methods added successfully. For each method that fails
+ * to be added, \a failedToAddCallback (if provided) is invoked.
+ */
+unsigned ext_injectMethodsFromClass (Class srcClass, Class dstClass, ext_methodInjectionBehavior behavior, ext_failedMethodCallback failedToAddCallback);
 
 /**
  * "Removes" any instance method matching \a methodName from \a aClass. This
