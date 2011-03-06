@@ -9,21 +9,37 @@
 #import <objc/runtime.h>
 
 /**
+ * A callback indicating that the given method failed to be added to the given
+ * class. The reason for the failure depends on the attempted task.
+ */
+typedef void (*ext_failedMethodCallback)(Class, Method);
+
+/**
  * Iterates through the first \a count entries in \a methods and attempts to add
  * each one to \a aClass. If a method by the same name already exists on \a
  * aClass, it is \e not overridden. If \a checkSuperclasses is \c YES, and
  * a method by the same name already exists on any superclass of \a aClass, it
  * is not overridden.
  *
- * Returns the number of methods added successfully, or \c NO if there was
- * a conflict or an error occurred. Additionally, the first \a count entries in
- * methods are updated accordingly:
- *
- * @li The entries for any methods which were added successfully are set to \c
- * NULL.
- * @li The entries for any methods which failed to be added are left as-is.
+ * Returns the number of methods added successfully. For each method that fails
+ * to be added, \a failedToAddCallback (if provided) is invoked.
  */
-unsigned ext_addMethods (Class aClass, Method *methods, unsigned count, BOOL checkSuperclasses);
+unsigned ext_addMethods (Class aClass, Method *methods, unsigned count, BOOL checkSuperclasses, ext_failedMethodCallback failedToAddCallback);
+
+/**
+ * Iterates through all instance and class methods of \a srcClass and attempts
+ * to add each one to \a dstClass. If a method by the same name already exists
+ * on \a aClass, it is \e not overridden. If \a checkSuperclasses is \c YES, and
+ * a method by the same name already exists on any superclass of \a aClass, it
+ * is not overridden.
+ *
+ * Returns the number of methods added successfully. For each method that fails
+ * to be added, \a failedToAddCallback (if provided) is invoked.
+ *
+ * @note This ignores any \c +load method on \a srcClass. \a srcClass and \a
+ * dstClass must not be metaclasses.
+ */
+unsigned ext_addMethodsFromClass (Class srcClass, Class dstClass, BOOL checkSuperclasses, ext_failedMethodCallback failedToAddCallback);
 
 /**
  * Looks through the complete list of classes registered with the runtime and
