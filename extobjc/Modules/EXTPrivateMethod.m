@@ -19,20 +19,13 @@ id ext_removedMethodCalled (id self, SEL _cmd, ...) {
 	return nil;
 }
 
-BOOL ext_makeProtocolMethodsPrivate (Class targetClass, Protocol *protocol) {
-	const char *className = class_getName(targetClass);
-
-	Class superclass = class_getSuperclass(targetClass);
-	if (!superclass) {
-		fprintf(stderr, "ERROR: Cannot make methods on class %s private without a superclass\n", className);
-		return NO;
-	}
-
+static
+BOOL ext_copyProtocolMethodsToClass (Protocol *protocol, Class srcClass, Class dstClass, BOOL instanceMethods) {
 	unsigned methodCount = 0;
 	struct objc_method_description *methods = protocol_copyMethodDescriptionList(
 		protocol,
 		YES,
-		YES,
+		instanceMethods,
 		&methodCount
 	);
 
@@ -41,24 +34,58 @@ BOOL ext_makeProtocolMethodsPrivate (Class targetClass, Protocol *protocol) {
 		SEL name = methods[methodIndex].name;
 		const char *selectorName = sel_getName(name);
 
-		Method foundMethod = ext_getImmediateInstanceMethod(targetClass, name);
+		Method foundMethod = ext_getImmediateInstanceMethod(srcClass, name);
 		if (!foundMethod) {
-			fprintf(stderr, "ERROR: Method %s not found on class %s\n", selectorName, className);
+			fprintf(stderr, "ERROR: Method %c%s not found on class %s\n", (instanceMethods ? '-' : '+'), selectorName, class_getName(srcClass));
 			success = NO;
 			continue;
 		}
 
-		Method originalMethod = ext_getImmediateInstanceMethod(superclass, name);
+		// TODO: keep track of methods injected like this so we can check
+		// against an array, rather than a function address -- we can then
+		// restore ext_removeMethod(), which has more reasonable behavior
+		// anyways
+
+		Method originalMethod = ext_getImmediateInstanceMethod(dstClass, name);
 		if (originalMethod && method_getImplementation(originalMethod) != (IMP)&ext_removedMethodCalled) {
-			fprintf(stderr, "ERROR: Method %s already exists on class %s\n", selectorName, class_getName(superclass));
+			fprintf(stderr, "ERROR: Method %c%s already exists on class %s\n", (instanceMethods ? '-' : '+'), selectorName, class_getName(dstClass));
 			success = NO;
 			continue;
 		}
 		
-		class_replaceMethod(superclass, name, method_getImplementation(foundMethod), method_getTypeEncoding(foundMethod));
+		class_replaceMethod(dstClass, name, method_getImplementation(foundMethod), method_getTypeEncoding(foundMethod));
 		method_setImplementation(foundMethod, (IMP)&ext_removedMethodCalled);
-	//	ext_removeMethod(targetClass, name);
+	//	ext_removeMethod(srcClass, name);
 	}
+
+	free(methods);
+	return success;
+}
+
+BOOL ext_makeProtocolMethodsPrivate (Class targetClass, Protocol *protocol) {
+	Class superclass = class_getSuperclass(targetClass);
+	if (!superclass) {
+		fprintf(stderr, "ERROR: Cannot make methods on class %s private without a superclass\n", class_getName(targetClass));
+		return NO;
+	}
+
+	BOOL success = YES;
+
+	// instance methods
+	success &= ext_copyProtocolMethodsToClass(
+		protocol,
+		targetClass,
+		superclass,
+		YES
+	);
+
+	// class methods
+	success &= ext_copyProtocolMethodsToClass(
+		protocol,
+		object_getClass(targetClass),
+		object_getClass(superclass),
+		NO	
+	);
 
 	return success;
 }

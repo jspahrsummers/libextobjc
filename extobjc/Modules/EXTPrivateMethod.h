@@ -19,6 +19,8 @@
  * Private method declarations must be followed by \c @endprivate. The methods
  * themselves must be invoked using #privateSelf.
  *
+ * @note This macro should only be used in an implementation file.
+ *
  * @todo Private methods by the same name currently cannot exist in classes that
  * are immediate descendants of the same superclass.
  *
@@ -27,10 +29,10 @@
  */
 #define private(CLASS) \
 	protocol ext_ ## CLASS ## _PrivateMethods; \
-	@protocol ext_ ## CLASS ## _FakeProtocol <ext_ ## CLASS ## _PrivateMethods> \
+	@protocol ext_ ## CLASS ## _PrivateMethodsFakeProtocol <ext_ ## CLASS ## _PrivateMethods> \
 	@end \
 	\
-	@interface NSObject (CLASS ## _PrivateMethodsProtocol) <ext_ ## CLASS ## _FakeProtocol> \
+	@interface NSObject (CLASS ## _PrivateMethodsProtocol) <ext_ ## CLASS ## _PrivateMethodsFakeProtocol> \
 	@end \
 	\
 	extern Class ext_privateMethodsClass_; \
@@ -39,7 +41,7 @@
 	__attribute__((constructor)) \
 	static void ext_ ## CLASS ## _preparePrivateMethods (void) { \
 		ext_privateMethodsClass_ = objc_getClass(# CLASS); \
-		ext_privateMethodsFakeProtocol_ = @protocol(ext_ ## CLASS ## _FakeProtocol); \
+		ext_privateMethodsFakeProtocol_ = @protocol(ext_ ## CLASS ## _PrivateMethodsFakeProtocol); \
 	} \
 	\
 	@protocol ext_ ## CLASS ## _PrivateMethods
@@ -47,6 +49,8 @@
 /**
  * Ends a set of private method declarations. This must be used instead of \c
  * @end.
+ *
+ * @note This macro should only be used in an implementation file.
  */
 #define endprivate \
 	end \

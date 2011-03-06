@@ -10,31 +10,73 @@
 #import "EXTRuntimeExtensions.h"
 #import <stdio.h>
 
-BOOL ext_verifyFinalMethod (SEL methodName, Class targetClass) {
-	unsigned subclassCount = 0;
-	Class *subclasses = ext_copySubclassList(targetClass, &subclassCount);
+Class ext_finalMethodsClass_ = nil;
+Protocol *ext_finalMethodsFakeProtocol_ = NULL;
+
+static
+BOOL ext_verifyProtocolMethodsAgainstSubclasses (Protocol *protocol, Class targetClass, Class *subclasses, unsigned subclassCount, BOOL instanceMethods) {
+	unsigned methodCount = 0;
+	struct objc_method_description *methods = protocol_copyMethodDescriptionList(
+		protocol,
+		YES,
+		instanceMethods,
+		&methodCount
+	);
 
 	BOOL success = YES;
 	for (unsigned subclassIndex = 0;subclassIndex < subclassCount;++subclassIndex) {
-		Class cls = subclasses[subclassIndex];
+		Class subclass = subclasses[subclassIndex];
+		if (!instanceMethods)
+			subclass = object_getClass(subclass);
+
+		unsigned subclassMethodCount = 0;
+		Method *subclassMethods = class_copyMethodList(subclass, &subclassMethodCount);
 		
-		unsigned methodCount = 0;
-		Method *methods = class_copyMethodList(cls, &methodCount);
+		for (unsigned subclassMethodIndex = 0;subclassMethodIndex < subclassMethodCount;++subclassMethodIndex) {
+			Method subclassMethod = subclassMethods[subclassMethodIndex];
 
-		for (unsigned methodIndex = 0;methodIndex < methodCount;++methodIndex) {
-			SEL name = method_getName(methods[methodIndex]);
-			if (name == methodName) {
-				BOOL isMeta = class_isMetaClass(targetClass);
+			for (unsigned methodIndex = 0;methodIndex < methodCount;++methodIndex) {
+				SEL name = methods[methodIndex].name;
 
-				success = NO;
-				fprintf(stderr, "ERROR: Method %c%s in %s overrides final method by the same name in %s\n", (isMeta ? '+' : '-'), sel_getName(name), class_getName(cls), class_getName(targetClass));
-				
-				break;
+				if (method_getName(subclassMethod) == name) {
+					const char *selectorName = sel_getName(name);
+					fprintf(stderr, "ERROR: Method %c%s in %s overrides final method by the same name in %s\n", (instanceMethods ? '-' : '+'), selectorName, class_getName(subclass), class_getName(targetClass));
+					success = NO;
+					break;
+				}
 			}
 		}
 
-		free(methods);
+		free(subclassMethods);
 	}
+
+	free(methods);
+	return success;
+}
+
+BOOL ext_verifyFinalProtocolMethods (Class targetClass, Protocol *protocol) {
+	unsigned subclassCount = 0;
+	Class *subclasses = ext_copySubclassList(targetClass, &subclassCount);
+	
+	BOOL success = YES;
+
+	// instance methods
+	success &= ext_verifyProtocolMethodsAgainstSubclasses(
+		protocol,
+		targetClass,
+		subclasses,
+		subclassCount,
+		YES
+	);
+
+	// class methods
+	success &= ext_verifyProtocolMethodsAgainstSubclasses(
+		protocol,
+		targetClass,
+		subclasses,
+		subclassCount,
+		NO
+	);
 
 	free(subclasses);
 	return success;

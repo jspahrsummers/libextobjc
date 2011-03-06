@@ -16,10 +16,12 @@
 @end
 
 /*** test class implementations ***/
-@implementation MySuperclass
-finalInstanceMethod(MySuperclass, superclassFinalMethod);
-finalClassMethod(MySuperclass, superclassFinalClassMethod);
+@final (MySuperclass)
+- (Class)superclassFinalMethod;
++ (Class)superclassFinalClassMethod;
+@endfinal
 
+@implementation MySuperclass
 - (Class)superclassFinalMethod {
   	return [MySuperclass class];
 }
@@ -33,9 +35,11 @@ finalClassMethod(MySuperclass, superclassFinalClassMethod);
 }
 @end
 
-@implementation MySubclass
-finalClassMethod(MySubclass, subclassFinalClassMethod);
+@final (MySubclass)
++ (void)subclassFinalClassMethod;
+@endfinal
 
+@implementation MySubclass
 // this should log an error to the console
 - (Class)superclassFinalMethod {
 	return [MySubclass class];
