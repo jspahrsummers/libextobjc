@@ -107,13 +107,15 @@ typedef struct {
 
 	/**
 	 * The selector for the getter of this property. This will reflect any
-	 * custom \c getter= attribute provided in the property declaration.
+	 * custom \c getter= attribute provided in the property declaration, or the
+	 * inferred getter name otherwise.
 	 */
 	SEL getter;
 
 	/**
 	 * The selector for the setter of this property. This will reflect any
-	 * custom \c setter= attribute provided in the property declaration.
+	 * custom \c setter= attribute provided in the property declaration, or the
+	 * inferred setter name otherwise.
 	 *
 	 * @note If #readonly is \c YES, this value will represent what the setter
 	 * \e would be, if the property were writable.
