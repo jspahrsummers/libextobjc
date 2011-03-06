@@ -8,20 +8,32 @@
 
 #import "EXTPrivateMethodTest.h"
 
+@interface PrivateTestClass : NSURLRequest {
+}
+
+- (int)stuff;
+
+@end
+
+@private (PrivateTestClass)
+- (int)privateValue;
+@end
+
+@public (PrivateTestClass)
+- (int)stuff {
+  	return [privateSelf privateValue];
+}
+
+- (int)privateValue {
+	return 42;
+}
+@end
+
 @implementation EXTPrivateMethodTest
-
-- (void)setUp
-{
-    [super setUp];
-    
-    // Set-up code here.
+- (void)testPrivateMethods {
+	PrivateTestClass *obj = [[PrivateTestClass alloc] init];
+	STAssertNotNil(obj, @"could not allocate instance of class with private methods");
+	STAssertEquals([obj stuff], 42, @"expected -[PrivateTestClass stuff] to return 42");
+	STAssertNoThrow([obj release], @"could not deallocate instance of class with private methods");
 }
-
-- (void)tearDown
-{
-    // Tear-down code here.
-    
-    [super tearDown];
-}
-
 @end
