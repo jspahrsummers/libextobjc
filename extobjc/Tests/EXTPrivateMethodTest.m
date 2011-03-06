@@ -15,33 +15,11 @@
 
 @end
 
-@protocol TestProtocol;
-@protocol FakeProtocol <TestProtocol>
-@end
-
-@interface NSURLRequest (Something) <FakeProtocol>
-@end
-
-@protocol TestProtocol
-@end
-
-@implementation PrivateTestClass (Something)
-- (void)something {}
-@end
-
 @private (PrivateTestClass)
 - (int)privateValue;
 @endprivate
 
 @implementation PrivateTestClass
-+ (void)load {
-	NSLog(@"%s", __func__);
-}
-	
-+ (void)initialize {
-	NSLog(@"%s", __func__);
-}
-
 - (int)stuff {
   	return [privateSelf privateValue];
 }
