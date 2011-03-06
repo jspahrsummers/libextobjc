@@ -42,6 +42,13 @@ unsigned ext_addMethods (Class aClass, Method *methods, unsigned count, BOOL che
 unsigned ext_addMethodsFromClass (Class srcClass, Class dstClass, BOOL checkSuperclasses, ext_failedMethodCallback failedToAddCallback);
 
 /**
+ * Returns the full list of classes registered with the runtime, terminated with
+ * \c NULL. If \a count is not \c NULL, it is filled in with the total number of
+ * classes returned. You must \c free() the returned array.
+ */
+Class *ext_copyClassList (unsigned *count);
+
+/**
  * Looks through the complete list of classes registered with the runtime and
  * finds all classes which conform to \a protocol. Returns \c *count classes
  * termined by a \c NULL. You must \c free() the returned array. If there are no

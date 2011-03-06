@@ -140,10 +140,7 @@ unsigned ext_injectMethodsFromClass (
 	return successes;
 }
 
-static
 Class *ext_copyClassList (unsigned *count) {
-	// TODO: this could use some kinda caching
-
 	// get the number of classes registered with the runtime
 	int classCount = objc_getClassList(NULL, 0);
 	if (!classCount) {
@@ -153,8 +150,8 @@ Class *ext_copyClassList (unsigned *count) {
 		return NULL;
 	}
 
-	// allocate space for them
-	Class *allClasses = malloc(sizeof(Class) * classCount);
+	// allocate space for them plus NULL
+	Class *allClasses = malloc(sizeof(Class) * (classCount + 1));
 	if (!allClasses) {
 		fprintf(stderr, "ERROR: Could allocate memory for all classes\n");
 		if (count)
@@ -165,6 +162,7 @@ Class *ext_copyClassList (unsigned *count) {
 
 	// and then actually pull the list of the class objects
 	classCount = objc_getClassList(allClasses, classCount);
+	allClasses[classCount] = NULL;
 
 	if (count)
 		*count = (unsigned)classCount;
