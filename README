@@ -2,4 +2,4 @@ The ExtendedC library extends the C programming language through complex macros 
 
 Current features include exception handling, new block statements, automatic scoped cleanup, and type-safe generic containers.
 
-This library is public domain, and can be incorporated for free and without attribution for any use.:wq
+This library is public domain, and can be incorporated for free and without attribution for any use.
