@@ -100,7 +100,8 @@ typedef struct {
 	BOOL canBeCollected;
 
 	/**
-	 * The memory management policy for this property.
+	 * The memory management policy for this property. This will always be
+	 * #ext_propertyMemoryManagementPolicyAssign if #readonly is \c YES.
 	 */
 	ext_propertyMemoryManagementPolicy memoryManagementPolicy;
 

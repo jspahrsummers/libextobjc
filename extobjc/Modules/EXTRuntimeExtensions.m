@@ -238,6 +238,9 @@ ext_propertyAttributes *ext_copyPropertyAttributes (objc_property_t property) {
 		return NULL;
 	}
 
+	// skip past any junk before the first flag
+	next = strchr(next, ',');
+
 	// allocate enough space for the structure and the type string (plus a NUL)
 	ext_propertyAttributes *attributes = calloc(1, sizeof(ext_propertyAttributes) + typeLength + 1);
 	if (!attributes) {
