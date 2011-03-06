@@ -1,0 +1,5 @@
+The ExtendedObjC library extends the dynamism of the Objective-C programming language to support additional patterns present in other dynamic programming languages (including those that are not necessarily object-oriented).
+
+Current features include concrete protocols, safe categories, multiple dispatch, and conveniences for interacting with the runtime, among others.
+
+This library is public domain, and can be incorporated for free and without attribution for any use.
