@@ -9,11 +9,6 @@
 #import <SenTestingKit/SenTestingKit.h>
 #import "extobjc.h"
 
-@protocol TestProtocol <NSObject>
-@required
-- (void)doStuff;
-@end
-
 @interface EXTPrivateMethodTest : SenTestCase {
 @private
     

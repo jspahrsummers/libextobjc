@@ -8,7 +8,6 @@
 
 #import "EXTPrivateMethod.h"
 #import "EXTRuntimeExtensions.h"
-#import <stdlib.h>
 #import <string.h>
 
 BOOL ext_makeProtocolMethodsPrivate (Class targetClass, Protocol *protocol) {
@@ -27,9 +26,6 @@ BOOL ext_makeProtocolMethodsPrivate (Class targetClass, Protocol *protocol) {
 		YES,
 		&methodCount
 	);
-
-	printf("methodCount: %u\n", methodCount);
-	fflush(stdout);
 
 	BOOL success = YES;
 	for (unsigned methodIndex = 0;methodIndex < methodCount;++methodIndex) {
