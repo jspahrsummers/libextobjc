@@ -56,6 +56,11 @@ typedef enum {
 } ext_methodInjectionBehavior;
 
 /**
+ * A mask for the overwriting behavior flags of #ext_methodInjectionBehavior.
+ */
+static const ext_methodInjectionBehavior ext_methodInjectionOverwriteBehaviorMask = 0x3;
+
+/**
  * Describes the memory management policy of a property.
  */
 typedef enum {
@@ -134,11 +139,6 @@ typedef struct {
 	 */
 	char type[];
 } ext_propertyAttributes;
-
-/**
- * A mask for the overwriting behavior flags of #ext_methodInjectionBehavior.
- */
-static const ext_methodInjectionBehavior ext_methodInjectionOverwriteBehaviorMask = 0x3;
 
 /**
  * Iterates through the first \a count entries in \a methods and attempts to add
