@@ -17,12 +17,20 @@
  * with private or public methods by the same name declared in any subclasses.
  *
  * Private method declarations must be followed by \c @endprivate. The methods
- * themselves must be invoked using #privateSelf.
+ * themselves must be invoked using #privateSelf. This macro should only be used
+ * in an implementation file.
  *
- * @note This macro should only be used in an implementation file.
- *
- * @todo Private methods by the same name currently cannot exist in classes that
+ * @bug Private methods by the same name currently cannot exist in classes that
  * are immediate descendants of the same superclass.
+ * 
+ * @bug Due to implementation details, private methods can be invoked publicly
+ * against the superclass of the implementing class. However, in such cases,
+ * their behavior will differ, being subject to normal inheritance and
+ * overriding.
+ *
+ * @note Private methods will conflict with unqualified methods of the same name
+ * in the immediate ancestor of the implementing class. This is not considered
+ * a bug, but may nonetheless be fixed in the future.
  *
  * @warning Private methods will not be available at the point of \c +load, and
  * possibly not even by \c +initialize.

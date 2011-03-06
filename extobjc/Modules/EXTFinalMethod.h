@@ -16,9 +16,8 @@
  * startup; otherwise, the error is logged and execution continues using the
  * overridden method.
  *
- * Final method declarations must be followed by \c @endfinal.
- *
- * @note This macro should only be used in an implementation file.
+ * Final method declarations must be followed by \c @endfinal. This macro
+ * should only be used in an implementation file.
  */
 #define final(CLASS) \
 	protocol ext_ ## CLASS ## _FinalMethods; \
