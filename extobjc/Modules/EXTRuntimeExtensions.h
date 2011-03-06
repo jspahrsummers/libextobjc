@@ -43,12 +43,23 @@ unsigned ext_addMethodsFromClass (Class srcClass, Class dstClass, BOOL checkSupe
 
 /**
  * Looks through the complete list of classes registered with the runtime and
+ * finds all classes which conform to \a protocol. Returns \c *count classes
+ * termined by a \c NULL. You must \c free() the returned array. If there are no
+ * classes conforming to \a protocol, \c NULL is returned.
+ *
+ * @note \a count may be \c NULL.
+ */
+Class *ext_copyClassListConformingToProtocol (Protocol *protocol, unsigned *count);
+
+/**
+ * Looks through the complete list of classes registered with the runtime and
  * finds all classes which are descendant from \a aClass. Returns \c
  * *subclassCount classes terminated by a \c NULL. You must \c free() the
  * returned array. If there are no subclasses of \a aClass, \c NULL is
  * returned.
  *
- * @note \a subclassCount may be \c NULL.
+ * @note \a subclassCount may be \c NULL. \a aClass may be a metaclass to get
+ * all subclass metaclass objects.
  */
 Class *ext_copySubclassList (Class aClass, unsigned *subclassCount);
 

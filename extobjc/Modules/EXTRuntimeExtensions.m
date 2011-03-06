@@ -140,6 +140,38 @@ unsigned ext_injectMethodsFromClass (
 	return successes;
 }
 
+static
+Class *ext_copyClassList (unsigned *count) {
+	// TODO: this could use some kinda caching
+
+	// get the number of classes registered with the runtime
+	int classCount = objc_getClassList(NULL, 0);
+	if (!classCount) {
+		if (count)
+			*count = 0;
+
+		return NULL;
+	}
+
+	// allocate space for them
+	Class *allClasses = malloc(sizeof(Class) * classCount);
+	if (!allClasses) {
+		fprintf(stderr, "ERROR: Could allocate memory for all classes\n");
+		if (count)
+			*count = 0;
+
+		return NULL;
+	}
+
+	// and then actually pull the list of the class objects
+	classCount = objc_getClassList(allClasses, classCount);
+
+	if (count)
+		*count = (unsigned)classCount;
+
+	return allClasses;
+}
+
 unsigned ext_addMethods (Class aClass, Method *methods, unsigned count, BOOL checkSuperclasses, ext_failedMethodCallback failedToAddCallback) {
 	ext_methodInjectionBehavior behavior = ext_methodInjectionFailOnExisting;
 	if (checkSuperclasses)
@@ -162,39 +194,42 @@ unsigned ext_addMethodsFromClass (Class srcClass, Class dstClass, BOOL checkSupe
 	return ext_injectMethodsFromClass(srcClass, dstClass, behavior, failedToAddCallback);
 }
 
-Class *ext_copySubclassList (Class targetClass, unsigned *subclassCount) {
-	// TODO: this method could use some kinda caching
-
-	// get the number of classes registered with the runtime
-	int classCount = objc_getClassList(NULL, 0);
-	if (!classCount) {
-		fprintf(stderr, "ERROR: No classes registered with the runtime\n");
-		if (subclassCount)
-			*subclassCount = 0;
-
-		return NULL;
-	}
-
-	// allocate space for them
-	Class *allClasses = malloc(sizeof(Class) * classCount);
-	if (!allClasses) {
-		fprintf(stderr, "ERROR: Could allocate memory for all classes\n");
-		if (subclassCount)
-			*subclassCount = 0;
-
-		return NULL;
-	}
-
-	// and then actually pull the list of the class objects
-	classCount = objc_getClassList(allClasses, classCount);
+Class *ext_copyClassListConformingToProtocol (Protocol *protocol, unsigned *count) {
+	unsigned classCount = 0;
+	Class *allClasses = ext_copyClassList(&classCount);
 
 	// we're going to reuse allClasses for the return value, so returnIndex will
 	// keep track of the indices we replace with new values
-	int returnIndex = 0;
+	unsigned returnIndex = 0;
+
+	for (unsigned classIndex = 0;classIndex < classCount;++classIndex) {
+		Class cls = allClasses[classIndex];
+		if (class_conformsToProtocol(cls, protocol))
+			allClasses[returnIndex++] = cls;
+	}
+
+	allClasses[returnIndex] = NULL;
+	if (count)
+		*count = returnIndex;
+	
+	return allClasses;
+}
+
+Class *ext_copySubclassList (Class targetClass, unsigned *subclassCount) {
+	unsigned classCount = 0;
+	Class *allClasses = ext_copyClassList(&classCount);
+	if (!allClasses || !classCount) {
+		fprintf(stderr, "ERROR: No classes registered with the runtime, cannot find %s!\n", class_getName(targetClass));
+		return NULL;
+	}
+
+	// we're going to reuse allClasses for the return value, so returnIndex will
+	// keep track of the indices we replace with new values
+	unsigned returnIndex = 0;
 
 	BOOL isMeta = class_isMetaClass(targetClass);
 
-	for (int classIndex = 0;classIndex < classCount;++classIndex) {
+	for (unsigned classIndex = 0;classIndex < classCount;++classIndex) {
 		Class cls = allClasses[classIndex];
 		Class superclass = class_getSuperclass(cls);
 		
@@ -220,7 +255,7 @@ Class *ext_copySubclassList (Class targetClass, unsigned *subclassCount) {
 
 	allClasses[returnIndex] = NULL;
 	if (subclassCount)
-		*subclassCount = (unsigned)returnIndex;
+		*subclassCount = returnIndex;
 	
 	return allClasses;
 }
