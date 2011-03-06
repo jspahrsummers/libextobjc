@@ -45,3 +45,25 @@ Class *ext_copySubclassList (Class aClass, unsigned *subclassCount);
  */
 Method ext_getImmediateInstanceMethod (Class aClass, SEL aSelector);
 
+/**
+ * Returns the value of \c Ivar \a IVAR from instance \a OBJ. The instance
+ * variable must be of type \a TYPE, and is returned as such.
+ *
+ * @warning Depending on the platform, this may or may not work with aggregate
+ * or floating-point types.
+ */
+#define ext_getIvar(OBJ, IVAR, TYPE) \
+	((TYPE (*)(id, Ivar)object_getIvar)((OBJ), (IVAR)))
+
+/**
+ * Returns the value of the instance variable named \a NAME from instance \a
+ * OBJ. The instance variable must be of type \a TYPE, and is returned as such.
+ *
+ * @note \a OBJ is evaluated twice.
+ *
+ * @warning Depending on the platform, this may or may not work with aggregate
+ * or floating-point types.
+ */
+#define ext_getIvarByName(OBJ, NAME, TYPE) \
+	ext_getIvar((OBJ), class_getInstanceVariable(object_getClass((OBJ)), (NAME)), TYPE)
+
