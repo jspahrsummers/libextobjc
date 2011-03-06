@@ -11,6 +11,20 @@
 #import <stdlib.h>
 #import "metamacros.h"
 
+/**
+ * Declares private methods for \a CLASS. Any methods declared inside this block
+ * will not be visible to or invokable by other classes, and will not conflict
+ * with private or public methods by the same name declared in any subclasses.
+ *
+ * Private method declarations must be followed by \c @endprivate. The methods
+ * themselves must be invoked using #privateSelf.
+ *
+ * @todo Private methods by the same name currently cannot exist in classes that
+ * are immediate descendants of the same superclass.
+ *
+ * @warning Private methods will not be available at the point of \c +load, and
+ * possibly not even by \c +initialize.
+ */
 #define private(CLASS) \
 	protocol ext_ ## CLASS ## _PrivateMethods; \
 	@protocol ext_ ## CLASS ## _FakeProtocol <ext_ ## CLASS ## _PrivateMethods> \
@@ -30,6 +44,10 @@
 	\
 	@protocol ext_ ## CLASS ## _PrivateMethods
 
+/**
+ * Ends a set of private method declarations. This must be used instead of \c
+ * @end.
+ */
 #define endprivate \
 	end \
 	\
@@ -48,6 +66,10 @@
 		} \
 	}
 
+/**
+ * Required to invoke a private method. If this keyword is not used, method
+ * lookup may fail.
+ */
 #define privateSelf super
 
 /*** implementation details follow ***/
