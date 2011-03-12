@@ -8,6 +8,14 @@
 
 #import "EXTDispatchObject.h"
 
+@interface EXTDispatchObject() {
+	// a C array is used rather than an NSArray for performance reasons
+	id *targets;
+	NSUInteger targetCount;
+}
+
+@end
+
 @implementation EXTDispatchObject
 
 #pragma mark Object lifecycle

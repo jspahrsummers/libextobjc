@@ -21,11 +21,7 @@
  * @note To avoid warnings about static typing, refer to instances of this class as
  * \c id or using one of the classes being proxied.
  */
-@interface EXTDispatchObject : NSObject {
-	// a C array is used rather than an NSArray for performance reasons
-	id *targets;
-	NSUInteger targetCount;
-}
+@interface EXTDispatchObject : NSObject
 
 /**
  * Returns an autoreleased object that will dispatch all messages to the provided
