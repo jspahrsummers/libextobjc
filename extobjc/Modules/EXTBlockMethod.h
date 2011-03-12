@@ -46,5 +46,13 @@ BOOL ext_addBlockMethod (Class aClass, SEL name, id block, const char *types);
  */
 IMP ext_blockImplementation (id block);
 
+/**
+ * Replaces the implementation of \a name on \a aClass using \a block. \a
+ * types describes the return and argument types of the method. \a block must
+ * have been originally defined using #blockMethod. This will overwrite any
+ * existing method by the same name on \a aClass.
+ */
+void ext_replaceBlockMethod (Class aClass, SEL name, id block, const char *types);
+
 /*** implementation details follow ***/
 

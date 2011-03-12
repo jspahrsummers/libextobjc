@@ -20,3 +20,13 @@ BOOL ext_addBlockMethod (Class aClass, SEL name, id block, const char *types) {
 IMP ext_blockImplementation (id block) {
 	return (IMP)(*((void**)block + 2));
 }
+
+void ext_replaceBlockMethod (Class aClass, SEL name, id block, const char *types) {
+	class_replaceMethod(
+		aClass,
+		name,
+		ext_blockImplementation(block),
+		types
+	);
+}
+
