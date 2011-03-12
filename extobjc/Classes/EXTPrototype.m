@@ -146,9 +146,13 @@ void invokeBlockMethodWithSelf (NSInvocation *invocation, id self) {
 	NSCAssert([signature methodReturnLength] == [newSignature methodReturnLength], @"expected method signature and modified method signature to have the same return type");
 	NSLog(@"%s:%lu", __func__, (unsigned long)__LINE__);
 
-	char returnValue[[signature methodReturnLength]];
-	[newInvocation getReturnValue:returnValue];
-	[invocation setReturnValue:returnValue];
+	if ([signature methodReturnLength]) {
+		char returnValue[[signature methodReturnLength]];
+		[newInvocation getReturnValue:returnValue];
+		[invocation setReturnValue:returnValue];
+	}
+
+	NSLog(@"%s:%lu", __func__, (unsigned long)__LINE__);
 }
 
 @interface EXTPrototype () {
@@ -240,99 +244,6 @@ void invokeBlockMethodWithSelf (NSInvocation *invocation, id self) {
 
 	NSLog(@"slots: %@", (id)slots);
 
-	// TODO: this should really check for method signatures here, not selector names
-	BOOL isSetter = ((argCount == 1 || argCount == 2) && nameIsSetter(name));
-	if (isSetter) {
-		NSLog(@"%s determined to be a setter", name);
-
-		// we assume that the setter name contains a trailing colon
-		NSAssert(name[strlen(name) - 1] == ':', @"expected setter name to have a trailing colon");
-
-		// don't include the trailing colon
-		size_t slotLength = strlen(name + 3) - 1;
-		CFStringRef slotKey = NULL;
-
-		{
-			char lowercaseSlot[slotLength];
-
-			strncpy(lowercaseSlot, name + 3, slotLength);
-			lowercaseSlot[0] = tolower(lowercaseSlot[0]);
-
-			slotKey = CFStringCreateWithBytes(
-				NULL,
-				(void *)lowercaseSlot,
-				slotLength,
-				kCFStringEncodingUTF8,
-				false
-			);
-		}
-
-		NSLog(@"slotKey: %@", (id)slotKey);
-
-		id slotValue = nil;
-		[anInvocation getArgument:&slotValue atIndex:2];
-
-		NSLog(@"slotValue: %@", (id)slotValue);
-
-		int slotArgumentCount = 1;
-		if (argCount == 2)
-			[anInvocation getArgument:&slotArgumentCount atIndex:3];
-
-		id existingValue = (id)CFDictionaryGetValue(slots, slotKey);
-
-		CFDictionarySetValue(
-			slots,
-			slotKey,
-			slotValue
-		);
-
-		NSLog(@"slots: %@", (id)slots);
-		
-		if ([slotValue isKindOfClass:blockClass]) {
-			NSLog(@"%@ is a block", (id)slotValue);
-
-			char * restrict typeString = newTypeStringForArgumentCount(slotArgumentCount);
-			NSLog(@"typeString: %s", typeString);
-
-			size_t methodNameLength = slotLength + slotArgumentCount;
-			char methodName[methodNameLength + 1];
-
-			CFStringGetCString(
-				slotKey,
-				methodName,
-				slotLength + 1,
-				kCFStringEncodingUTF8
-			);
-
-			for (size_t i = slotLength;i < methodNameLength;++i) {
-				methodName[i] = ':';
-			}
-
-			methodName[methodNameLength] = '\0';
-			NSLog(@"methodName: %s", methodName);
-
-			// add the block as a class method
-			ext_replaceBlockMethod(
-				object_getClass(uniqueClass),
-				sel_registerName(methodName),
-				slotValue,
-				typeString
-			);
-
-			free(typeString);
-		} else if ([existingValue isKindOfClass:blockClass]) {
-			NSLog(@"%@ was a block", (id)existingValue);
-
-			// remove the block as a class method
-			ext_removeMethod(object_getClass(uniqueClass), NSSelectorFromString((id)slotKey));
-		} else {
-			NSLog(@"using simple slot assignment for %@ replacing %@", (id)slotValue, (id)existingValue);
-		}
-
-		CFRelease(slotKey);
-		return YES;
-	}
-
 	const char *firstArg = strchr(name, ':');
 	size_t slotLength;
 	
@@ -388,6 +299,99 @@ void invokeBlockMethodWithSelf (NSInvocation *invocation, id self) {
 		return YES;
 	} else if (argCount == 0) {
 		[anInvocation setReturnValue:&slotValue];
+		return YES;
+	}
+
+	// TODO: this should really check for method signatures here, not selector names
+	BOOL isSetter = ((argCount == 1 || argCount == 2) && nameIsSetter(name));
+	if (isSetter) {
+		NSLog(@"%s determined to be a setter", name);
+
+		slotLength -= 3;
+
+		{
+			char lowercaseSlot[slotLength];
+
+			strncpy(lowercaseSlot, name + 3, slotLength);
+			lowercaseSlot[0] = tolower(lowercaseSlot[0]);
+
+			slotKey = CFStringCreateWithBytes(
+				NULL,
+				(void *)lowercaseSlot,
+				slotLength,
+				kCFStringEncodingUTF8,
+				false
+			);
+		}
+
+		NSLog(@"slotKey: %@", (id)slotKey);
+
+		id slotValue = nil;
+		[anInvocation getArgument:&slotValue atIndex:2];
+
+		NSLog(@"slotValue: %@", (id)slotValue);
+
+		int slotArgumentCount = 1;
+		if (argCount == 2)
+			[anInvocation getArgument:&slotArgumentCount atIndex:3];
+
+		id existingValue = (id)CFDictionaryGetValue(slots, slotKey);
+
+		if ([slotValue isKindOfClass:blockClass]) {
+			// create copies of blocks
+			slotValue = [[slotValue copy] autorelease];
+		}
+
+		CFDictionarySetValue(
+			slots,
+			slotKey,
+			slotValue
+		);
+
+		NSLog(@"slots: %@", (id)slots);
+		
+		if ([slotValue isKindOfClass:blockClass]) {
+			NSLog(@"%@ is a block", (id)slotValue);
+
+			char * restrict typeString = newTypeStringForArgumentCount(slotArgumentCount);
+			NSLog(@"typeString: %s", typeString);
+
+			size_t methodNameLength = slotLength + slotArgumentCount;
+			char methodName[methodNameLength + 1];
+
+			CFStringGetCString(
+				slotKey,
+				methodName,
+				slotLength + 1,
+				kCFStringEncodingUTF8
+			);
+
+			for (size_t i = slotLength;i < methodNameLength;++i) {
+				methodName[i] = ':';
+			}
+
+			methodName[methodNameLength] = '\0';
+			NSLog(@"methodName: %s", methodName);
+
+			// add the block as a class method
+			ext_replaceBlockMethod(
+				object_getClass(uniqueClass),
+				sel_registerName(methodName),
+				slotValue,
+				typeString
+			);
+
+			free(typeString);
+		} else if ([existingValue isKindOfClass:blockClass]) {
+			NSLog(@"%@ was a block", (id)existingValue);
+
+			// remove the block as a class method
+			ext_removeMethod(object_getClass(uniqueClass), NSSelectorFromString((id)slotKey));
+		} else {
+			NSLog(@"using simple slot assignment for %@ replacing %@", (id)slotValue, (id)existingValue);
+		}
+
+		CFRelease(slotKey);
 		return YES;
 	}
 
@@ -458,6 +462,7 @@ void invokeBlockMethodWithSelf (NSInvocation *invocation, id self) {
 }
 
 - (BOOL)respondsToSelector:(SEL)aSelector {
+	// TODO: be more discriminating
 	return YES;
 }
 @end

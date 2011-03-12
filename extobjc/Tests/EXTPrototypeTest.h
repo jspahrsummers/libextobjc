@@ -10,7 +10,7 @@
 #import "extobjc.h"
 
 @interface EXTPrototypeTest : SenTestCase {
-    
+    NSAutoreleasePool *pool;
 }
 
 @end
