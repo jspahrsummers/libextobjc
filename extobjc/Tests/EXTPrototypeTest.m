@@ -29,6 +29,7 @@
 	};
 
 	obj.title = method;
+	STAssertEquals([obj valueForSlot:@"title"], method, @"");
 
 	NSString *title = obj.title;
 	STAssertEquals(title, @"test title", @"");
@@ -44,10 +45,10 @@
 	NSString *title = obj.title;
 	STAssertNil(title, @"");
 
-	[obj setSetTitle:blockMethod(id self, NSString *title) {
+	[obj setBlock:blockMethod(id self, NSString *title) {
 		objTitle = title;
 		return nil;
-	} argumentCount:2];
+	} forSlot:@"setTitle:" argumentCount:2];
 
 	[obj setTitle:@"test 2"];
 	STAssertEquals(obj.title, @"test 2", @"");
