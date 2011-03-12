@@ -32,8 +32,6 @@
  * there is no distinction between the two).
  */
 @interface EXTPrototype : NSObject <NSCopying> {
-    CFMutableDictionaryRef slots;
-	Class uniqueClass;
 }
 
 /**

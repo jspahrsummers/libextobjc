@@ -145,7 +145,11 @@ void invokeBlockMethodWithSelf (NSInvocation *invocation, id self) {
 	[invocation setReturnValue:returnValue];
 }
 
-@interface EXTPrototype ()
+@interface EXTPrototype () {
+    CFMutableDictionaryRef slots;
+	Class uniqueClass;
+}
+
 - (BOOL)respondToInvocationWithSlot:(NSInvocation *)anInvocation;
 @end
 
@@ -228,9 +232,13 @@ void invokeBlockMethodWithSelf (NSInvocation *invocation, id self) {
 
 	Class blockClass = objc_getClass("NSBlock");
 
+	NSLog(@"slots: %@", (id)slots);
+
 	// TODO: this should really check for method signatures here, not selector names
 	BOOL isSetter = ((argCount == 1 || argCount == 2) && nameIsSetter(name));
 	if (isSetter) {
+		NSLog(@"%s determined to be a setter", name);
+
 		// we assume that the setter name contains a trailing colon
 		NSAssert(name[strlen(name) - 1] == ':', @"expected setter name to have a trailing colon");
 
@@ -256,21 +264,27 @@ void invokeBlockMethodWithSelf (NSInvocation *invocation, id self) {
 		NSLog(@"slotKey: %@", (id)slotKey);
 
 		id slotValue = nil;
-		[anInvocation getArgument:&slotValue atIndex:0];
+		[anInvocation getArgument:&slotValue atIndex:2];
+
+		NSLog(@"slotValue: %@", (id)slotValue);
 
 		int slotArgumentCount = 0;
 		if (argCount == 2)
-			[anInvocation getArgument:&slotArgumentCount atIndex:1];
+			[anInvocation getArgument:&slotArgumentCount atIndex:3];
 
 		id existingValue = (id)CFDictionaryGetValue(slots, slotKey);
 
-		CFDictionaryReplaceValue(
+		CFDictionarySetValue(
 			slots,
 			slotKey,
 			slotValue
 		);
+
+		NSLog(@"slots: %@", (id)slots);
 		
 		if ([slotValue isKindOfClass:blockClass]) {
+			NSLog(@"%@ is a block", (id)slotValue);
+
 			char * restrict typeString = newTypeStringForArgumentCount(slotArgumentCount);
 
 			// add the block as a method
@@ -283,8 +297,12 @@ void invokeBlockMethodWithSelf (NSInvocation *invocation, id self) {
 
 			free(typeString);
 		} else if ([existingValue isKindOfClass:blockClass]) {
+			NSLog(@"%@ was a block", (id)existingValue);
+
 			// remove the block as a method
 			ext_removeMethod(uniqueClass, NSSelectorFromString((id)slotKey));
+		} else {
+			NSLog(@"using simple slot assignment for %@ replacing %@", (id)slotValue, (id)existingValue);
 		}
 
 		CFRelease(slotKey);
