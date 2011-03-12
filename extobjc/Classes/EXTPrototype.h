@@ -59,6 +59,9 @@
  * arguments taken by the block must be specified in \a argCount, and must be at
  * least one for normal block invocations to be successful. The block is assumed
  * to take a \c self argument for its first parameter.
+ *
+ * @note \a slotName should not include the colons that will be added to the
+ * method name.
  */
 - (void)setBlock:(id)block forSlot:(NSString *)slotName argumentCount:(NSUInteger)argCount;
 

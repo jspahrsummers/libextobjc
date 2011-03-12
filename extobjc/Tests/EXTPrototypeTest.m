@@ -9,6 +9,7 @@
 #import "EXTPrototypeTest.h"
 
 @slot(title)
+@slot(titleCopy)
 
 @implementation EXTPrototypeTest
 - (void)setUp {
@@ -29,35 +30,43 @@
 	};
 
 	obj.title = method;
-	STAssertEquals([obj valueForSlot:@"title"], method, @"");
+	STAssertEqualObjects([obj valueForSlot:@"title"], method, @"");
 
 	NSString *title = obj.title;
-	STAssertEquals(title, @"test title", @"");
+	STAssertEqualObjects(title, @"test title", @"");
+
+	obj.titleCopy = blockMethod(id self){
+		return [self title];
+	};
+
+	STAssertEqualObjects(title, obj.titleCopy, @"");
+	STAssertEqualObjects(obj.title, obj.titleCopy, @"");
 }
 
 - (void)testPrototypeCopying {
 	EXTPrototype *orig = [EXTPrototype prototype];
+	NSLog(@"orig: %p", (void *)orig);
+
 	orig.title = blockMethod(id self){ return @"test"; };
 
-	STAssertEquals(orig.title, @"test", @"");
-
-	NSLog(@"%s: %lu", __FILE__, (unsigned long)__LINE__);
+	STAssertEqualObjects(orig.title, @"test", @"");
 
 	EXTPrototype *copy = [orig copy];
+	NSLog(@"copy: %p", (void *)copy);
+
+	STAssertNotNil(copy, @"copy of proto-object should not be nil");
+
 	copy.title = blockMethod(id self){
+		//return [[orig class] description];
 		return @"test_copy";
+		//return orig.title;
 		//return [orig.title stringByAppendingString:@"_copy"];
 	};
 
-	NSLog(@"%s: %lu", __FILE__, (unsigned long)__LINE__);
+	STAssertEqualObjects(orig.title, @"test", @"");
+	STAssertEqualObjects(copy.title, @"test_copy", @"");
 
-	STAssertEquals(orig.title, @"test", @"");
-
-	NSLog(@"%s: %lu", __FILE__, (unsigned long)__LINE__);
-
-	STAssertEquals(copy.title, @"test_copy", @"");
-
-	NSLog(@"%s: %lu", __FILE__, (unsigned long)__LINE__);
+	NSLog(@"finished with copy test");
 }
 
 - (void)testAddingSetter {
@@ -73,9 +82,9 @@
 	[obj setBlock:blockMethod(id self, NSString *title) {
 		objTitle = title;
 		return nil;
-	} forSlot:@"setTitle:" argumentCount:2];
+	} forSlot:@"setTitle" argumentCount:2];
 
 	[obj setTitle:@"test 2"];
-	STAssertEquals(obj.title, @"test 2", @"");
+	STAssertEqualObjects(obj.title, @"test 2", @"");
 }
 @end

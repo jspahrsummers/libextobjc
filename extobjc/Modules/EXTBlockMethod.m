@@ -18,7 +18,9 @@ BOOL ext_addBlockMethod (Class aClass, SEL name, id block, const char *types) {
 }
 
 IMP ext_blockImplementation (id block) {
-	return (IMP)(*((void**)block + 2));
+	IMP impl = (IMP)(*((void**)block + 2));
+	NSLog(@"implementation for block %@: %p", block, (void *)impl);
+	return impl;
 }
 
 void ext_replaceBlockMethod (Class aClass, SEL name, id block, const char *types) {

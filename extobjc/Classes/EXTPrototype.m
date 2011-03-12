@@ -138,21 +138,16 @@ void invokeBlockMethodWithSelf (NSInvocation *invocation, id self) {
 		}
 	}
 
-	NSLog(@"%s:%lu", __func__, (unsigned long)__LINE__);
 	NSLog(@"about to invoke against %p (%@)", (void *)self, [self class]);
 	[newInvocation invoke];
 	
-	NSLog(@"%s:%lu", __func__, (unsigned long)__LINE__);
 	NSCAssert([signature methodReturnLength] == [newSignature methodReturnLength], @"expected method signature and modified method signature to have the same return type");
-	NSLog(@"%s:%lu", __func__, (unsigned long)__LINE__);
 
 	if ([signature methodReturnLength]) {
 		char returnValue[[signature methodReturnLength]];
 		[newInvocation getReturnValue:returnValue];
 		[invocation setReturnValue:returnValue];
 	}
-
-	NSLog(@"%s:%lu", __func__, (unsigned long)__LINE__);
 }
 
 @interface EXTPrototype () {
@@ -160,6 +155,7 @@ void invokeBlockMethodWithSelf (NSInvocation *invocation, id self) {
 	Class uniqueClass;
 }
 
+- (id)initWithExistingSlots:(CFDictionaryRef)existingSlots;
 - (BOOL)respondToInvocationWithSlot:(NSInvocation *)anInvocation;
 @end
 
@@ -211,6 +207,24 @@ void invokeBlockMethodWithSelf (NSInvocation *invocation, id self) {
 	return self;
 }
 
+- (id)initWithExistingSlots:(CFDictionaryRef)existingSlots {
+	if ((self = [super init])) {
+		uniqueClass = [EXTPrototype uniqueClass];
+		if (!uniqueClass) {
+			[self release];
+			return nil;
+		}
+
+		slots = CFDictionaryCreateMutableCopy(
+			NULL,
+			0,
+			existingSlots
+		);
+	}
+
+	return self;
+}
+
 - (void)dealloc {
 	if (slots) {
 		CFRelease(slots);
@@ -223,63 +237,11 @@ void invokeBlockMethodWithSelf (NSInvocation *invocation, id self) {
 #pragma mark NSCopying
 
 - (id)copyWithZone:(NSZone *)zone {
-	EXTPrototype *obj = [[[self class] allocWithZone:zone] init];
+	EXTPrototype *obj = [[[self class] allocWithZone:zone] initWithExistingSlots:slots];
+	if (!obj)
+		return nil;
 
-	Class blockClass = objc_getClass("NSBlock");
-	Class injectionClass = object_getClass(obj->uniqueClass);
-	Class sourceClass = object_getClass(uniqueClass);
-
-	unsigned sourceMethodsCount = 0;
-	Method * restrict sourceMethods = class_copyMethodList(sourceClass, &sourceMethodsCount);
-
-	CFIndex slotCount = CFDictionaryGetCount(slots);
-	const void *keys[slotCount];
-	const void *values[slotCount];
-
-	CFDictionaryGetKeysAndValues(slots, keys, values);
-
-	for (CFIndex i = 0;i < slotCount;++i) {
-		const void *key = keys[i];
-		id value = (id)values[i];
-
-		if ([value isKindOfClass:blockClass]) {
-			Method originalMethod = NULL;
-			for (unsigned methodIndex = 0;methodIndex < sourceMethodsCount;++methodIndex) {
-				Method thisMethod = sourceMethods[methodIndex];
-
-				IMP impl = method_getImplementation(thisMethod);
-				if (impl == ext_blockImplementation(value)) {
-					originalMethod = thisMethod;
-					break;
-				}
-			}
-
-			if (!originalMethod) {
-				NSLog(@"ERROR: Could not find original method implementation for slot %@ on %@", (id)key, self);
-				continue;
-			}
-
-			id newBlock = [value copy];
-			CFDictionarySetValue(obj->slots, key, newBlock);
-
-			NSLog(@"copying method %s from %@ to %@", sel_getName(method_getName(originalMethod)), sourceClass, injectionClass);
-				
-			// install method implementation
-			ext_addBlockMethod(
-				injectionClass,
-				method_getName(originalMethod),
-				newBlock,
-				method_getTypeEncoding(originalMethod)
-			);
-
-			[newBlock release];
-		} else {
-			CFDictionarySetValue(obj->slots, key, value);
-		}
-	}
-
-	free(sourceMethods);
-
+	ext_addMethodsFromClass(uniqueClass, obj->uniqueClass, NO, NULL);
 	return obj;
 }
 
@@ -315,6 +277,8 @@ void invokeBlockMethodWithSelf (NSInvocation *invocation, id self) {
 }
 
 - (void)setBlock:(id)block forSlot:(NSString *)slotName argumentCount:(NSUInteger)argCount {
+	NSLog(@"%s: slotName: %@", __func__, slotName);
+
 	// create copies of blocks
 	id slotValue = [block copy];
 	NSLog(@"%@ is a block", (id)slotValue);
@@ -361,6 +325,7 @@ void invokeBlockMethodWithSelf (NSInvocation *invocation, id self) {
 }
 
 - (void)setValue:(id)slotValue forSlot:(NSString *)slotName {
+	NSLog(@"%s: slotName: %@", __func__, slotName);
 	Class blockClass = objc_getClass("NSBlock");
 
 	if ([slotValue isKindOfClass:blockClass]) {
