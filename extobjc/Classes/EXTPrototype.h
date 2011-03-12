@@ -36,6 +36,9 @@
 	Class uniqueClass;
 }
 
+/**
+ * Returns an empty prototype-object containing no slots.
+ */
 + (id)prototype;
 
 @end

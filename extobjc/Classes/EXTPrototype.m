@@ -44,13 +44,15 @@ char *newTypeStringForArgumentCount (size_t argCount) {
 	const char *selType = @encode(SEL);
 	size_t selLen = strlen(selType);
 
-	size_t typeStringLength = idLen + selLen + idLen * argCount;
+	                       // id (*)  (id,    SEL,     ...)
+	size_t typeStringLength = idLen + idLen + selLen + idLen * argCount;
 	char *typeString = malloc(typeStringLength + 1);
 
 	strncpy(typeString, idType, idLen);
-	strncpy(typeString + idLen, selType, selLen);
+	strncpy(typeString + idLen, idType, idLen);
+	strncpy(typeString + idLen * 2, selType, selLen);
 
-	char *moving = typeString + idLen + selLen;
+	char *moving = typeString + idLen * 2 + selLen;
 	for (size_t i = 0;i < argCount;++i) {
 		strncpy(moving, idType, idLen);
 		moving += idLen;
@@ -208,6 +210,10 @@ void invokeBlockMethodWithSelf (NSInvocation *invocation, id self) {
 #pragma mark Forwarding machinery
 
 - (void)forwardInvocation:(NSInvocation *)anInvocation {
+	NSLog(@"%s", __func__);
+	NSLog(@"selector: %s", sel_getName([anInvocation selector]));
+	NSLog(@"signature type: %s", [[anInvocation methodSignature] typeEncoding]);
+
 	if (![self respondToInvocationWithSlot:anInvocation])
 		[self doesNotRecognizeSelector:[anInvocation selector]];
 }
@@ -320,9 +326,15 @@ void invokeBlockMethodWithSelf (NSInvocation *invocation, id self) {
 }
 
 - (NSMethodSignature *)methodSignatureForSelector:(SEL)aSelector {
+	NSLog(@"%s", __func__);
+	NSLog(@"selector: %s", sel_getName(aSelector));
+
 	NSMethodSignature *signature = [EXTPrototype instanceMethodSignatureForSelector:aSelector];
-	if (signature)
+	if (signature) {
+		NSLog(@"signature type: %s", [signature typeEncoding]);
+		NSLog(@"number of args: %lu", (unsigned long)[signature numberOfArguments]);
 		return signature;
+	}
 	
 	const char *name = sel_getName(aSelector);
 
@@ -336,8 +348,13 @@ void invokeBlockMethodWithSelf (NSInvocation *invocation, id self) {
 	}
 
 	char * restrict typeString = newTypeStringForArgumentCount(argCount);
+	NSLog(@"typeString: %s", typeString);
+
 	signature = [NSMethodSignature signatureWithObjCTypes:typeString];
 	free(typeString);
+
+	NSLog(@"signature type: %s", [signature typeEncoding]);
+	NSLog(@"number of args: %lu", (unsigned long)[signature numberOfArguments]);
 
 	return signature;
 }
