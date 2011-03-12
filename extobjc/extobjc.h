@@ -14,7 +14,9 @@
 #import "EXTMultiObject.h"
 #import "EXTPrivateMethod.h"
 #import "EXTProtocolCategory.h"
+#import "EXTPrototype.h"
 #import "EXTSafeCategory.h"
 #import "EXTSwizzle.h"
 #import "NSInvocation+EXT.h"
+#import "NSMethodSignature+EXT.h"
 
