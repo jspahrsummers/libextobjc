@@ -1,8 +1,8 @@
 //
-//  EXTMultiObject.h
+//  EXTDispatchObject.h
 //  extobjc
 //
-//  Created by Justin Spahr-Summers on 2010-11-09.
+//  Created by Justin Spahr-Summers on 2011-03-11.
 //  Released into the public domain.
 //
 
@@ -10,36 +10,39 @@
 
 /**
  * Functions as a proxy for one or more other objects of any class and forwards
- * each message to the first proxied object that responds to it. This does not send
- * every message to each target, with some exceptions for reflection functionality
- * within the \c NSObject protocol. The result is dynamism very much like multiple
- * inheritance.
- * 
+ * each message to all proxied objects.
+ *
+ * The return value for a given message is that of the \e last object
+ * successfully messaged. Objects are only messaged if they indicate that they
+ * can respond to a given method. The method signature for a message is
+ * determined from the \e first object that can respond to it; if the other
+ * proxied objects can respond to a different signature, they are ignored.
+ *
  * @note To avoid warnings about static typing, refer to instances of this class as
  * \c id or using one of the classes being proxied.
  */
-@interface EXTMultiObject : NSObject {
+@interface EXTDispatchObject : NSObject {
 	// a C array is used rather than an NSArray for performance reasons
 	id *targets;
 	NSUInteger targetCount;
 }
 
 /**
- * Returns an autoreleased object that will selectively dispatch messages to the provided
+ * Returns an autoreleased object that will dispatch all messages to the provided
  * objects as they are received. The order of the objects in the argument list
  * determines the order in which method lookup and dispatch occurs.
  *
  * @note All provided objects are retained until the returned object is deallocated.
  */
-+ (id)multiObjectForObjects:(id)firstObj, ... NS_REQUIRES_NIL_TERMINATION;
++ (id)dispatchObjectForObjects:(id)firstObj, ... NS_REQUIRES_NIL_TERMINATION;
 
 /**
- * Returns an autoreleased object that will selectively dispatch messages to the provided
+ * Returns an autoreleased object that will dispatch all messages to the provided
  * objects as they are received. The order of the objects in the array determines
  * the order in which method lookup and dispatch occurs.
  *
  * @note All provided objects are retained until the returned object is deallocated.
  */
-+ (id)multiObjectForObjectsInArray:(NSArray *)objects;
++ (id)dispatchObjectForObjectsInArray:(NSArray *)objects;
 
 @end
