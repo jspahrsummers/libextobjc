@@ -189,17 +189,26 @@ void invokeBlockMethodWithSelf (NSInvocation *invocation, id self) {
 }
 
 + (id)prototype {
-	EXTPrototype *obj = [[[self alloc] init] autorelease];
+	return [[[self alloc] init] autorelease];
+}
 
-	obj->uniqueClass = [self uniqueClass];
-	obj->slots = CFDictionaryCreateMutable(
-		NULL,
-		0,
-		&kCFCopyStringDictionaryKeyCallBacks,
-		&kCFTypeDictionaryValueCallBacks
-	);
+- (id)init {
+	if ((self = [super init])) {
+		uniqueClass = [EXTPrototype uniqueClass];
+		if (!uniqueClass) {
+			[self release];
+			return nil;
+		}
 
-	return obj;
+		slots = CFDictionaryCreateMutable(
+			NULL,
+			0,
+			&kCFCopyStringDictionaryKeyCallBacks,
+			&kCFTypeDictionaryValueCallBacks
+		);
+	}
+
+	return self;
 }
 
 - (void)dealloc {
@@ -215,12 +224,61 @@ void invokeBlockMethodWithSelf (NSInvocation *invocation, id self) {
 
 - (id)copyWithZone:(NSZone *)zone {
 	EXTPrototype *obj = [[[self class] allocWithZone:zone] init];
-	obj->uniqueClass = [EXTPrototype uniqueClass];
-	obj->slots = CFDictionaryCreateMutableCopy(
-		NULL,
-		0,
-		slots
-	);
+
+	Class blockClass = objc_getClass("NSBlock");
+	Class injectionClass = object_getClass(obj->uniqueClass);
+	Class sourceClass = object_getClass(uniqueClass);
+
+	unsigned sourceMethodsCount = 0;
+	Method * restrict sourceMethods = class_copyMethodList(sourceClass, &sourceMethodsCount);
+
+	CFIndex slotCount = CFDictionaryGetCount(slots);
+	const void *keys[slotCount];
+	const void *values[slotCount];
+
+	CFDictionaryGetKeysAndValues(slots, keys, values);
+
+	for (CFIndex i = 0;i < slotCount;++i) {
+		const void *key = keys[i];
+		id value = (id)values[i];
+
+		if ([value isKindOfClass:blockClass]) {
+			Method originalMethod = NULL;
+			for (unsigned methodIndex = 0;methodIndex < sourceMethodsCount;++methodIndex) {
+				Method thisMethod = sourceMethods[methodIndex];
+
+				IMP impl = method_getImplementation(thisMethod);
+				if (impl == ext_blockImplementation(value)) {
+					originalMethod = thisMethod;
+					break;
+				}
+			}
+
+			if (!originalMethod) {
+				NSLog(@"ERROR: Could not find original method implementation for slot %@ on %@", (id)key, self);
+				continue;
+			}
+
+			id newBlock = [value copy];
+			CFDictionarySetValue(obj->slots, key, newBlock);
+
+			NSLog(@"copying method %s from %@ to %@", sel_getName(method_getName(originalMethod)), sourceClass, injectionClass);
+				
+			// install method implementation
+			ext_addBlockMethod(
+				injectionClass,
+				method_getName(originalMethod),
+				newBlock,
+				method_getTypeEncoding(originalMethod)
+			);
+
+			[newBlock release];
+		} else {
+			CFDictionarySetValue(obj->slots, key, value);
+		}
+	}
+
+	free(sourceMethods);
 
 	return obj;
 }
@@ -256,8 +314,7 @@ void invokeBlockMethodWithSelf (NSInvocation *invocation, id self) {
 	invokeBlockMethodWithSelf(invocation, self);
 }
 
-- (void)setBlock:(id)block forSlot:(NSString *)slotName
-  argumentCount:(NSUInteger)argCount {
+- (void)setBlock:(id)block forSlot:(NSString *)slotName argumentCount:(NSUInteger)argCount {
 	// create copies of blocks
 	id slotValue = [block copy];
 	NSLog(@"%@ is a block", (id)slotValue);

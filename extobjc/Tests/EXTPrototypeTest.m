@@ -35,6 +35,31 @@
 	STAssertEquals(title, @"test title", @"");
 }
 
+- (void)testPrototypeCopying {
+	EXTPrototype *orig = [EXTPrototype prototype];
+	orig.title = blockMethod(id self){ return @"test"; };
+
+	STAssertEquals(orig.title, @"test", @"");
+
+	NSLog(@"%s: %lu", __FILE__, (unsigned long)__LINE__);
+
+	EXTPrototype *copy = [orig copy];
+	copy.title = blockMethod(id self){
+		return @"test_copy";
+		//return [orig.title stringByAppendingString:@"_copy"];
+	};
+
+	NSLog(@"%s: %lu", __FILE__, (unsigned long)__LINE__);
+
+	STAssertEquals(orig.title, @"test", @"");
+
+	NSLog(@"%s: %lu", __FILE__, (unsigned long)__LINE__);
+
+	STAssertEquals(copy.title, @"test_copy", @"");
+
+	NSLog(@"%s: %lu", __FILE__, (unsigned long)__LINE__);
+}
+
 - (void)testAddingSetter {
 	EXTPrototype *obj = [EXTPrototype prototype];
 

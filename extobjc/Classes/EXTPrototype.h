@@ -40,6 +40,11 @@
 + (id)prototype;
 
 /**
+ * Initializes an empty object with no slots.
+ */
+- (id)init;
+
+/**
  * Invokes the implementation of \a slotName using the arguments of \a
  * invocation. The return value, if applicable, is placed back into \a
  * invocation upon completion. The method signature and arguments of \a
