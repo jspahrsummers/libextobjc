@@ -35,18 +35,19 @@
 // MyProtocol.h
 @protocol MyProtocol
 @required
-	- (void)someRequiredMethod;
+- (void)someRequiredMethod;
 
 @optional
-	- (void)someOptionalMethod;
+- (void)someOptionalMethod;
 
 @concrete
-	- (BOOL)isConcrete;
+- (BOOL)isConcrete;
 
 @end
 
 // MyProtocol.m
 @concreteprotocol(MyProtocol)
+
 - (BOOL)isConcrete {
   	return YES;
 }
