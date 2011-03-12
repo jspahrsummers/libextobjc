@@ -111,6 +111,10 @@ static
 void invokeBlockMethodWithSelf (NSInvocation *invocation, id self) {
 	NSMethodSignature *signature = [invocation methodSignature];
 
+	NSLog(@"%s", __func__);
+	NSLog(@"selector: %s", sel_getName([invocation selector]));
+	NSLog(@"signature type: %s", [signature typeEncoding]);
+
 	// add a faked 'id self' argument
 	NSMethodSignature *newSignature = [signature methodSignatureByInsertingType:@encode(id) atArgumentIndex:2];
 	NSInvocation *newInvocation = [NSInvocation invocationWithMethodSignature:newSignature];
@@ -232,14 +236,24 @@ void invokeBlockMethodWithSelf (NSInvocation *invocation, id self) {
 
 		// don't include the trailing colon
 		size_t slotLength = strlen(name + 3) - 1;
+		CFStringRef slotKey = NULL;
 
-		CFStringRef slotKey = CFStringCreateWithBytes(
-			NULL,
-			(void *)(name + 3),
-			slotLength,
-			kCFStringEncodingUTF8,
-			false
-		);
+		{
+			char lowercaseSlot[slotLength];
+
+			strncpy(lowercaseSlot, name + 3, slotLength);
+			lowercaseSlot[0] = tolower(lowercaseSlot[0]);
+
+			slotKey = CFStringCreateWithBytes(
+				NULL,
+				(void *)lowercaseSlot,
+				slotLength,
+				kCFStringEncodingUTF8,
+				false
+			);
+		}
+
+		NSLog(@"slotKey: %@", (id)slotKey);
 
 		id slotValue = nil;
 		[anInvocation getArgument:&slotValue atIndex:0];
@@ -294,8 +308,13 @@ void invokeBlockMethodWithSelf (NSInvocation *invocation, id self) {
 		false
 	);
 
+	NSLog(@"slotKey: %@", (id)slotKey);
+
 	id slotValue = (id)CFDictionaryGetValue(slots, slotKey);
 	CFRelease(slotKey);
+
+	NSLog(@"slotValue: %@", slotValue);
+	NSLog(@"[slotValue class]: %@", [slotValue class]);
 
 	if ([slotValue isKindOfClass:blockClass]) {
 		[anInvocation setTarget:uniqueClass];
