@@ -119,6 +119,8 @@ void invokeBlockMethodWithSelf (NSInvocation *invocation, id self) {
 	NSMethodSignature *newSignature = [signature methodSignatureByInsertingType:@encode(id) atArgumentIndex:2];
 	NSInvocation *newInvocation = [NSInvocation invocationWithMethodSignature:newSignature];
 
+	NSLog(@"new signature type: %s", [newSignature typeEncoding]);
+
 	[newInvocation setTarget:[invocation target]];
 	[newInvocation setSelector:[invocation selector]];
 	[newInvocation setArgument:&self atIndex:2];

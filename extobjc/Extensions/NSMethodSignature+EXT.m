@@ -32,9 +32,10 @@
 	char *encoding = calloc(stringLength + 1, 1);
 	strcpy(encoding, [self methodReturnType]);
 
-	for (NSUInteger i = 0;i < argumentCount;++i) {
+	for (NSUInteger i = 0;i < argumentCount + 1;++i) {
 		NSUInteger realIndex = i;
 		const char *argType = NULL;
+
 		if (i == index) {
 			argType = type;		
 		} else if (i > index) {
