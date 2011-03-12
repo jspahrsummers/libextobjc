@@ -6,6 +6,7 @@
  *  Released into the public domain.
  */
 
+#import "EXTBlockMethod.h"
 #import "EXTConcreteProtocol.h"
 #import "EXTDispatchObject.h"
 #import "EXTFinalMethod.h"
@@ -15,4 +16,5 @@
 #import "EXTProtocolCategory.h"
 #import "EXTSafeCategory.h"
 #import "EXTSwizzle.h"
+#import "NSInvocation+EXT.h"
 

@@ -19,7 +19,7 @@
 /**
  * Returns the Objective-C type encoding for this method signature, which
  * includes the return type and all arguments. The resultant string is suitable
- * for passing to \c class_addInstanceMethod() and similar facilities.
+ * for passing to \c class_addMethod() and similar facilities.
  *
  * @note The returned string is autoreleased.
  */
