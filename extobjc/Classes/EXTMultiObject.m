@@ -8,6 +8,14 @@
 
 #import "EXTMultiObject.h"
 
+@interface EXTMultiObject () {
+	// a C array is used rather than an NSArray for performance reasons
+	id *targets;
+	NSUInteger targetCount;
+}
+
+@end
+
 @implementation EXTMultiObject
 
 #pragma mark Object lifecycle
