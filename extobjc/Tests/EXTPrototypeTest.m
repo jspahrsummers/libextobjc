@@ -10,6 +10,7 @@
 
 @slot(title)
 @slot(titleCopy)
+@slot(parent)
 
 @implementation EXTPrototypeTest
 - (void)setUp {
@@ -58,6 +59,20 @@
 
 	STAssertEqualObjects(orig.title, @"test", @"");
 	STAssertEqualObjects(copy.title, @"test_copy", @"");
+}
+
+- (void)testPrototypeLookup {
+	EXTPrototype *superObj = [EXTPrototype prototype];
+	superObj.title = blockMethod(id self){ return @"test"; };
+
+	STAssertEqualObjects(superObj.title, @"test", @"");
+
+	EXTPrototype *subObj = [EXTPrototype prototype];
+	subObj.parent = superObj;
+
+	STAssertEqualObjects(superObj.title, @"test", @"");
+	STAssertEqualObjects(subObj.parent, superObj, @"");
+	STAssertEqualObjects(subObj.title, superObj.title, @"");
 }
 
 - (void)testAddingSetter {

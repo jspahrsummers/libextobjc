@@ -410,7 +410,7 @@ void invokeBlockMethodWithSelf (NSInvocation *invocation, id self) {
 
 		NSLog(@"slotKey: %@", (id)slotKey);
 
-		id slotValue = nil;
+		slotValue = nil;
 		[anInvocation getArgument:&slotValue atIndex:2];
 
 		NSLog(@"slotValue: %@", (id)slotValue);
@@ -494,7 +494,40 @@ void invokeBlockMethodWithSelf (NSInvocation *invocation, id self) {
 }
 
 - (BOOL)respondsToSelector:(SEL)aSelector {
-	// TODO: be more discriminating
-	return YES;
+	if ([[self class] instancesRespondToSelector:aSelector])
+		return YES;
+	
+	const char *name = sel_getName(aSelector);
+	if (strncmp(name, "set", 3) == 0)
+		return YES;
+	
+	CFStringRef slotKey = CFStringCreateWithCString(
+		NULL,
+		name,
+		kCFStringEncodingUTF8
+	);
+
+	BOOL found = (CFDictionaryGetValue(slots, slotKey) != NULL);
+	CFRelease(slotKey);
+
+	if (found)
+		return YES;
+
+	// TODO: optimize parent lookup to not do all of the above work
+	// try looking up in the parents of this prototype
+	id *parents = copyParents(slots, NULL);
+
+	if (parents) {
+		while (*parents != NULL) {
+			if ([*parents respondsToSelector:aSelector]) {
+				found = YES;
+				break;
+			}
+		}
+
+		free(parents);
+	}
+
+	return found;
 }
 @end
