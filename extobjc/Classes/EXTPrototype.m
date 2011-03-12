@@ -63,8 +63,8 @@ char *newTypeStringForArgumentCount (size_t argCount) {
 }
 
 static
-id *copyParents (CFDictionaryRef dict, size_t *outCount) {
-	size_t totalParents = 0;
+id *copyParents (CFDictionaryRef dict, unsigned *outCount) {
+	unsigned totalParents = 0;
 
 	CFIndex count = CFDictionaryGetCount(dict);
 	const void *values[count];
@@ -80,11 +80,21 @@ id *copyParents (CFDictionaryRef dict, size_t *outCount) {
 
 		for (CFIndex i = 0;i < count;++i) {
 			CFStringRef key = keys[i];
-			if (CFStringHasPrefix(key, CFSTR("parent")))
+			NSLog(@"considering slot %@", (id)key);
+
+			if (CFStringHasPrefix(key, CFSTR("parent"))) {
+				NSLog(@"%@ is a parent", (id)key);
 				++totalParents;
-			else
+			} else
 				values[i] = NULL;
 		}
+	}
+
+	if (!totalParents) {
+		if (outCount)
+			*outCount = 0;
+
+		return NULL;
 	}
 
 	id *parents = malloc((totalParents + 1) * sizeof(id));
@@ -330,7 +340,7 @@ void invokeBlockMethodWithSelf (NSInvocation *invocation, id self) {
 #pragma mark Forwarding machinery
 
 - (void)forwardInvocation:(NSInvocation *)anInvocation {
-	NSLog(@"%s", __func__);
+	NSLog(@"%s on %@", __func__, self);
 	NSLog(@"selector: %s", sel_getName([anInvocation selector]));
 	NSLog(@"signature type: %s", [[anInvocation methodSignature] typeEncoding]);
 
@@ -339,6 +349,8 @@ void invokeBlockMethodWithSelf (NSInvocation *invocation, id self) {
 }
 
 - (BOOL)respondToInvocationWithSlot:(NSInvocation *)anInvocation {
+	NSLog(@"%s on %@", __func__, self);
+
 	const char *name = sel_getName([anInvocation selector]);
 	size_t argCount = argumentCountForSelectorName(name);
 
@@ -380,7 +392,7 @@ void invokeBlockMethodWithSelf (NSInvocation *invocation, id self) {
 
 	if (success) {
 		return YES;
-	} else if (argCount == 0) {
+	} else if (slotValue && argCount == 0) {
 		[[slotValue retain] autorelease];
 		[anInvocation setReturnValue:&slotValue];
 		return YES;
@@ -429,24 +441,23 @@ void invokeBlockMethodWithSelf (NSInvocation *invocation, id self) {
 	}
 
 	// try looking up in the parents of this prototype
-	id *parents = copyParents(slots, NULL);
+	unsigned parentCount = 0;
+	id *parents = copyParents(slots, &parentCount);
 
-	if (parents) {
-		while (*parents != NULL) {
-			if ([*parents respondToInvocationWithSlot:anInvocation]) {
-				success = YES;
-				break;
-			}
+	for (unsigned i = 0;i < parentCount;++i) {
+		NSLog(@"checking %@ for selector %s", parents[i], name);
+		if ([parents[i] respondToInvocationWithSlot:anInvocation]) {
+			success = YES;
+			break;
 		}
-
-		free(parents);
 	}
 
+	free(parents);
 	return success;
 }
 
 - (NSMethodSignature *)methodSignatureForSelector:(SEL)aSelector {
-	NSLog(@"%s", __func__);
+	NSLog(@"%s on %@", __func__, self);
 	NSLog(@"selector: %s", sel_getName(aSelector));
 
 	NSMethodSignature *signature = [EXTPrototype instanceMethodSignatureForSelector:aSelector];
@@ -494,6 +505,7 @@ void invokeBlockMethodWithSelf (NSInvocation *invocation, id self) {
 }
 
 - (BOOL)respondsToSelector:(SEL)aSelector {
+	NSLog(@"%s on %@", __func__, self);
 	if ([[self class] instancesRespondToSelector:aSelector])
 		return YES;
 	
@@ -515,19 +527,18 @@ void invokeBlockMethodWithSelf (NSInvocation *invocation, id self) {
 
 	// TODO: optimize parent lookup to not do all of the above work
 	// try looking up in the parents of this prototype
-	id *parents = copyParents(slots, NULL);
+	unsigned parentCount = 0;
+	id *parents = copyParents(slots, &parentCount);
 
-	if (parents) {
-		while (*parents != NULL) {
-			if ([*parents respondsToSelector:aSelector]) {
-				found = YES;
-				break;
-			}
+	for (unsigned i = 0;i < parentCount;++i) {
+		NSLog(@"checking %@ for selector %s", parents[i], name);
+		if ([parents[i] respondsToSelector:aSelector]) {
+			found = YES;
+			break;
 		}
-
-		free(parents);
 	}
 
+	free(parents);
 	return found;
 }
 @end
