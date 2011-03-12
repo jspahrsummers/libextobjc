@@ -15,7 +15,7 @@
  * @protocol declarations.
  */
 #define slot(NAME) \
-	interface NSObject (EXTSlot_ ## NAME) \
+	interface EXTPrototype (EXTSlot_ ## NAME) \
 	@property (nonatomic, copy) id NAME; \
 	\
 	- (id)NAME:(id)arg1; \
@@ -27,7 +27,9 @@
 	@end
 
 /**
- * Prototype-oriented programming!
+ * Prototype-oriented programming for Cocoa. This class implements both
+ * prototypes and objects created from prototypes in the style of Self (where
+ * there is no distinction between the two).
  */
 @interface EXTPrototype : NSObject <NSCopying> {
     CFMutableDictionaryRef slots;

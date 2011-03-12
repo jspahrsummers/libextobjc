@@ -9,6 +9,7 @@
 #import "EXTPrototype.h"
 #import "EXTBlockMethod.h"
 #import "EXTRuntimeExtensions.h"
+#import "NSMethodSignature+EXT.h"
 #import <assert.h>
 #import <ctype.h>
 
@@ -19,7 +20,7 @@ size_t argumentCountForSelectorName (const char *name) {
 	size_t argCount = 0;
 
 	// assume that the very first character won't be a colon
-	assert(name[0] != ':');
+	NSCAssert(name[0] != ':', @"expected method name to start with something other than a colon");
 
 	// and start on the second
 	for (size_t i = 1;i < nameLength;++i) {
@@ -102,6 +103,40 @@ id *copyParents (CFDictionaryRef dict, size_t *outCount) {
 		*outCount = totalParents;
 
 	return parents;
+}
+
+static
+void invokeBlockMethodWithSelf (NSInvocation *invocation, id self) {
+	NSMethodSignature *signature = [invocation methodSignature];
+
+	// add a faked 'id self' argument
+	NSMethodSignature *newSignature = [signature methodSignatureByInsertingType:@encode(id) atArgumentIndex:2];
+	NSInvocation *newInvocation = [NSInvocation invocationWithMethodSignature:newSignature];
+
+	[newInvocation setTarget:[invocation target]];
+	[newInvocation setSelector:[invocation selector]];
+	[newInvocation setArgument:&self atIndex:2];
+
+	NSUInteger origArgumentCount = [signature numberOfArguments];
+	NSCAssert(origArgumentCount - 1 == [newSignature numberOfArguments], @"expected method signature and modified method signature to differ only in one argument");
+
+	{
+		char buffer[[signature frameLength]];
+		for (NSUInteger i = 2;i < origArgumentCount;++i) {
+			[invocation getArgument:buffer atIndex:i];
+			[newInvocation setArgument:buffer atIndex:i + 1];
+		}
+	}
+
+	[self retain];
+	[newInvocation invoke];
+	[self release];
+	
+	NSCAssert([signature methodReturnLength] == [newSignature methodReturnLength], @"expected method signature and modified method signature to have the same return type");
+
+	char returnValue[[signature methodReturnLength]];
+	[newInvocation getReturnValue:returnValue];
+	[invocation setReturnValue:returnValue];
 }
 
 @interface EXTPrototype ()
@@ -187,7 +222,7 @@ id *copyParents (CFDictionaryRef dict, size_t *outCount) {
 	BOOL isSetter = ((argCount == 1 || argCount == 2) && nameIsSetter(name));
 	if (isSetter) {
 		// we assume that the setter name contains a trailing colon
-		assert(name[strlen(name) - 1] == ':');
+		NSAssert(name[strlen(name) - 1] == ':', @"expected setter name to have a trailing colon");
 
 		// don't include the trailing colon
 		size_t slotLength = strlen(name + 3) - 1;
@@ -219,10 +254,10 @@ id *copyParents (CFDictionaryRef dict, size_t *outCount) {
 			char * restrict typeString = newTypeStringForArgumentCount(slotArgumentCount);
 
 			// add the block as a method
-			class_replaceMethod(
+			ext_replaceBlockMethod(
 				uniqueClass,
 				NSSelectorFromString((id)slotKey),
-				ext_blockImplementation(slotValue),
+				slotValue,
 				typeString
 			);
 
@@ -241,7 +276,7 @@ id *copyParents (CFDictionaryRef dict, size_t *outCount) {
 	
 	if (firstArg) {
 		slotLength = firstArg - name;
-		assert(slotLength != 0);
+		NSAssert(slotLength != 0, @"expected method name containing colon to also have an identifier");
 	} else
 		slotLength = strlen(name);
 
@@ -257,7 +292,9 @@ id *copyParents (CFDictionaryRef dict, size_t *outCount) {
 	CFRelease(slotKey);
 
 	if ([slotValue isKindOfClass:blockClass]) {
-		[anInvocation invokeWithTarget:uniqueClass];
+		[anInvocation setTarget:uniqueClass];
+
+		invokeBlockMethodWithSelf(anInvocation, self);
 		return YES;
 	} else if (argCount == 0) {
 		[anInvocation setReturnValue:&slotValue];
