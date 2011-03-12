@@ -225,6 +225,120 @@ void invokeBlockMethodWithSelf (NSInvocation *invocation, id self) {
 	return obj;
 }
 
+#pragma mark Public slot management
+
+- (void)invokeSlot:(NSString *)slotName withInvocation:(NSInvocation *)invocation {
+	NSUInteger argCount = [[invocation methodSignature] numberOfArguments] - 2;
+
+	// include a faked 'self' argument
+	NSUInteger slotLength = [slotName length];
+
+	size_t methodNameLength = slotLength + argCount + 1;
+	char methodName[methodNameLength + 1];
+
+	CFStringGetCString(
+		(CFStringRef)slotName,
+		methodName,
+		slotLength + 1,
+		kCFStringEncodingUTF8
+	);
+
+	for (size_t i = slotLength;i < methodNameLength;++i) {
+		methodName[i] = ':';
+	}
+
+	methodName[methodNameLength] = '\0';
+	NSLog(@"methodName: %s", methodName);
+
+	[invocation setSelector:sel_registerName(methodName)];
+	[invocation setTarget:uniqueClass];
+
+	invokeBlockMethodWithSelf(invocation, self);
+}
+
+- (void)setBlock:(id)block forSlot:(NSString *)slotName
+  argumentCount:(NSUInteger)argCount {
+	// create copies of blocks
+	id slotValue = [block copy];
+	NSLog(@"%@ is a block", (id)slotValue);
+
+	CFDictionarySetValue(
+		slots,
+		(CFStringRef)slotName,
+		slotValue
+	);
+
+	char * restrict typeString = newTypeStringForArgumentCount(argCount);
+	NSLog(@"typeString: %s", typeString);
+
+	NSUInteger slotLength = [slotName length];
+
+	size_t methodNameLength = slotLength + argCount;
+	char methodName[methodNameLength + 1];
+
+	CFStringGetCString(
+		(CFStringRef)slotName,
+		methodName,
+		slotLength + 1,
+		kCFStringEncodingUTF8
+	);
+
+	for (size_t i = slotLength;i < methodNameLength;++i) {
+		methodName[i] = ':';
+	}
+
+	methodName[methodNameLength] = '\0';
+	NSLog(@"methodName: %s", methodName);
+
+	// add the block as a class method
+	ext_replaceBlockMethod(
+		object_getClass(uniqueClass),
+		sel_registerName(methodName),
+		slotValue,
+		typeString
+	);
+
+	free(typeString);
+
+	[slotValue release];
+}
+
+- (void)setValue:(id)slotValue forSlot:(NSString *)slotName {
+	Class blockClass = objc_getClass("NSBlock");
+
+	if ([slotValue isKindOfClass:blockClass]) {
+		[self setBlock:slotValue forSlot:slotName argumentCount:1];
+		return;
+	}
+
+	id existingValue = (id)CFDictionaryGetValue(slots, (CFStringRef)slotName);
+
+	if (slotValue) {
+		CFDictionarySetValue(
+			slots,
+			(CFStringRef)slotName,
+			slotValue
+		);
+	} else {
+		CFDictionaryRemoveValue(slots, (CFStringRef)slotName);
+	}
+
+	NSLog(@"slots: %@", (id)slots);
+	
+	if ([existingValue isKindOfClass:blockClass]) {
+		NSLog(@"%@ was a block", (id)existingValue);
+
+		// remove the block as a class method
+		ext_removeMethod(object_getClass(uniqueClass), NSSelectorFromString(slotName));
+	} else {
+		NSLog(@"using simple slot assignment for %@ replacing %@", (id)slotValue, (id)existingValue);
+	}
+}
+
+- (id)valueForSlot:(NSString *)slotName {
+	return (id)CFDictionaryGetValue(slots, (CFStringRef)slotName);
+}
+
 #pragma mark Forwarding machinery
 
 - (void)forwardInvocation:(NSInvocation *)anInvocation {
@@ -263,28 +377,12 @@ void invokeBlockMethodWithSelf (NSInvocation *invocation, id self) {
 
 	NSLog(@"slotKey: %@", (id)slotKey);
 
-	id slotValue = (id)CFDictionaryGetValue(slots, slotKey);
+	id slotValue = [self valueForSlot:(id)slotKey];
+	BOOL success = NO;
 
 	if ([slotValue isKindOfClass:blockClass]) {
-		// include a faked 'self' argument
-		size_t methodNameLength = slotLength + argCount + 1;
-		char methodName[methodNameLength + 1];
-
-		CFStringGetCString(
-			slotKey,
-			methodName,
-			slotLength + 1,
-			kCFStringEncodingUTF8
-		);
-
-		for (size_t i = slotLength;i < methodNameLength;++i) {
-			methodName[i] = ':';
-		}
-
-		methodName[methodNameLength] = '\0';
-		NSLog(@"methodName: %s", methodName);
-
-		[anInvocation setSelector:sel_registerName(methodName)];
+		[self invokeSlot:(id)slotKey withInvocation:anInvocation];
+		success = YES;
 	}
 
 	CFRelease(slotKey);
@@ -292,12 +390,10 @@ void invokeBlockMethodWithSelf (NSInvocation *invocation, id self) {
 	NSLog(@"slotValue: %@", slotValue);
 	NSLog(@"[slotValue class]: %@", [slotValue class]);
 
-	if ([slotValue isKindOfClass:blockClass]) {
-		[anInvocation setTarget:uniqueClass];
-
-		invokeBlockMethodWithSelf(anInvocation, self);
+	if (success) {
 		return YES;
 	} else if (argCount == 0) {
+		[[slotValue retain] autorelease];
 		[anInvocation setReturnValue:&slotValue];
 		return YES;
 	}
@@ -331,64 +427,13 @@ void invokeBlockMethodWithSelf (NSInvocation *invocation, id self) {
 
 		NSLog(@"slotValue: %@", (id)slotValue);
 
-		int slotArgumentCount = 1;
-		if (argCount == 2)
+		if (argCount == 2) {
+			int slotArgumentCount = 1;
 			[anInvocation getArgument:&slotArgumentCount atIndex:3];
 
-		id existingValue = (id)CFDictionaryGetValue(slots, slotKey);
-
-		if ([slotValue isKindOfClass:blockClass]) {
-			// create copies of blocks
-			slotValue = [[slotValue copy] autorelease];
-		}
-
-		CFDictionarySetValue(
-			slots,
-			slotKey,
-			slotValue
-		);
-
-		NSLog(@"slots: %@", (id)slots);
-		
-		if ([slotValue isKindOfClass:blockClass]) {
-			NSLog(@"%@ is a block", (id)slotValue);
-
-			char * restrict typeString = newTypeStringForArgumentCount(slotArgumentCount);
-			NSLog(@"typeString: %s", typeString);
-
-			size_t methodNameLength = slotLength + slotArgumentCount;
-			char methodName[methodNameLength + 1];
-
-			CFStringGetCString(
-				slotKey,
-				methodName,
-				slotLength + 1,
-				kCFStringEncodingUTF8
-			);
-
-			for (size_t i = slotLength;i < methodNameLength;++i) {
-				methodName[i] = ':';
-			}
-
-			methodName[methodNameLength] = '\0';
-			NSLog(@"methodName: %s", methodName);
-
-			// add the block as a class method
-			ext_replaceBlockMethod(
-				object_getClass(uniqueClass),
-				sel_registerName(methodName),
-				slotValue,
-				typeString
-			);
-
-			free(typeString);
-		} else if ([existingValue isKindOfClass:blockClass]) {
-			NSLog(@"%@ was a block", (id)existingValue);
-
-			// remove the block as a class method
-			ext_removeMethod(object_getClass(uniqueClass), NSSelectorFromString((id)slotKey));
+			[self setBlock:slotValue forSlot:(id)slotKey argumentCount:slotArgumentCount];
 		} else {
-			NSLog(@"using simple slot assignment for %@ replacing %@", (id)slotValue, (id)existingValue);
+			[self setValue:slotValue forSlot:(id)slotKey];
 		}
 
 		CFRelease(slotKey);
@@ -397,7 +442,6 @@ void invokeBlockMethodWithSelf (NSInvocation *invocation, id self) {
 
 	// try looking up in the parents of this prototype
 	id *parents = copyParents(slots, NULL);
-	BOOL success = NO;
 
 	if (parents) {
 		while (*parents != NULL) {
