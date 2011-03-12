@@ -128,19 +128,23 @@ void invokeBlockMethodWithSelf (NSInvocation *invocation, id self) {
 	NSUInteger origArgumentCount = [signature numberOfArguments];
 	NSCAssert(origArgumentCount + 1 == [newSignature numberOfArguments], @"expected method signature and modified method signature to differ only in one argument");
 
-	{
+	if (origArgumentCount > 2) {
 		char buffer[[signature frameLength]];
+
 		for (NSUInteger i = 2;i < origArgumentCount;++i) {
+			NSLog(@"copying argument %lu", (unsigned long)i);
 			[invocation getArgument:buffer atIndex:i];
 			[newInvocation setArgument:buffer atIndex:i + 1];
 		}
 	}
 
-	[self retain];
+	NSLog(@"%s:%lu", __func__, (unsigned long)__LINE__);
+	NSLog(@"about to invoke against %p (%@)", (void *)self, [self class]);
 	[newInvocation invoke];
-	[self release];
 	
+	NSLog(@"%s:%lu", __func__, (unsigned long)__LINE__);
 	NSCAssert([signature methodReturnLength] == [newSignature methodReturnLength], @"expected method signature and modified method signature to have the same return type");
+	NSLog(@"%s:%lu", __func__, (unsigned long)__LINE__);
 
 	char returnValue[[signature methodReturnLength]];
 	[newInvocation getReturnValue:returnValue];
@@ -288,11 +292,29 @@ void invokeBlockMethodWithSelf (NSInvocation *invocation, id self) {
 			NSLog(@"%@ is a block", (id)slotValue);
 
 			char * restrict typeString = newTypeStringForArgumentCount(slotArgumentCount);
+			NSLog(@"typeString: %s", typeString);
+
+			size_t methodNameLength = slotLength + slotArgumentCount;
+			char methodName[methodNameLength + 1];
+
+			CFStringGetCString(
+				slotKey,
+				methodName,
+				slotLength + 1,
+				kCFStringEncodingUTF8
+			);
+
+			for (size_t i = slotLength;i < methodNameLength;++i) {
+				methodName[i] = ':';
+			}
+
+			methodName[methodNameLength] = '\0';
+			NSLog(@"methodName: %s", methodName);
 
 			// add the block as a class method
 			ext_replaceBlockMethod(
 				object_getClass(uniqueClass),
-				NSSelectorFromString((id)slotKey),
+				sel_registerName(methodName),
 				slotValue,
 				typeString
 			);
@@ -331,8 +353,27 @@ void invokeBlockMethodWithSelf (NSInvocation *invocation, id self) {
 	NSLog(@"slotKey: %@", (id)slotKey);
 
 	id slotValue = (id)CFDictionaryGetValue(slots, slotKey);
+
 	if ([slotValue isKindOfClass:blockClass]) {
-		[anInvocation setSelector:NSSelectorFromString((id)slotKey)];
+		// include a faked 'self' argument
+		size_t methodNameLength = slotLength + argCount + 1;
+		char methodName[methodNameLength + 1];
+
+		CFStringGetCString(
+			slotKey,
+			methodName,
+			slotLength + 1,
+			kCFStringEncodingUTF8
+		);
+
+		for (size_t i = slotLength;i < methodNameLength;++i) {
+			methodName[i] = ':';
+		}
+
+		methodName[methodNameLength] = '\0';
+		NSLog(@"methodName: %s", methodName);
+
+		[anInvocation setSelector:sel_registerName(methodName)];
 	}
 
 	CFRelease(slotKey);

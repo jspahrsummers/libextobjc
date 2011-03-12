@@ -14,9 +14,12 @@
 - (void)testSimplePrototype {
 	EXTPrototype *obj = [EXTPrototype prototype];
 
-	obj.title = blockMethod(id self){
+	id method = blockMethod(id self){
 		return @"test title";
 	};
+
+	obj.title = method;
+	NSLog(@"method invocation: %@", ((id (^)(SEL, id))method)(@selector(title), obj));
 
 	NSString *title = obj.title;
 	STAssertEquals(title, @"test title", @"");
