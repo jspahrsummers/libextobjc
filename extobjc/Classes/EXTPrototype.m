@@ -126,7 +126,7 @@ void invokeBlockMethodWithSelf (NSInvocation *invocation, id self) {
 	[newInvocation setArgument:&self atIndex:2];
 
 	NSUInteger origArgumentCount = [signature numberOfArguments];
-	NSCAssert(origArgumentCount - 1 == [newSignature numberOfArguments], @"expected method signature and modified method signature to differ only in one argument");
+	NSCAssert(origArgumentCount + 1 == [newSignature numberOfArguments], @"expected method signature and modified method signature to differ only in one argument");
 
 	{
 		char buffer[[signature frameLength]];
@@ -270,7 +270,7 @@ void invokeBlockMethodWithSelf (NSInvocation *invocation, id self) {
 
 		NSLog(@"slotValue: %@", (id)slotValue);
 
-		int slotArgumentCount = 0;
+		int slotArgumentCount = 1;
 		if (argCount == 2)
 			[anInvocation getArgument:&slotArgumentCount atIndex:3];
 
@@ -289,9 +289,9 @@ void invokeBlockMethodWithSelf (NSInvocation *invocation, id self) {
 
 			char * restrict typeString = newTypeStringForArgumentCount(slotArgumentCount);
 
-			// add the block as a method
+			// add the block as a class method
 			ext_replaceBlockMethod(
-				uniqueClass,
+				object_getClass(uniqueClass),
 				NSSelectorFromString((id)slotKey),
 				slotValue,
 				typeString
@@ -301,8 +301,8 @@ void invokeBlockMethodWithSelf (NSInvocation *invocation, id self) {
 		} else if ([existingValue isKindOfClass:blockClass]) {
 			NSLog(@"%@ was a block", (id)existingValue);
 
-			// remove the block as a method
-			ext_removeMethod(uniqueClass, NSSelectorFromString((id)slotKey));
+			// remove the block as a class method
+			ext_removeMethod(object_getClass(uniqueClass), NSSelectorFromString((id)slotKey));
 		} else {
 			NSLog(@"using simple slot assignment for %@ replacing %@", (id)slotValue, (id)existingValue);
 		}
@@ -331,6 +331,10 @@ void invokeBlockMethodWithSelf (NSInvocation *invocation, id self) {
 	NSLog(@"slotKey: %@", (id)slotKey);
 
 	id slotValue = (id)CFDictionaryGetValue(slots, slotKey);
+	if ([slotValue isKindOfClass:blockClass]) {
+		[anInvocation setSelector:NSSelectorFromString((id)slotKey)];
+	}
+
 	CFRelease(slotKey);
 
 	NSLog(@"slotValue: %@", slotValue);
