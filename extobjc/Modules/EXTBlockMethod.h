@@ -35,6 +35,8 @@ id badIsEqual = blockMethod(id obj){
  *
  * Returns \c YES if the method was added successfully, or \c NO if it was not
  * (such as due to a naming conflict).
+ *
+ * @bug This will only work if the block doesn't require context!
  */
 BOOL ext_addBlockMethod (Class aClass, SEL name, id block, const char *types);
 
@@ -51,6 +53,8 @@ IMP ext_blockImplementation (id block);
  * types describes the return and argument types of the method. \a block must
  * have been originally defined using #blockMethod. This will overwrite any
  * existing method by the same name on \a aClass.
+ *
+ * @bug This will only work if the block doesn't require context!
  */
 void ext_replaceBlockMethod (Class aClass, SEL name, id block, const char *types);
 

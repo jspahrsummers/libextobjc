@@ -152,7 +152,6 @@ void invokeBlockMethodWithSelf (NSInvocation *invocation, id self) {
 
 @interface EXTPrototype () {
     CFMutableDictionaryRef slots;
-	Class uniqueClass;
 }
 
 - (id)initWithExistingSlots:(CFDictionaryRef)existingSlots;
@@ -166,36 +165,12 @@ void invokeBlockMethodWithSelf (NSInvocation *invocation, id self) {
 
 #pragma mark Object lifecycle
 
-+ (Class)uniqueClass {
-	NSString *uniqueClassName = [[NSProcessInfo processInfo] globallyUniqueString];
-	uniqueClassName = [@"EXTPrototypeStub_" stringByAppendingString:uniqueClassName];
-
-	Class newClass = objc_allocateClassPair(
-		self,
-		[uniqueClassName UTF8String],
-		0
-	);
-
-	if (!newClass) {
-		return nil;
-	}
-
-	objc_registerClassPair(newClass);
-	return newClass;
-}
-
 + (id)prototype {
 	return [[[self alloc] init] autorelease];
 }
 
 - (id)init {
 	if ((self = [super init])) {
-		uniqueClass = [EXTPrototype uniqueClass];
-		if (!uniqueClass) {
-			[self release];
-			return nil;
-		}
-
 		slots = CFDictionaryCreateMutable(
 			NULL,
 			0,
@@ -209,12 +184,6 @@ void invokeBlockMethodWithSelf (NSInvocation *invocation, id self) {
 
 - (id)initWithExistingSlots:(CFDictionaryRef)existingSlots {
 	if ((self = [super init])) {
-		uniqueClass = [EXTPrototype uniqueClass];
-		if (!uniqueClass) {
-			[self release];
-			return nil;
-		}
-
 		slots = CFDictionaryCreateMutableCopy(
 			NULL,
 			0,
@@ -237,12 +206,7 @@ void invokeBlockMethodWithSelf (NSInvocation *invocation, id self) {
 #pragma mark NSCopying
 
 - (id)copyWithZone:(NSZone *)zone {
-	EXTPrototype *obj = [[[self class] allocWithZone:zone] initWithExistingSlots:slots];
-	if (!obj)
-		return nil;
-
-	ext_addMethodsFromClass(uniqueClass, obj->uniqueClass, NO, NULL);
-	return obj;
+	return [[[self class] allocWithZone:zone] initWithExistingSlots:slots];
 }
 
 #pragma mark Public slot management
@@ -270,8 +234,10 @@ void invokeBlockMethodWithSelf (NSInvocation *invocation, id self) {
 	methodName[methodNameLength] = '\0';
 	NSLog(@"methodName: %s", methodName);
 
+	id block = [self valueForSlot:slotName];
+
+	[invocation setTarget:block];
 	[invocation setSelector:sel_registerName(methodName)];
-	[invocation setTarget:uniqueClass];
 
 	invokeBlockMethodWithSelf(invocation, self);
 }
@@ -311,11 +277,11 @@ void invokeBlockMethodWithSelf (NSInvocation *invocation, id self) {
 	methodName[methodNameLength] = '\0';
 	NSLog(@"methodName: %s", methodName);
 
-	// add the block as a class method
-	ext_replaceBlockMethod(
-		object_getClass(uniqueClass),
+	// add the block as an instance method to itself
+	class_replaceMethod(
+		object_getClass(slotValue),
 		sel_registerName(methodName),
-		slotValue,
+		ext_blockImplementation(slotValue),
 		typeString
 	);
 
@@ -350,8 +316,8 @@ void invokeBlockMethodWithSelf (NSInvocation *invocation, id self) {
 	if ([existingValue isKindOfClass:blockClass]) {
 		NSLog(@"%@ was a block", (id)existingValue);
 
-		// remove the block as a class method
-		ext_removeMethod(object_getClass(uniqueClass), NSSelectorFromString(slotName));
+		// remove the block from its own list of methods
+		ext_removeMethod(object_getClass(existingValue), NSSelectorFromString(slotName));
 	} else {
 		NSLog(@"using simple slot assignment for %@ replacing %@", (id)slotValue, (id)existingValue);
 	}

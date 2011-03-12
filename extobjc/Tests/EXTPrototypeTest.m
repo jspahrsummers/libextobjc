@@ -45,28 +45,19 @@
 
 - (void)testPrototypeCopying {
 	EXTPrototype *orig = [EXTPrototype prototype];
-	NSLog(@"orig: %p", (void *)orig);
-
 	orig.title = blockMethod(id self){ return @"test"; };
 
 	STAssertEqualObjects(orig.title, @"test", @"");
 
 	EXTPrototype *copy = [orig copy];
-	NSLog(@"copy: %p", (void *)copy);
-
 	STAssertNotNil(copy, @"copy of proto-object should not be nil");
 
 	copy.title = blockMethod(id self){
-		//return [[orig class] description];
-		return @"test_copy";
-		//return orig.title;
-		//return [orig.title stringByAppendingString:@"_copy"];
+		return [orig.title stringByAppendingString:@"_copy"];
 	};
 
 	STAssertEqualObjects(orig.title, @"test", @"");
 	STAssertEqualObjects(copy.title, @"test_copy", @"");
-
-	NSLog(@"finished with copy test");
 }
 
 - (void)testAddingSetter {
