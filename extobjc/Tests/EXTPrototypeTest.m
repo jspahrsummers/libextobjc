@@ -10,7 +10,6 @@
 
 @slot(title)
 @slot(titleCopy)
-@slot(parent)
 
 @slot(string)
 @slot(appendString)

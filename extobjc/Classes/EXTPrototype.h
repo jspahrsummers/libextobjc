@@ -17,7 +17,7 @@
  */
 #define slot(NAME) \
 	interface EXTPrototype (EXTSlot_ ## NAME) \
-	@property (nonatomic, copy) id NAME; \
+	@property (nonatomic, retain) id NAME; \
 	\
 	- (id)NAME:(id)arg1; \
 	- (id)NAME:(id)arg1 withObject:(id)arg2; \
@@ -79,9 +79,28 @@ obj.string = @"";
 [obj replaceOccurrencesOfString:@"bar" withString:@"foo"];
 
  * @endcode
+ *
+ * Delegation or inheritance is possible through specially-designated parent
+ * slots. A parent slot is identified as such by starting with the word "parent"
+ * and by containing a reference to another EXTPrototype object. When looking
+ * for the value of a slot (either for a getter or to invoke a method), if
+ * unable to find the exact slot on the receiver, all parent slots will be
+ * depth-first traversed in alphabetical order; for example, slot \c parentA and
+ * all of its parents will be searched before slot \c parentB and all of its
+ * parents.
+ *
+ * @bug Accessing and modifying slots is not a thread-safe operation.
  */
 @interface EXTPrototype : NSObject <NSCopying> {
 }
+
+/**
+ * Convenience declaration for using proto-object parents. Note that
+ * proto-objects are not limited to one parent, nor is the use of a slot
+ * named exactly "parent" required. See the class description for more
+ * information.
+ */
+@property (nonatomic, retain) EXTPrototype *parent;
 
 /**
  * Returns an empty prototype-object containing no slots.

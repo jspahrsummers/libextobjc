@@ -189,6 +189,8 @@ void invokeBlockMethodWithSelf (NSInvocation *invocation, id self) {
 @end
 
 @implementation EXTPrototype
+@dynamic parent;
+
 // useful method signatures
 + (void)setSlot:(id)obj {}
 + (void)setSlot:(id)obj argumentCount:(int)count {}
@@ -572,8 +574,8 @@ void invokeBlockMethodWithSelf (NSInvocation *invocation, id self) {
 	if (found)
 		return YES;
 
-	// TODO: optimize parent lookup to not do all of the above work
 	// try looking up in the parents of this prototype
+	// TODO: optimize parent lookup to not do all of the above work
 	unsigned parentCount = 0;
 	id *parents = copyParents(slots, &parentCount);
 
