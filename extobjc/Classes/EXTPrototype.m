@@ -390,18 +390,18 @@ void invokeBlockMethodWithSelf (NSInvocation *invocation, id self) {
 	}
 }
 
-- (void)synthesizeSlot:(NSString *)slotName {
-	[self synthesizeSlot:slotName withMemoryManagementPolicy:ext_propertyMemoryManagementPolicyRetain atomic:YES];
-}
-
-- (void)synthesizeSlot:(NSString *)slotName withMemoryManagementPolicy:(ext_propertyMemoryManagementPolicy)policy atomic:(BOOL)atomic {
+- (void)synthesizeSlot:(NSString *)slotName withMemoryManagementPolicy:(ext_propertyMemoryManagementPolicy)policy {
 	ext_blockGetter getter = NULL;
 	ext_blockSetter setter = NULL;
-	ext_synthesizeBlockProperty(policy, atomic, &getter, &setter);
+
+	// pass NO for atomic, since we synchronize slots anyways
+	ext_synthesizeBlockProperty(policy, NO, &getter, &setter);
 
 	NSAssert(getter != NULL, @"Block property synthesis should never fail!");
 	NSAssert(setter != NULL, @"Block property synthesis should never fail!");
 
+	// TODO: should the mutex be locked for both of these slot modifications? it
+	// could be useful, but then would require a recursive mutex...
 	[self setValue:blockMethod(id self){
 		return getter();
 	} forSlot:slotName];

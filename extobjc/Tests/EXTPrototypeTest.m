@@ -100,8 +100,27 @@
 - (void)testPropertySynthesis {
 	EXTPrototype *obj = [EXTPrototype prototype];
 
-	// this creates ATOMIC accessors
-	[obj synthesizeSlot:@"title"];
+	[obj synthesizeSlot:@"title" withMemoryManagementPolicy:ext_propertyMemoryManagementPolicyAssign];
+
+	STAssertNil(obj.title, @"");
+
+	obj.title = @"test";
+	STAssertEqualObjects(obj.title, @"test", @"");
+
+	[obj setTitle:@"test 2"];
+	STAssertEqualObjects(obj.title, @"test 2", @"");
+
+	[obj synthesizeSlot:@"title" withMemoryManagementPolicy:ext_propertyMemoryManagementPolicyCopy];
+
+	STAssertNil(obj.title, @"");
+
+	obj.title = @"test";
+	STAssertEqualObjects(obj.title, @"test", @"");
+
+	[obj setTitle:@"test 2"];
+	STAssertEqualObjects(obj.title, @"test 2", @"");
+
+	[obj synthesizeSlot:@"title" withMemoryManagementPolicy:ext_propertyMemoryManagementPolicyRetain];
 
 	STAssertNil(obj.title, @"");
 

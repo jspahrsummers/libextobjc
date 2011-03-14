@@ -139,23 +139,18 @@ obj.string = @"";
 - (void)setValue:(id)value forSlot:(NSString *)slotName;
 
 /**
- * Invokes #synthesizeSlot:withMemoryManagementPolicy:atomic: with a memory
- * management policy of #ext_propertyMemoryManagementPolicyRetain and \e atomic
- * accessors.
- */
-- (void)synthesizeSlot:(NSString *)slotName;
-
-/**
  * Synthesizes a property \a slotName by creating a getter and a setter
  * according to the specified behavior. \a policy determines the retention
- * policy for any objects passed into the setter. If \a atomic is \c YES, the
- * generated getter and setter will read and write atomically.
+ * policy for any objects passed into the setter. Slots are always atomic.
  *
- * @note If \a policy is #ext_propertyMemoryManagementPolicyRetain and \a atomic
- * is \c NO, the behavior is no different from how slots normally work, except
- * that explicit blocks are created to function as the getter and setter.
+ * This can be called multiple times for the same slot. Each subsequent
+ * invocation will overwrite the synthesis of the previous.
+ *
+ * @note If \a policy is #ext_propertyMemoryManagementPolicyRetain, the behavior
+ * is no different from how slots normally work, except that explicit blocks are
+ * created to function as the getter and setter.
  */
-- (void)synthesizeSlot:(NSString *)slotName withMemoryManagementPolicy:(ext_propertyMemoryManagementPolicy)policy atomic:(BOOL)atomic;
+- (void)synthesizeSlot:(NSString *)slotName withMemoryManagementPolicy:(ext_propertyMemoryManagementPolicy)policy;
 
 /**
  * Returns the value associated with \a slotName, or \c nil if there is no value
