@@ -39,6 +39,11 @@
  * #setValue:forSlot: and #valueForSlot:. Assigning an object to a slot retains
  * it and allows it to later be read from that same slot.
  *
+ * Proto-objects can be created from nothing, or by copying. When copied using
+ * the \c NSCopying protocol, a shallow copy of the object is returned. This
+ * means that any slot values (including parents -- see below) will be retained,
+ * not copied.
+ *
  * Blocks have slightly different behavior in a slot. When inserted into one,
  * a block replaces the default behavior of the slot, to instead invoke the
  * block every time the slot is accessed. This is how methods on a proto-object
