@@ -12,6 +12,10 @@
 @slot(titleCopy)
 @slot(parent)
 
+@slot(string)
+@slot(appendString)
+@slot(replaceOccurrencesOfString)
+
 @implementation EXTPrototypeTest
 - (void)setUp {
 	pool = [NSAutoreleasePool new];
@@ -107,5 +111,36 @@
 
 	[obj setTitle:@"test 2"];
 	STAssertEqualObjects(obj.title, @"test 2", @"");
+}
+
+- (void)testArgumentSlots {
+	EXTPrototype *obj = [EXTPrototype prototype];
+	obj.string = @"";
+
+	STAssertEqualObjects(obj.string, @"", @"");
+
+	[obj setBlock:blockMethod(EXTPrototype *self, NSString *append){
+		self.string = [self.string stringByAppendingString:append];
+	} forSlot:@"appendString" argumentCount:2];
+
+	[obj setBlock:blockMethod(EXTPrototype *self, NSString *search, NSString *replace){
+		self.string = [self.string stringByReplacingOccurrencesOfString:search withString:replace];
+	} forSlot:@"replaceOccurrencesOfString" argumentCount:3];
+
+	STAssertEqualObjects(obj.string, @"", @"");
+
+	[obj appendString:@"foobar"];
+	STAssertEqualObjects(obj.string, @"foobar", @"");
+
+	[obj replaceOccurrencesOfString:@"foo" withObject:@"bar"];
+	STAssertEqualObjects(obj.string, @"barbar", @"");
+
+	// slot replaceOccurrencesOfString should be invokable with any name for the
+	// additional arguments
+	[obj performSelector:@selector(replaceOccurrencesOfString:withString:) withObject:@"bar" withObject:@"foo"];
+	STAssertEqualObjects(obj.string, @"foofoo", @"");
+
+	[obj performSelector:@selector(replaceOccurrencesOfString:somethingElse:) withObject:@"foo" withObject:@"beef"];
+	STAssertEqualObjects(obj.string, @"beefbeef", @"");
 }
 @end
