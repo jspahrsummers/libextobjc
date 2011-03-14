@@ -63,47 +63,67 @@ char *newTypeStringForArgumentCount (size_t argCount) {
 }
 
 static
+int compareCFStrings (const void *a, const void *b) {
+	CFStringRef strA = *(CFStringRef *)a;
+	CFStringRef strB = *(CFStringRef *)b;
+
+	// use forced ordering for predictable unspecified behavior
+	return (int)CFStringCompare(strA, strB, kCFCompareForcedOrdering);
+}
+
+static
 id *copyParents (CFDictionaryRef dict, unsigned *outCount) {
-	unsigned totalParents = 0;
+	NSLog(@"%s", __func__);
+
+	unsigned totalParents;
 
 	CFIndex count = CFDictionaryGetCount(dict);
-	const void *values[count];
+
+	const void *keys[count];
+	size_t keyCount;
 
 	{
-		const void *keys[count];
-
 		CFDictionaryGetKeysAndValues(
 			dict,
 			keys,
-			values
+			NULL
 		);
 
+		qsort(
+			keys,
+			count,
+			sizeof(const void *),
+			&compareCFStrings
+		);
+
+		keyCount = 0;
 		for (CFIndex i = 0;i < count;++i) {
 			CFStringRef key = keys[i];
 			NSLog(@"considering slot %@", (id)key);
 
 			if (CFStringHasPrefix(key, CFSTR("parent"))) {
 				NSLog(@"%@ is a parent", (id)key);
-				++totalParents;
-			} else
-				values[i] = NULL;
+				keys[keyCount++] = key;
+			}
 		}
 	}
 
-	if (!totalParents) {
+	if (!keyCount) {
 		if (outCount)
 			*outCount = 0;
 
 		return NULL;
 	}
 
-	id *parents = malloc((totalParents + 1) * sizeof(id));
+	id *parents = malloc((keyCount + 1) * sizeof(id));
 	
-	// use this to keep track of how many we actually fill in (we may not fill
+	// use totalParents to keep track of how many we actually fill in (we may not fill
 	// in some because they turn out to not actually be proto-objects)
 	totalParents = 0;
-	for (CFIndex i = 0;i < count;++i) {
-		id value = values[i];
+
+	for (size_t i = 0;i < keyCount;++i) {
+		const void *key = keys[i];
+		id value = (id)CFDictionaryGetValue(dict, key);
 		if ([value isKindOfClass:[EXTPrototype class]])
 			parents[totalParents++] = value;
 	}
