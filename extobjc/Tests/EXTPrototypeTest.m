@@ -96,6 +96,8 @@
 
 - (void)testPropertySynthesis {
 	EXTPrototype *obj = [EXTPrototype prototype];
+
+	// this creates ATOMIC accessors
 	[obj synthesizeSlot:@"title"];
 
 	STAssertNil(obj.title, @"");

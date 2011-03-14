@@ -85,6 +85,10 @@
  * according to the specified behavior. \a policy determines the retention
  * policy for any objects passed into the setter. If \a atomic is \c YES, the
  * generated getter and setter will read and write atomically.
+ *
+ * @note If \a policy is #ext_propertyMemoryManagementPolicyRetain and \a atomic
+ * is \c NO, the behavior is no different from how slots normally work, except
+ * that explicit blocks are created to function as the getter and setter.
  */
 - (void)synthesizeSlot:(NSString *)slotName withMemoryManagementPolicy:(ext_propertyMemoryManagementPolicy)policy atomic:(BOOL)atomic;
 
