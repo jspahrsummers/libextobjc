@@ -146,7 +146,7 @@ obj.string = @"";
  * from successive #immediateParents calls, or create a custom invocation (one
  * that matches the conventions of property dot syntax) if you need this behavior.
  */
-- (BOOL)invokeSlot:(NSString *)slotName withInvocation:(NSInvocation *)invocation;
+- (BOOL)invoke:(NSInvocation *)invocation withSlot:(NSString *)slotName;
 
 /**
  * Defines \a block to be the implementation for \a slotName. The number of

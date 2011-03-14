@@ -262,7 +262,7 @@ void invokeBlockMethodWithSelf (NSInvocation *invocation, id self) {
 
 #pragma mark Public slot management
 
-- (BOOL)invokeSlot:(NSString *)slotName withInvocation:(NSInvocation *)invocation {
+- (BOOL)invoke:(NSInvocation *)invocation withSlot:(NSString *)slotName {
 	Class blockClass = objc_getClass("NSBlock");
 
 	id block = [self valueForSlot:slotName];
@@ -529,7 +529,7 @@ void invokeBlockMethodWithSelf (NSInvocation *invocation, id self) {
 
 	NSLog(@"slotKey: %@", (id)slotKey);
 
-	BOOL success = [self invokeSlot:(id)slotKey withInvocation:anInvocation];
+	BOOL success = [self invoke:anInvocation withSlot:(id)slotKey];
 	CFRelease(slotKey);
 
 	if (success) {
