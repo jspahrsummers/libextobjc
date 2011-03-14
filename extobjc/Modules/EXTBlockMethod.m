@@ -18,8 +18,13 @@ BOOL ext_addBlockMethod (Class aClass, SEL name, id block, const char *types) {
 }
 
 IMP ext_blockImplementation (id block) {
-	IMP impl = (IMP)(*((void**)block + 2));
-	NSLog(@"implementation for block %@: %p", block, (void *)impl);
+	IMP impl = NULL;
+
+	// the function pointer for a block is at +12 bytes on iOS (32 bit) and +16
+	// bytes on OS X (64 bit), so we assume a constant of +8 incremented by the
+	// size of a pointer
+	impl = *(IMP *)((char *)block + 8 + sizeof(void *));
+
 	return impl;
 }
 
