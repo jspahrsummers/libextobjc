@@ -116,14 +116,37 @@ obj.string = @"";
 - (id)init;
 
 /**
- * Invokes the implementation of \a slotName using the arguments of \a
- * invocation. The return value, if applicable, is placed back into \a
- * invocation upon completion. The method signature and arguments of \a
- * invocation should start \e after the automatic \c self parameter.
- *
- * @note This does not search parents for \a slotName.
+ * Returns the immediate parents of this object, sorted such that the parents
+ * are listed in the order that they would be used for lookup. The returned
+ * array does not include any parents of parents.
  */
-- (void)invokeSlot:(NSString *)slotName withInvocation:(NSInvocation *)invocation;
+- (NSArray *)immediateParents;
+
+/**
+ * Returns the names of all slots on the object. The returned array is sorted
+ * alphabetically, with parent slots in the order that they would be used for
+ * lookup.
+ *
+ * @note This does not include any slots defined in parents.
+ */
+- (NSArray *)slots;
+
+/**
+ * Invokes the implementation of \a slotName using the arguments of \a
+ * invocation, only if the slot contains a block. The return value, if
+ * applicable, is placed back into \a invocation upon completion. The method
+ * signature and arguments of \a invocation should start \e after the automatic
+ * \c self parameter.
+ *
+ * Returns \c YES if the slot contained a block which was invoked successfully,
+ * or \c NO if the slot did not exist or contained a value instead of a block.
+ * If \c NO is returned, \a invocation is left unmodified.
+ *
+ * @note This does not search parents for \a slotName. Follow the return values
+ * from successive #immediateParents calls, or create a custom invocation (one
+ * that matches the conventions of property dot syntax) if you need this behavior.
+ */
+- (BOOL)invokeSlot:(NSString *)slotName withInvocation:(NSInvocation *)invocation;
 
 /**
  * Defines \a block to be the implementation for \a slotName. The number of
@@ -162,7 +185,9 @@ obj.string = @"";
  * in the specified slot. If the value in the specified slot is a block, this
  * method will \e not invoke it.
  *
- * @note This does not search parents for \a slotName.
+ * @note This does not search parents for \a slotName. Follow the return values
+ * from successive #immediateParents calls, or create a custom invocation (one
+ * that matches the conventions of property dot syntax) if you need this behavior.
  */
 - (id)valueForSlot:(NSString *)slotName;
 

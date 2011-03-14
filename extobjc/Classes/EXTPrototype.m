@@ -262,7 +262,14 @@ void invokeBlockMethodWithSelf (NSInvocation *invocation, id self) {
 
 #pragma mark Public slot management
 
-- (void)invokeSlot:(NSString *)slotName withInvocation:(NSInvocation *)invocation {
+- (BOOL)invokeSlot:(NSString *)slotName withInvocation:(NSInvocation *)invocation {
+	Class blockClass = objc_getClass("NSBlock");
+
+	id block = [self valueForSlot:slotName];
+	if (![block isKindOfClass:blockClass]) {
+		return NO;
+	}
+
 	NSUInteger argCount = [[invocation methodSignature] numberOfArguments] - 2;
 
 	// include a faked 'self' argument
@@ -285,12 +292,30 @@ void invokeBlockMethodWithSelf (NSInvocation *invocation, id self) {
 	methodName[methodNameLength] = '\0';
 	NSLog(@"methodName: %s", methodName);
 
-	id block = [self valueForSlot:slotName];
-
 	[invocation setTarget:block];
 	[invocation setSelector:sel_registerName(methodName)];
 
 	invokeBlockMethodWithSelf(invocation, self);
+	return YES;
+}
+
+- (NSArray *)immediateParents {
+	if (pthread_mutex_lock(&mutex) != 0) {
+		NSLog(@"ERROR: Could not lock mutex for %@", self);
+		return nil;
+	}
+
+	unsigned count = 0;
+	id *parents = copyParents(slots, &count);
+
+	if (pthread_mutex_unlock(&mutex) != 0) {
+		NSLog(@"ERROR: Could not unlock mutex for %@", self);
+	}
+
+	NSArray *ret = [NSArray arrayWithObjects:parents count:count];
+	free(parents);
+
+	return ret;
 }
 
 - (void)setBlock:(id)block forSlot:(NSString *)slotName argumentCount:(NSUInteger)argCount {
@@ -390,6 +415,41 @@ void invokeBlockMethodWithSelf (NSInvocation *invocation, id self) {
 	}
 }
 
+- (NSArray *)slots {
+	if (pthread_mutex_lock(&mutex) != 0) {
+		NSLog(@"ERROR: Could not lock mutex for %@", self);
+		return nil;
+	}
+
+	NSArray *ret = nil;
+
+	{
+		CFIndex count = CFDictionaryGetCount(slots);
+		const void *keys[count];
+
+		CFDictionaryGetKeysAndValues(
+			slots,
+			keys,
+			NULL
+		);
+
+		if (pthread_mutex_unlock(&mutex) != 0) {
+			NSLog(@"ERROR: Could not unlock mutex for %@", self);
+		}
+
+		qsort(
+			keys,
+			count,
+			sizeof(const void *),
+			&compareCFStrings
+		);
+
+		ret = [NSArray arrayWithObjects:(const id *)keys count:count];
+	}
+
+	return ret;
+}
+
 - (void)synthesizeSlot:(NSString *)slotName withMemoryManagementPolicy:(ext_propertyMemoryManagementPolicy)policy {
 	ext_blockGetter getter = NULL;
 	ext_blockSetter setter = NULL;
@@ -448,8 +508,6 @@ void invokeBlockMethodWithSelf (NSInvocation *invocation, id self) {
 	const char *name = sel_getName([anInvocation selector]);
 	size_t argCount = argumentCountForSelectorName(name);
 
-	Class blockClass = objc_getClass("NSBlock");
-
 	NSLog(@"slots: %@", (id)slots);
 
 	const char *firstArg = strchr(name, ':');
@@ -471,25 +529,20 @@ void invokeBlockMethodWithSelf (NSInvocation *invocation, id self) {
 
 	NSLog(@"slotKey: %@", (id)slotKey);
 
-	id slotValue = [self valueForSlot:(id)slotKey];
-	BOOL success = NO;
-
-	if ([slotValue isKindOfClass:blockClass]) {
-		[self invokeSlot:(id)slotKey withInvocation:anInvocation];
-		success = YES;
-	}
-
+	BOOL success = [self invokeSlot:(id)slotKey withInvocation:anInvocation];
 	CFRelease(slotKey);
-
-	NSLog(@"slotValue: %@", slotValue);
-	NSLog(@"[slotValue class]: %@", [slotValue class]);
 
 	if (success) {
 		return YES;
-	} else if (slotValue && argCount == 0) {
-		[[slotValue retain] autorelease];
-		[anInvocation setReturnValue:&slotValue];
-		return YES;
+	} 
+
+	if (argCount == 0) {
+		id slotValue = [self valueForSlot:(id)slotKey];
+		if (slotValue) {
+			[[slotValue retain] autorelease];
+			[anInvocation setReturnValue:&slotValue];
+			return YES;
+		}
 	}
 
 	// TODO: this should really check for method signatures here, not selector names
@@ -516,7 +569,7 @@ void invokeBlockMethodWithSelf (NSInvocation *invocation, id self) {
 
 		NSLog(@"slotKey: %@", (id)slotKey);
 
-		slotValue = nil;
+		id slotValue = nil;
 		[anInvocation getArgument:&slotValue atIndex:2];
 
 		NSLog(@"slotValue: %@", (id)slotValue);
