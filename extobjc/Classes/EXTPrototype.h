@@ -7,6 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "EXTRuntimeExtensions.h"
 
 /**
  * Declares a slot \a NAME for use with prototypes. This macro only provides
@@ -71,6 +72,21 @@
  * currently associated with \a slotName.
  */
 - (void)setValue:(id)value forSlot:(NSString *)slotName;
+
+/**
+ * Invokes #synthesizeSlot:withMemoryManagementPolicy:atomic: with a memory
+ * management policy of #ext_propertyMemoryManagementPolicyRetain and \e atomic
+ * accessors.
+ */
+- (void)synthesizeSlot:(NSString *)slotName;
+
+/**
+ * Synthesizes a property \a slotName by creating a getter and a setter
+ * according to the specified behavior. \a policy determines the retention
+ * policy for any objects passed into the setter. If \a atomic is \c YES, the
+ * generated getter and setter will read and write atomically.
+ */
+- (void)synthesizeSlot:(NSString *)slotName withMemoryManagementPolicy:(ext_propertyMemoryManagementPolicy)policy atomic:(BOOL)atomic;
 
 /**
  * Returns the value associated with \a slotName, or \c nil if there is no value

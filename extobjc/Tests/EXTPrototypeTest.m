@@ -93,4 +93,17 @@
 	[obj setTitle:@"test 2"];
 	STAssertEqualObjects(obj.title, @"test 2", @"");
 }
+
+- (void)testPropertySynthesis {
+	EXTPrototype *obj = [EXTPrototype prototype];
+	[obj synthesizeSlot:@"title"];
+
+	STAssertNil(obj.title, @"");
+
+	obj.title = @"test";
+	STAssertEqualObjects(obj.title, @"test", @"");
+
+	[obj setTitle:@"test 2"];
+	STAssertEqualObjects(obj.title, @"test 2", @"");
+}
 @end

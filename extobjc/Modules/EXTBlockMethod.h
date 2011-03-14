@@ -74,9 +74,10 @@ void ext_replaceBlockMethod (Class aClass, SEL name, id block, const char *types
  * returned in \a getter and \a setter, respectively. \a memoryManagementPolicy
  * determines the retention policy for any objects passed into the setter. If \a
  * atomic is \c YES, the generated getter and setter will read and write
- * atomically. Both \a getter and \a setter are autoreleased by default.
+ * atomically.
  *
- * @note Neither \a getter and \a setter should be \c NULL.
+ * Neither \a getter and \a setter should be \c NULL. Both are autoreleased by
+ * default.
  */
 void ext_synthesizeBlockProperty (ext_propertyMemoryManagementPolicy memoryManagementPolicy, BOOL atomic, ext_blockGetter *getter, ext_blockSetter *setter);
 

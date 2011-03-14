@@ -333,6 +333,33 @@ void invokeBlockMethodWithSelf (NSInvocation *invocation, id self) {
 	}
 }
 
+- (void)synthesizeSlot:(NSString *)slotName {
+	[self synthesizeSlot:slotName withMemoryManagementPolicy:ext_propertyMemoryManagementPolicyRetain atomic:YES];
+}
+
+- (void)synthesizeSlot:(NSString *)slotName withMemoryManagementPolicy:(ext_propertyMemoryManagementPolicy)policy atomic:(BOOL)atomic {
+	ext_blockGetter getter = NULL;
+	ext_blockSetter setter = NULL;
+	ext_synthesizeBlockProperty(policy, atomic, &getter, &setter);
+
+	NSAssert(getter != NULL, @"Block property synthesis should never fail!");
+	NSAssert(setter != NULL, @"Block property synthesis should never fail!");
+
+	[self setValue:blockMethod(id self){
+		return getter();
+	} forSlot:slotName];
+
+	NSMutableString *setterSlot = [[NSMutableString alloc] initWithString:@"set"];
+	[setterSlot appendString:[[slotName substringToIndex:1] uppercaseString]];
+	[setterSlot appendString:[slotName substringFromIndex:1]];
+
+	[self setBlock:blockMethod(id self, id newValue){
+		setter(newValue);
+	} forSlot:setterSlot argumentCount:2];
+
+	[setterSlot release];
+}
+
 - (id)valueForSlot:(NSString *)slotName {
 	return (id)CFDictionaryGetValue(slots, (CFStringRef)slotName);
 }
