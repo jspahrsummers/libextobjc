@@ -7,6 +7,7 @@
 //
 
 #import <objc/runtime.h>
+#import "EXTRuntimeExtensions.h"
 
 /**
  * Constructs a block suitable for use as a method implementation, using the
@@ -26,6 +27,16 @@ id badIsEqual = blockMethod(id obj){
  */
 #define blockMethod(...) \
 	^(SEL _cmd, __VA_ARGS__)
+
+/**
+ * The type for a block-based property getter.
+ */
+typedef id (^ext_blockGetter)(void);
+
+/**
+ * The type for a block-based property setter.
+ */
+typedef void (^ext_blockSetter)(id);
 
 /**
  * Uses \a block as the implementation for a new method \a name on \a aClass. \a
@@ -58,5 +69,14 @@ IMP ext_blockImplementation (id block);
  */
 void ext_replaceBlockMethod (Class aClass, SEL name, id block, const char *types);
 
-/*** implementation details follow ***/
+/**
+ * Synthesizes blocks for a property getter and a property setter, which are
+ * returned in \a getter and \a setter, respectively. \a memoryManagementPolicy
+ * determines the retention policy for any objects passed into the setter. If \a
+ * atomic is \c YES, the generated getter and setter will read and write
+ * atomically. Both \a getter and \a setter are autoreleased by default.
+ *
+ * @note Neither \a getter and \a setter should be \c NULL.
+ */
+void ext_synthesizeBlockProperty (ext_propertyMemoryManagementPolicy memoryManagementPolicy, BOOL atomic, ext_blockGetter *getter, ext_blockSetter *setter);
 
