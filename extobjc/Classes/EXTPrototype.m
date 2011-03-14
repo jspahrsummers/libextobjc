@@ -12,6 +12,7 @@
 #import "NSMethodSignature+EXT.h"
 #import <assert.h>
 #import <ctype.h>
+#import <pthread.h>
 
 // doesn't include 'self' and '_cmd'
 static
@@ -182,6 +183,10 @@ void invokeBlockMethodWithSelf (NSInvocation *invocation, id self) {
 
 @interface EXTPrototype () {
     CFMutableDictionaryRef slots;
+
+	// this mutex protects 'slots' and the class objects of any blocks (when
+	// performing method injection using slot names)
+	pthread_mutex_t mutex;
 }
 
 - (id)initWithExistingSlots:(CFDictionaryRef)existingSlots;
@@ -203,6 +208,11 @@ void invokeBlockMethodWithSelf (NSInvocation *invocation, id self) {
 
 - (id)init {
 	if ((self = [super init])) {
+		if (pthread_mutex_init(&mutex, NULL) != 0) {
+			[self release];
+			return nil;
+		}
+
 		slots = CFDictionaryCreateMutable(
 			NULL,
 			0,
@@ -216,6 +226,11 @@ void invokeBlockMethodWithSelf (NSInvocation *invocation, id self) {
 
 - (id)initWithExistingSlots:(CFDictionaryRef)existingSlots {
 	if ((self = [super init])) {
+		if (pthread_mutex_init(&mutex, NULL) != 0) {
+			[self release];
+			return nil;
+		}
+
 		slots = CFDictionaryCreateMutableCopy(
 			NULL,
 			0,
@@ -227,6 +242,10 @@ void invokeBlockMethodWithSelf (NSInvocation *invocation, id self) {
 }
 
 - (void)dealloc {
+	if (pthread_mutex_destroy(&mutex) != 0) {
+		NSLog(@"ERROR: Could not destroy mutex for %@", self);
+	}
+
 	if (slots) {
 		CFRelease(slots);
 		slots = NULL;
@@ -281,12 +300,6 @@ void invokeBlockMethodWithSelf (NSInvocation *invocation, id self) {
 	id slotValue = [block copy];
 	NSLog(@"%@ is a block", (id)slotValue);
 
-	CFDictionarySetValue(
-		slots,
-		(CFStringRef)slotName,
-		slotValue
-	);
-
 	char * restrict typeString = newTypeStringForArgumentCount(argCount);
 	NSLog(@"typeString: %s", typeString);
 
@@ -309,16 +322,29 @@ void invokeBlockMethodWithSelf (NSInvocation *invocation, id self) {
 	methodName[methodNameLength] = '\0';
 	NSLog(@"methodName: %s", methodName);
 
-	// add the block as an instance method to itself
-	class_replaceMethod(
-		object_getClass(slotValue),
-		sel_registerName(methodName),
-		ext_blockImplementation(slotValue),
-		typeString
-	);
+	if (pthread_mutex_lock(&mutex) != 0) {
+		NSLog(@"ERROR: Could not lock mutex for %@", self);
+	} else {
+		CFDictionarySetValue(
+			slots,
+			(CFStringRef)slotName,
+			slotValue
+		);
+
+		// add the block as an instance method to itself
+		class_replaceMethod(
+			object_getClass(slotValue),
+			sel_registerName(methodName),
+			ext_blockImplementation(slotValue),
+			typeString
+		);
+
+		if (pthread_mutex_unlock(&mutex) != 0) {
+			NSLog(@"ERROR: Could not unlock mutex for %@", self);
+		}
+	}
 
 	free(typeString);
-
 	[slotValue release];
 }
 
@@ -328,6 +354,11 @@ void invokeBlockMethodWithSelf (NSInvocation *invocation, id self) {
 
 	if ([slotValue isKindOfClass:blockClass]) {
 		[self setBlock:slotValue forSlot:slotName argumentCount:1];
+		return;
+	}
+
+	if (pthread_mutex_lock(&mutex) != 0) {
+		NSLog(@"ERROR: Could not lock mutex for %@", self);
 		return;
 	}
 
@@ -352,6 +383,10 @@ void invokeBlockMethodWithSelf (NSInvocation *invocation, id self) {
 		ext_removeMethod(object_getClass(existingValue), NSSelectorFromString(slotName));
 	} else {
 		NSLog(@"using simple slot assignment for %@ replacing %@", (id)slotValue, (id)existingValue);
+	}
+
+	if (pthread_mutex_unlock(&mutex) != 0) {
+		NSLog(@"ERROR: Could not unlock mutex for %@", self);
 	}
 }
 
@@ -383,7 +418,17 @@ void invokeBlockMethodWithSelf (NSInvocation *invocation, id self) {
 }
 
 - (id)valueForSlot:(NSString *)slotName {
-	return (id)CFDictionaryGetValue(slots, (CFStringRef)slotName);
+	if (pthread_mutex_lock(&mutex) != 0) {
+		NSLog(@"ERROR: Could not lock mutex for %@", self);
+		return nil;
+	}
+
+	id value = (id)CFDictionaryGetValue(slots, (CFStringRef)slotName);
+	if (pthread_mutex_unlock(&mutex) != 0) {
+		NSLog(@"ERROR: Could not unlock mutex for %@", self);
+	}
+
+	return value;
 }
 
 #pragma mark Forwarding machinery
@@ -489,9 +534,18 @@ void invokeBlockMethodWithSelf (NSInvocation *invocation, id self) {
 		return YES;
 	}
 
+	if (pthread_mutex_lock(&mutex) != 0) {
+		NSLog(@"ERROR: Could not lock mutex for %@", self);
+		return NO;
+	}
+
 	// try looking up in the parents of this prototype
 	unsigned parentCount = 0;
 	id *parents = copyParents(slots, &parentCount);
+
+	if (pthread_mutex_unlock(&mutex) != 0) {
+		NSLog(@"ERROR: Could not unlock mutex for %@", self);
+	}
 
 	for (unsigned i = 0;i < parentCount;++i) {
 		NSLog(@"checking %@ for selector %s", parents[i], name);
@@ -568,26 +622,40 @@ void invokeBlockMethodWithSelf (NSInvocation *invocation, id self) {
 		kCFStringEncodingUTF8
 	);
 
-	BOOL found = (CFDictionaryGetValue(slots, slotKey) != NULL);
-	CFRelease(slotKey);
-
-	if (found)
-		return YES;
-
-	// try looking up in the parents of this prototype
-	// TODO: optimize parent lookup to not do all of the above work
-	unsigned parentCount = 0;
-	id *parents = copyParents(slots, &parentCount);
-
-	for (unsigned i = 0;i < parentCount;++i) {
-		NSLog(@"checking %@ for selector %s", parents[i], name);
-		if ([parents[i] respondsToSelector:aSelector]) {
-			found = YES;
-			break;
-		}
+	if (pthread_mutex_lock(&mutex) != 0) {
+		NSLog(@"ERROR: Could not lock mutex for %@", self);
+		CFRelease(slotKey);
+		return NO;
 	}
 
-	free(parents);
+	BOOL found = (CFDictionaryGetValue(slots, slotKey) != NULL);
+
+	if (found) {
+		if (pthread_mutex_unlock(&mutex) != 0) {
+			NSLog(@"ERROR: Could not unlock mutex for %@", self);
+		}
+	} else {
+		// try looking up in the parents of this prototype
+		// TODO: optimize parent lookup to not do all of the above work
+		unsigned parentCount = 0;
+		id *parents = copyParents(slots, &parentCount);
+
+		if (pthread_mutex_unlock(&mutex) != 0) {
+			NSLog(@"ERROR: Could not unlock mutex for %@", self);
+		}
+
+		for (unsigned i = 0;i < parentCount;++i) {
+			NSLog(@"checking %@ for selector %s", parents[i], name);
+			if ([parents[i] respondsToSelector:aSelector]) {
+				found = YES;
+				break;
+			}
+		}
+
+		free(parents);
+	}
+
+	CFRelease(slotKey);
 	return found;
 }
 @end

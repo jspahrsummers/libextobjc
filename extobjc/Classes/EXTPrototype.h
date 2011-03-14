@@ -88,8 +88,6 @@ obj.string = @"";
  * depth-first traversed in alphabetical order; for example, slot \c parentA and
  * all of its parents will be searched before slot \c parentB and all of its
  * parents.
- *
- * @bug Accessing and modifying slots is not a thread-safe operation.
  */
 @interface EXTPrototype : NSObject <NSCopying> {
 }
