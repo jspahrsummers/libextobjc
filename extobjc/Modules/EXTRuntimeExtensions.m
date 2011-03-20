@@ -482,8 +482,8 @@ void ext_removeMethod (Class aClass, SEL methodName) {
 	if (superclassMethod) {
 		method_setImplementation(existingMethod, method_getImplementation(superclassMethod));
 	} else {
-		// since we know for a fact that the method doesn't exist now, get an
-		// IMP internal to the runtime for message forwarding
+		// since we now know that the method doesn't exist on any
+		// superclass, get an IMP internal to the runtime for message forwarding
 		IMP forward = class_getMethodImplementation(superclass, methodName);
 
 		method_setImplementation(existingMethod, forward);
