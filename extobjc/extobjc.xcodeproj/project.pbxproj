@@ -46,6 +46,8 @@
 		D0555B88132317FA00874D66 /* EXTRuntimeExtensions.h in Headers */ = {isa = PBXBuildFile; fileRef = D0555B84132317FA00874D66 /* EXTRuntimeExtensions.h */; };
 		D05F5BF71335E43F00A34927 /* EXTBlockMethodTest.m in Sources */ = {isa = PBXBuildFile; fileRef = D05F5BF61335E43F00A34927 /* EXTBlockMethodTest.m */; };
 		D05F5BF81335E43F00A34927 /* EXTBlockMethodTest.m in Sources */ = {isa = PBXBuildFile; fileRef = D05F5BF61335E43F00A34927 /* EXTBlockMethodTest.m */; };
+		D05F5BFB1335F5E800A34927 /* EXTPrototypeTest.m in Sources */ = {isa = PBXBuildFile; fileRef = D03D2363132C060500F7B1A3 /* EXTPrototypeTest.m */; };
+		D05F5BFC1335F5E800A34927 /* EXTPrototypeTest.m in Sources */ = {isa = PBXBuildFile; fileRef = D03D2363132C060500F7B1A3 /* EXTPrototypeTest.m */; };
 		D0A8B04F128A42F4004AACE0 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0867D69BFE84028FC02AAC07 /* Foundation.framework */; };
 		D0A8B188128A4303004AACE0 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D0A8B187128A4303004AACE0 /* Foundation.framework */; };
 		D0A8B2F8128A49E9004AACE0 /* EXTSwizzle.h in Headers */ = {isa = PBXBuildFile; fileRef = D0A8B2F7128A49E9004AACE0 /* EXTSwizzle.h */; };
@@ -596,6 +598,7 @@
 				D0337667131E54960039ACFD /* EXTFinalMethodTest.m in Sources */,
 				D0FD397413243A31009300A7 /* EXTRuntimeExtensionsTest.m in Sources */,
 				D05F5BF71335E43F00A34927 /* EXTBlockMethodTest.m in Sources */,
+				D05F5BFB1335F5E800A34927 /* EXTPrototypeTest.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -611,6 +614,7 @@
 				D0337668131E54960039ACFD /* EXTFinalMethodTest.m in Sources */,
 				D0FD397513243A31009300A7 /* EXTRuntimeExtensionsTest.m in Sources */,
 				D05F5BF81335E43F00A34927 /* EXTBlockMethodTest.m in Sources */,
+				D05F5BFC1335F5E800A34927 /* EXTPrototypeTest.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

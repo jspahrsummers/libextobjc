@@ -139,7 +139,7 @@ id *copyParents (CFDictionaryRef dict, unsigned *outCount) {
 }
 
 static
-void invokeBlockMethodWithSelf (NSInvocation *invocation, id self) {
+void invokeBlockMethodWithSelf (id block, NSInvocation *invocation, id self) {
 	NSMethodSignature *signature = [invocation methodSignature];
 
 	NSLog(@"%s", __func__);
@@ -152,7 +152,7 @@ void invokeBlockMethodWithSelf (NSInvocation *invocation, id self) {
 
 	NSLog(@"new signature type: %s", [newSignature typeEncoding]);
 
-	[newInvocation setTarget:[invocation target]];
+	[newInvocation setTarget:block];
 	[newInvocation setSelector:[invocation selector]];
 	[newInvocation setArgument:&self atIndex:2];
 
@@ -292,10 +292,9 @@ void invokeBlockMethodWithSelf (NSInvocation *invocation, id self) {
 	methodName[methodNameLength] = '\0';
 	NSLog(@"methodName: %s", methodName);
 
-	[invocation setTarget:block];
 	[invocation setSelector:sel_registerName(methodName)];
 
-	invokeBlockMethodWithSelf(invocation, self);
+	invokeBlockMethodWithSelf(block, invocation, self);
 	return YES;
 }
 
