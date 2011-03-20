@@ -52,14 +52,20 @@
 
 	int result;
 	STAssertNoThrow(result = [obj multiplyByTwo:42], @"expected -multiplyByTwo: method to be available");
-
 	STAssertEquals(expected, result, @"expected -multiplyByTwo: method to be implemented using block implementation");
+
+	STAssertNoThrow([obj release], @"could not deallocate BlockTestClass instance");
+}
+
+- (void)testReplacingMethod {
+	BlockTestClass *obj = [[BlockTestClass alloc] init];
+	STAssertNotNil(obj, @"could not allocate BlockTestClass instance");
 
 	STAssertEqualObjects([obj description], @"method", @"expected -description before replacement to be as defined in BlockTestClass");
 
 	__block BOOL descriptionCalled = NO;
 
-	block = blockMethod(id self){
+	id block = blockMethod(id self){
 		STAssertTrue([self isMemberOfClass:[BlockTestClass class]], @"expected self to be an instance of BlockTestClass");
 
 		descriptionCalled = YES;
