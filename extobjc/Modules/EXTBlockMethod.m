@@ -7,39 +7,80 @@
 //
 
 #import "EXTBlockMethod.h"
+#import "NSMethodSignature+EXT.h"
 #import <libkern/OSAtomic.h>
 #import <stdio.h>
+#import <string.h>
 
-static
-id ext_blockWithSelector (Class cls, SEL aSelector) {
-	while (cls != Nil) {
-		id block = objc_getAssociatedObject(cls, aSelector);
-		if (block)
-			return block;
+#define originalForwardInvocationSelector \
+	@selector(ext_originalForwardInvocation_:)
 
-		cls = class_getSuperclass(cls);
-	}
+#define originalMethodSignatureForSelectorSelector \
+	@selector(ext_originalMethodSignatureForSelector_:)
 
-	return nil;
-}
+#define originalRespondsToSelectorSelector \
+	@selector(ext_originalRespondsToSelector_:)
 
 typedef NSMethodSignature *(*methodSignatureForSelectorIMP)(id, SEL, SEL);
 typedef void (*forwardInvocationIMP)(id, SEL, NSInvocation *);
 typedef BOOL (*respondsToSelectorIMP)(id, SEL, SEL);
 
 static
+id ext_blockWithSelector (Class cls, SEL aSelector) {
+	return objc_getAssociatedObject(cls, aSelector);
+}
+
+static
+void ext_invokeBlockMethodWithSelf (id block, NSInvocation *invocation, id self) {
+	NSMethodSignature *signature = [invocation methodSignature];
+
+	NSLog(@"%s", __func__);
+	NSLog(@"selector: %s", sel_getName([invocation selector]));
+	NSLog(@"signature type: %s", [signature typeEncoding]);
+
+	// add a faked 'id self' argument
+	NSMethodSignature *newSignature = [signature methodSignatureByInsertingType:@encode(id) atArgumentIndex:2];
+	NSInvocation *newInvocation = [NSInvocation invocationWithMethodSignature:newSignature];
+
+	NSLog(@"new signature type: %s", [newSignature typeEncoding]);
+
+	[newInvocation setTarget:block];
+	[newInvocation setSelector:[invocation selector]];
+	[newInvocation setArgument:&self atIndex:2];
+
+	NSUInteger origArgumentCount = [signature numberOfArguments];
+	NSCAssert(origArgumentCount + 1 == [newSignature numberOfArguments], @"expected method signature and modified method signature to differ only in one argument");
+
+	if (origArgumentCount > 2) {
+		char buffer[[signature frameLength]];
+
+		for (NSUInteger i = 2;i < origArgumentCount;++i) {
+			NSLog(@"copying argument %lu", (unsigned long)i);
+			[invocation getArgument:buffer atIndex:i];
+			[newInvocation setArgument:buffer atIndex:i + 1];
+		}
+	}
+
+	NSLog(@"about to invoke against %p (%@)", (void *)self, [self class]);
+	[newInvocation invoke];
+	
+	NSCAssert([signature methodReturnLength] == [newSignature methodReturnLength], @"expected method signature and modified method signature to have the same return type");
+
+	if ([signature methodReturnLength]) {
+		char returnValue[[signature methodReturnLength]];
+		[newInvocation getReturnValue:returnValue];
+		[invocation setReturnValue:returnValue];
+	}
+}
+
+static
 NSMethodSignature *ext_blockMethodSignatureForSelector (id self, SEL _cmd, SEL aSelector) {
 	Class cls = object_getClass(self);
-	Class superclass = class_getSuperclass(cls);
-	methodSignatureForSelectorIMP superclassImpl = (methodSignatureForSelectorIMP)class_getMethodImplementation(superclass, _cmd);
+	methodSignatureForSelectorIMP originalImpl = (methodSignatureForSelectorIMP)class_getMethodImplementation(cls, originalMethodSignatureForSelectorSelector);
 
-	if (superclassImpl == &ext_blockMethodSignatureForSelector) {
-		fprintf(stderr, "Warning: Superclass %s implementation of %s is the same as that of %s\n", class_getName(superclass), sel_getName(_cmd), class_getName(cls));
-	} else {
-		NSMethodSignature *signature = superclassImpl(self, _cmd, aSelector);
-		if (signature)
-			return signature;
-	}
+	NSMethodSignature *signature = originalImpl(self, _cmd, aSelector);
+	if (signature)
+		return signature;
 
 	id block = ext_blockWithSelector(cls, aSelector);
 	if (!block) {
@@ -64,37 +105,81 @@ void ext_blockForwardInvocation (id self, SEL _cmd, NSInvocation *invocation) {
 	id block = ext_blockWithSelector(cls, aSelector);
 	if (block) {
 		// update invocation and call through to block
+		ext_invokeBlockMethodWithSelf(block, invocation, self);
 		return;
 	}
 
-	// otherwise, invoke superclass implementation of forwardInvocation: (if
+	// otherwise, invoke original implementation of forwardInvocation: (if
 	// there is one)
-	Class superclass = class_getSuperclass(cls);
-	Method superclassMethod = class_getInstanceMethod(superclass, _cmd);
+	Method superclassMethod = class_getInstanceMethod(self, originalForwardInvocationSelector);
 
 	if (superclassMethod) {
-		forwardInvocationIMP superclassImpl = (forwardInvocationIMP)method_getImplementation(superclassMethod);
-		superclassImpl(self, _cmd, invocation);
+		forwardInvocationIMP originalImpl = (forwardInvocationIMP)method_getImplementation(superclassMethod);
+		originalImpl(self, _cmd, invocation);
 	} else {
-		[self doesNotRecognizeSelector:_cmd];
+		[self doesNotRecognizeSelector:aSelector];
 	}
 }
 
 static
 BOOL ext_blockRespondsToSelector (id self, SEL _cmd, SEL aSelector) {
 	Class cls = object_getClass(self);
-	Class superclass = class_getSuperclass(cls);
-	respondsToSelectorIMP superclassImpl = (respondsToSelectorIMP)class_getMethodImplementation(superclass, _cmd);
+	respondsToSelectorIMP originalImpl = (respondsToSelectorIMP)class_getMethodImplementation(cls, originalRespondsToSelectorSelector);
 
-	if (superclassImpl == &ext_blockRespondsToSelector) {
-		fprintf(stderr, "Warning: Superclass %s implementation of %s is the same as that of %s\n", class_getName(superclass), sel_getName(_cmd), class_getName(cls));
-	} else {
-		if (superclassImpl(self, _cmd, aSelector))
-			return YES;
-	}
+	if (originalImpl(self, _cmd, aSelector))
+		return YES;
 
 	id block = ext_blockWithSelector(cls, aSelector);
 	return (block != nil);
+}
+
+static
+void ext_installSpecialBlockMethods (Class aClass) {
+	SEL selectorsToInject[] = {
+		@selector(forwardInvocation:),
+		@selector(methodSignatureForSelector:),
+		@selector(respondsToSelector:)
+	};
+
+	IMP newImplementations[] = {
+		(IMP)&ext_blockForwardInvocation,
+		(IMP)&ext_blockMethodSignatureForSelector,
+		(IMP)&ext_blockRespondsToSelector
+	};
+
+	SEL renamedSelectors[] = {
+		originalForwardInvocationSelector,
+		originalMethodSignatureForSelectorSelector,
+		originalRespondsToSelectorSelector
+	};
+
+	size_t methodCount = sizeof(selectorsToInject) / sizeof(*selectorsToInject);
+	for (size_t i = 0;i < methodCount;++i) {
+		SEL name = selectorsToInject[i];
+
+		Method originalMethod = class_getInstanceMethod(aClass, name);
+		const char *type = method_getTypeEncoding(originalMethod);
+
+		BOOL success = class_addMethod(
+			aClass,
+			renamedSelectors[i],
+			method_getImplementation(originalMethod),
+			type
+		);
+
+		if (!success) {
+			// if this method couldn't be injected, we assume that the methods
+			// we need have already been fully installed
+			break;
+		}
+
+		class_replaceMethod(
+			aClass,
+			name,
+			newImplementations[i],
+			type
+		);
+	}
 }
 
 BOOL ext_addBlockMethod (Class aClass, SEL name, id block, const char *types) {

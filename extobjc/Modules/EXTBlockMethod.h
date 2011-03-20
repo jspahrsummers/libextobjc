@@ -58,7 +58,7 @@ BOOL ext_addBlockMethod (Class aClass, SEL name, id block, const char *types);
  * method -- that is the responsibility of the caller.
  *
  * @note On Mac OS X 10.7 or iOS 4.3, a public \c imp_implementationWithBlock()
- * function is available that can be used instead of this one.
+ * function is available that supersedes the functionality of this one.
  */
 IMP ext_blockImplementation (id block);
 
