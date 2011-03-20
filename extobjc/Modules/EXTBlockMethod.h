@@ -77,6 +77,20 @@ void ext_replaceBlockMethod (Class aClass, SEL name, id block, const char *types
  *
  * Neither \a getter and \a setter should be \c NULL. Both are autoreleased by
  * default.
+ *
+ * @note \a getter and \a setter do \e not automatically match a #blockMethod in
+ * type. Since blocks are composable, it is relatively straightforward to create
+ * a #blockMethod from them:
+ *
+ * @code
+
+ext_blockGetter getter, setter;
+ext_synthesizeBlockProperty(ext_propertyMemoryManagementPolicyRetain, YES, &getter, &setter);
+
+id getterMethod = blockMethod(id self){ return getter(); }
+id setterMethod = blockMethod(id self, id val){ setter(val); }
+
+ * @endcode
  */
 void ext_synthesizeBlockProperty (ext_propertyMemoryManagementPolicy memoryManagementPolicy, BOOL atomic, ext_blockGetter *getter, ext_blockSetter *setter);
 
