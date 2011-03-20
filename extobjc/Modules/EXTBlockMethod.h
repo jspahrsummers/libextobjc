@@ -21,7 +21,9 @@ id badIsEqual = blockMethod(id obj){
  * @endcode
  *
  * \c _cmd will be declared for your block, and, when invoked as a method
- * implementation, will be initialized to the selector of the method.
+ * implementation, will be initialized to the selector of the method. Your block
+ * must have at least one argument, the first of which is the object upon which
+ * the block is being invoked.
  */
 #define blockMethod(...) \
 	^(SEL _cmd, __VA_ARGS__)
