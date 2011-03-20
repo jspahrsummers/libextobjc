@@ -56,6 +56,9 @@ BOOL ext_addBlockMethod (Class aClass, SEL name, id block, const char *types);
  * a method implementation. Note that this does not (and cannot do) any argument
  * checking to ensure that \a block meets the requirements for an Objective-C
  * method -- that is the responsibility of the caller.
+ *
+ * @note On Mac OS X 10.7 or iOS 4.3, a public \c imp_implementationWithBlock()
+ * function is available that can be used instead of this one.
  */
 IMP ext_blockImplementation (id block);
 
