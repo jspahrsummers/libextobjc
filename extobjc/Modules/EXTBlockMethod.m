@@ -32,7 +32,7 @@ id ext_blockWithSelector (Class cls, SEL aSelector) {
 
 static
 void ext_installBlockWithSelector (Class cls, id block, SEL aSelector) {
-	objc_setAssociatedObject(cls, aSelector, block, OBJC_ASSOCIATION_COPY);
+	objc_setAssociatedObject(cls, aSelector, block, OBJC_ASSOCIATION_RETAIN);
 }
 
 static
@@ -41,6 +41,8 @@ void ext_invokeBlockMethodWithSelf (id block, NSInvocation *invocation, id self)
 
 	NSLog(@"%s", __func__);
 	NSLog(@"selector: %s", sel_getName([invocation selector]));
+	NSLog(@"invocation: %@", invocation);
+	NSLog(@"signature: %@", signature);
 	NSLog(@"signature type: %s", [signature typeEncoding]);
 
 	// add a faked 'id self' argument
@@ -107,6 +109,12 @@ void ext_blockForwardInvocation (id self, SEL _cmd, NSInvocation *invocation) {
 	Class cls = object_getClass(self);
 	SEL aSelector = [invocation selector];
 
+	NSLog(@"self: %p", (void *)self);
+	NSLog(@"cls: %@", cls);
+	NSLog(@"_cmd: %@", NSStringFromSelector(_cmd));
+	NSLog(@"selector: %@", NSStringFromSelector(aSelector));
+	NSLog(@"invocation: %@", invocation);
+
 	id block = ext_blockWithSelector(cls, aSelector);
 	if (block) {
 		// update invocation and call through to block
@@ -116,10 +124,10 @@ void ext_blockForwardInvocation (id self, SEL _cmd, NSInvocation *invocation) {
 
 	// otherwise, invoke original implementation of forwardInvocation: (if
 	// there is one)
-	Method superclassMethod = class_getInstanceMethod(self, originalForwardInvocationSelector);
+	Method originalMethod = class_getInstanceMethod(self, originalForwardInvocationSelector);
 
-	if (superclassMethod) {
-		forwardInvocationIMP originalImpl = (forwardInvocationIMP)method_getImplementation(superclassMethod);
+	if (originalMethod) {
+		forwardInvocationIMP originalImpl = (forwardInvocationIMP)method_getImplementation(originalMethod);
 		originalImpl(self, _cmd, invocation);
 	} else {
 		[self doesNotRecognizeSelector:aSelector];
@@ -193,14 +201,18 @@ BOOL ext_addBlockMethod (Class aClass, SEL name, id block, const char *types) {
 	
 	ext_installSpecialBlockMethods(aClass);
 
+	id copiedBlock = Block_copy(block);
+
 	class_replaceMethod(
-		object_getClass(block),
+		object_getClass(copiedBlock),
 		name,
-		ext_blockImplementation(block),
+		ext_blockImplementation(copiedBlock),
 		types
 	);
 
-	ext_installBlockWithSelector(aClass, block, name);
+	ext_installBlockWithSelector(aClass, copiedBlock, name);
+	Block_release(copiedBlock);
+
 	return YES;
 }
 
@@ -218,16 +230,29 @@ IMP ext_blockImplementation (id block) {
 void ext_replaceBlockMethod (Class aClass, SEL name, id block, const char *types) {
 	ext_installSpecialBlockMethods(aClass);
 
+	id copiedBlock = Block_copy(block);
+
 	class_replaceMethod(
-		object_getClass(block),
+		object_getClass(copiedBlock),
 		name,
-		ext_blockImplementation(block),
+		ext_blockImplementation(copiedBlock),
 		types
 	);
 
-	ext_installBlockWithSelector(aClass, block, name);
+	ext_installBlockWithSelector(aClass, copiedBlock, name);
+	Block_release(copiedBlock);
 
-	//Method existingMethod = 
+	// find a method that we know not to exist, and get an
+	// IMP internal to the runtime for message forwarding
+	SEL forwardSelector = @selector(iouawhjfiue::::ajoijw:aF:);
+	IMP forward = class_getMethodImplementation(aClass, forwardSelector);
+
+	class_replaceMethod(
+		aClass,
+		name,
+		forward,
+		types
+	);
 }
 
 void ext_synthesizeBlockProperty (ext_propertyMemoryManagementPolicy memoryManagementPolicy, BOOL atomic, ext_blockGetter *getter, ext_blockSetter *setter) {

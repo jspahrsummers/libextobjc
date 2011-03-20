@@ -7,16 +7,11 @@
 //
 
 #import "EXTRuntimeExtensions.h"
+#import <objc/message.h>
 #import <ctype.h>
 #import <stdio.h>
 #import <stdlib.h>
 #import <string.h>
-
-static
-id ext_removedMethodCalled (id self, SEL _cmd, ...) {
-	[self doesNotRecognizeSelector:_cmd];
-	return nil;
-}
 
 unsigned ext_injectMethods (
 	Class aClass,
@@ -484,10 +479,15 @@ void ext_removeMethod (Class aClass, SEL methodName) {
 	if (superclass)
 		superclassMethod = class_getInstanceMethod(superclass, methodName);
 	
-	if (superclassMethod)
+	if (superclassMethod) {
 		method_setImplementation(existingMethod, method_getImplementation(superclassMethod));
-	else
-		method_setImplementation(existingMethod, (IMP)&ext_removedMethodCalled);
+	} else {
+		// since we know for a fact that the method doesn't exist now, get an
+		// IMP internal to the runtime for message forwarding
+		IMP forward = class_getMethodImplementation(superclass, methodName);
+
+		method_setImplementation(existingMethod, forward);
+	}
 }
 
 void ext_replaceMethods (Class aClass, Method *methods, unsigned count) {
