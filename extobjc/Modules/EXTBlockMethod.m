@@ -31,6 +31,11 @@ id ext_blockWithSelector (Class cls, SEL aSelector) {
 }
 
 static
+void ext_installBlockWithSelector (Class cls, id block, SEL aSelector) {
+	objc_setAssociatedObject(cls, aSelector, block, OBJC_ASSOCIATION_COPY);
+}
+
+static
 void ext_invokeBlockMethodWithSelf (id block, NSInvocation *invocation, id self) {
 	NSMethodSignature *signature = [invocation methodSignature];
 
@@ -183,12 +188,20 @@ void ext_installSpecialBlockMethods (Class aClass) {
 }
 
 BOOL ext_addBlockMethod (Class aClass, SEL name, id block, const char *types) {
-	return class_addMethod(
-		aClass,
+	if (ext_blockWithSelector(aClass, name))
+		return NO;
+	
+	ext_installSpecialBlockMethods(aClass);
+
+	class_replaceMethod(
+		object_getClass(block),
 		name,
 		ext_blockImplementation(block),
 		types
 	);
+
+	ext_installBlockWithSelector(aClass, block, name);
+	return YES;
 }
 
 IMP ext_blockImplementation (id block) {
@@ -203,12 +216,18 @@ IMP ext_blockImplementation (id block) {
 }
 
 void ext_replaceBlockMethod (Class aClass, SEL name, id block, const char *types) {
+	ext_installSpecialBlockMethods(aClass);
+
 	class_replaceMethod(
-		aClass,
+		object_getClass(block),
 		name,
 		ext_blockImplementation(block),
 		types
 	);
+
+	ext_installBlockWithSelector(aClass, block, name);
+
+	//Method existingMethod = 
 }
 
 void ext_synthesizeBlockProperty (ext_propertyMemoryManagementPolicy memoryManagementPolicy, BOOL atomic, ext_blockGetter *getter, ext_blockSetter *setter) {

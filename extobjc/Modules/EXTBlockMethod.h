@@ -22,8 +22,6 @@ id badIsEqual = blockMethod(id obj){
  *
  * \c _cmd will be declared for your block, and, when invoked as a method
  * implementation, will be initialized to the selector of the method.
- *
- * @todo This macro does not yet declare \c self.
  */
 #define blockMethod(...) \
 	^(SEL _cmd, __VA_ARGS__)
