@@ -281,6 +281,9 @@ BOOL ext_injectMethodsFromClass (Class srcClass, Class dstClass, ext_methodInjec
  * @li If no superclasses of \a aClass implement a method by the same name, the
  * method is replaced with a call to \c doesNotRecognizeSelector:. The \c
  * forwardInvocation: machinery is not invoked.
+ *
+ * @warning Adding a method by the same name into a superclass of \a aClass \e
+ * after using this function may obscure it from the subclass.
  */
 void ext_removeMethod (Class aClass, SEL methodName);
 
