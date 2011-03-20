@@ -296,9 +296,21 @@ typedef union { int i; } *empty_union_ptr_t;
 				}
 				
 				break;
+
+			case '?':
+				{
+					// assume that this is a pointer to a function pointer
+					//
+					// even if it's not, the fact that it's
+					// a pointer-to-something gives us a good chance of not
+					// causing alignment or size problems
+					IMP *ptr = va_arg(args, IMP *);
+					[self setArgument:&ptr atIndex:i];
+				}
+
+				break;
 			
 			case 'b':
-			case '?':
 			default:
 				NSLog(@"Pointer to unexpected type within method argument type code \"%s\", cannot set method invocation!", type);
 				return NO;
@@ -307,6 +319,17 @@ typedef union { int i; } *empty_union_ptr_t;
 			break;
 		
 		case '?':
+			{
+				// this is PROBABLY a function pointer, but the documentation
+				// leaves room open for uncertainty, so at least log a message
+				NSLog(@"Assuming method argument type code \"%s\" is a function pointer", type);
+
+				IMP ptr = va_arg(args, IMP);
+				[self setArgument:&ptr atIndex:i];
+			}
+
+			break;
+			
 		default:
 			NSLog(@"Unexpected method argument type code \"%s\", cannot set method invocation!", type);
 			return NO;

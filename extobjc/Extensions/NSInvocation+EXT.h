@@ -19,7 +19,8 @@
  *
  * @warning Due to the mechanics behind variable argument lists, this method cannot
  * be used with method signatures that involve \c struct or \c union parameters.
- * Such arguments must be set individually.
+ * Blocks and function pointers may or may not also cause problems. Such
+ * arguments must be set individually.
  */
 - (BOOL)setArgumentsFromArgumentList:(va_list)args;
 @end
