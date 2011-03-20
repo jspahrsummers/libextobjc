@@ -9,11 +9,11 @@
 #import "EXTBlockMethodTest.h"
 
 @interface BlockTestClass : NSObject {}
-- (NSString *)description;
+- (NSString *)testDescription;
 @end
 
 @implementation BlockTestClass
-- (NSString *)description {
+- (NSString *)testDescription {
   	return @"method";
 }
 
@@ -61,30 +61,30 @@
 	BlockTestClass *obj = [[BlockTestClass alloc] init];
 	STAssertNotNil(obj, @"could not allocate BlockTestClass instance");
 
-	STAssertEqualObjects([obj description], @"method", @"expected -description before replacement to be as defined in BlockTestClass");
+	STAssertEqualObjects([obj testDescription], @"method", @"expected -testDescription before replacement to be as defined in BlockTestClass");
 
-	__block BOOL descriptionCalled = NO;
+	__block BOOL testDescriptionCalled = NO;
 
 	id block = blockMethod(id self){
 		STAssertTrue([self isMemberOfClass:[BlockTestClass class]], @"expected self to be an instance of BlockTestClass");
 
-		descriptionCalled = YES;
+		testDescriptionCalled = YES;
 		return @"block";
 	};
 
 	Class cls = [BlockTestClass class];
-	SEL name = @selector(description);
+	SEL name = @selector(testDescription);
 
 	ext_replaceBlockMethod(
 		cls,
-		@selector(description),
+		@selector(testDescription),
 		block,
 		method_getTypeEncoding(class_getInstanceMethod(cls, name))
 	);
 
-	STAssertFalse(descriptionCalled, @"expected -description replacement to not yet be invoked");
-	STAssertEqualObjects([obj description], @"block", @"expected -description after replacement to be as defined in block");
-	STAssertTrue(descriptionCalled, @"expected -description replacement to have been invoked and update context");
+	STAssertFalse(testDescriptionCalled, @"expected -testDescription replacement to not yet be invoked");
+	STAssertEqualObjects([obj testDescription], @"block", @"expected -testDescription after replacement to be as defined in block");
+	STAssertTrue(testDescriptionCalled, @"expected -testDescription replacement to have been invoked and update context");
 
 	STAssertNoThrow([obj release], @"could not deallocate BlockTestClass instance");
 }
