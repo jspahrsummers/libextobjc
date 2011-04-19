@@ -10,7 +10,10 @@
 
 /**
  * A target that has one action implemented with a block. This is meant to
- * replace the use of selectors with Cocoa's target-action mechanism.
+ * replace the use of selectors with Cocoa's target-action mechanism, but can
+ * also be used with other interfaces that expect a target and a selector taking
+ * a single object argument (like \c performSelector: variants that don't use
+ * the return value).
  *
  * This object should be created as needed to implement actions for those
  * interfaces which use a target-action mechanism, such as \c NSControl or \c
@@ -29,6 +32,17 @@ objc_setAssociatedObject(control, @selector(tapped), target, OBJC_ASSOCIATION_RE
  *
  * The #blockTargetFor:selector:action: initializer provides a convenience
  * implementation of the above behavior.
+ *
+ * This class can also be used with other interfaces that expect a target and
+ * a selector taking zero or one object arguments, like \c performSelector:
+ * variants (though only those that do not use a return value).
+ *
+ * @code
+
+id target = [EXTBlockTarget blockTargetWithSelector:@selector(afterOne) action:^{ NSLog(@"One second has passed"); }];
+[target performSelector:@selector(afterOne) withObject:nil afterDelay:1];
+
+ * @endcode
  */
 @interface EXTBlockTarget : NSObject {
 }
