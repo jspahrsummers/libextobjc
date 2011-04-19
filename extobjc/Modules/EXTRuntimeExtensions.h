@@ -279,8 +279,8 @@ BOOL ext_injectMethodsFromClass (Class srcClass, Class dstClass, ext_methodInjec
  * @li If any superclass of \a aClass implements a method by the same name, the
  * implementation of the closest such superclass is used.
  * @li If no superclasses of \a aClass implement a method by the same name, the
- * method is replaced with a call to \c doesNotRecognizeSelector:. The \c
- * forwardInvocation: machinery is not invoked.
+ * method is replaced with an implementation internal to the runtime, used for
+ * message forwarding.
  *
  * @warning Adding a method by the same name into a superclass of \a aClass \e
  * after using this function may obscure it from the subclass.
