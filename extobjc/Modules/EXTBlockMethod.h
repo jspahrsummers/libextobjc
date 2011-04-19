@@ -15,8 +15,8 @@
  * in a style similar to the normal \c ^ syntax:
  * 
  * @code
-id badIsEqual = blockMethod(id obj){
-	return obj != nil;
+id isIdentical = blockMethod(id self, id obj){
+	return self == obj;
 };
  * @endcode
  *
