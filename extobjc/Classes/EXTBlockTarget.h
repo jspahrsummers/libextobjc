@@ -11,9 +11,7 @@
 /**
  * A target that has one action implemented with a block. This is meant to
  * replace the use of selectors with Cocoa's target-action mechanism, but can
- * also be used with other interfaces that expect a target and a selector taking
- * a single object argument (like \c performSelector: variants that don't use
- * the return value).
+ * also be used with other, similar interfaces.
  *
  * This object should be created as needed to implement actions for those
  * interfaces which use a target-action mechanism, such as \c NSControl or \c
