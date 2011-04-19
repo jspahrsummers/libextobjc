@@ -23,10 +23,16 @@
 - (int)multiplyByTwo:(int)value;
 @end
 
+@interface BlockTestSubclass : BlockTestClass {}
+@end
+
+@implementation BlockTestSubclass
+@end
+
 @implementation EXTBlockMethodTest
 - (void)testAddingMethod {
 	id block = blockMethod(id self, int val){
-		STAssertTrue([self isMemberOfClass:[BlockTestClass class]], @"expected self to be an instance of BlockTestClass");
+		STAssertTrue([self isKindOfClass:[BlockTestClass class]], @"expected self to be an instance of BlockTestClass or one of its subclasses");
 		return val * 2;
 	};
 
@@ -45,16 +51,31 @@
 
 	STAssertTrue(success, @"could not add new block method to BlockTestClass");
 
-	BlockTestClass *obj = [[BlockTestClass alloc] init];
-	STAssertNotNil(obj, @"could not allocate BlockTestClass instance");
+	{
+		BlockTestClass *obj = [[BlockTestClass alloc] init];
+		STAssertNotNil(obj, @"could not allocate BlockTestClass instance");
 
-	int expected = 84;
+		int expected = 84;
 
-	int result;
-	STAssertNoThrow(result = [obj multiplyByTwo:42], @"expected -multiplyByTwo: method to be available");
-	STAssertEquals(expected, result, @"expected -multiplyByTwo: method to be implemented using block implementation");
+		int result;
+		STAssertNoThrow(result = [obj multiplyByTwo:42], @"expected -multiplyByTwo: method to be available");
+		STAssertEquals(expected, result, @"expected -multiplyByTwo: method to be implemented using block implementation");
 
-	STAssertNoThrow([obj release], @"could not deallocate BlockTestClass instance");
+		STAssertNoThrow([obj release], @"could not deallocate BlockTestClass instance");
+	}
+
+	{
+		BlockTestSubclass *obj = [[BlockTestSubclass alloc] init];
+		STAssertNotNil(obj, @"could not allocate BlockTestSubclass instance");
+
+		int expected = 84;
+
+		int result;
+		STAssertNoThrow(result = [obj multiplyByTwo:42], @"expected -multiplyByTwo: method to be available");
+		STAssertEquals(expected, result, @"expected -multiplyByTwo: method to be implemented using block implementation");
+
+		STAssertNoThrow([obj release], @"could not deallocate BlockTestSubclass instance");
+	}
 }
 
 - (void)testReplacingMethod {
@@ -63,13 +84,23 @@
 
 	STAssertEqualObjects([obj testDescription], @"method", @"expected -testDescription before replacement to be as defined in BlockTestClass");
 
+	BlockTestSubclass *subobj = [[BlockTestSubclass alloc] init];
+	STAssertNotNil(subobj, @"could not allocate BlockTestSubclass instance");
+
+	STAssertEqualObjects([subobj testDescription], @"method", @"expected -testDescription before replacement to be as defined in BlockTestClass");
+
 	__block BOOL testDescriptionCalled = NO;
 
 	id block = blockMethod(id self){
-		STAssertTrue([self isMemberOfClass:[BlockTestClass class]], @"expected self to be an instance of BlockTestClass");
-
-		testDescriptionCalled = YES;
-		return @"block";
+		if ([self isMemberOfClass:[BlockTestClass class]]) {
+			testDescriptionCalled = YES;
+			return @"block";
+		} else if ([self isMemberOfClass:[BlockTestSubclass class]]) {
+			return @"subclass";
+		} else {
+			STFail(@"expected self to be an instance of BlockTestClass or BlockTestSubclass");
+			return nil;
+		}
 	};
 
 	Class cls = [BlockTestClass class];
@@ -86,6 +117,9 @@
 	STAssertEqualObjects([obj testDescription], @"block", @"expected -testDescription after replacement to be as defined in block");
 	STAssertTrue(testDescriptionCalled, @"expected -testDescription replacement to have been invoked and update context");
 
+	STAssertEqualObjects([subobj testDescription], @"subclass", @"expected -testDescription after replacement to be as defined in block");
+
 	STAssertNoThrow([obj release], @"could not deallocate BlockTestClass instance");
+	STAssertNoThrow([subobj release], @"could not deallocate BlockTestSubclass instance");
 }
 @end
