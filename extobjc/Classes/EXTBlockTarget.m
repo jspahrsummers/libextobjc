@@ -127,17 +127,17 @@ typedef void (^action2)(id, id);
 	switch (argCount) {
 	case 0:
 		// (id self, SEL _cmd)
-		typeString = [NSString stringWithFormat:@"%@%@", idType, selType];
+		typeString = [NSString stringWithFormat:@"%s%s", idType, selType];
 		break;
 		
 	case 1:
 		// (id self, SEL _cmd, id sender)
-		typeString = [NSString stringWithFormat:@"%@%@%@", idType, selType, idType];
+		typeString = [NSString stringWithFormat:@"%s%s%s", idType, selType, idType];
 		break;
 
 	case 2:
 		// (id self, SEL _cmd, id sender, id event)
-		typeString = [NSString stringWithFormat:@"%@%@%@%@", idType, selType, idType, idType];
+		typeString = [NSString stringWithFormat:@"%s%s%s%s", idType, selType, idType, idType];
 		break;
 
 	default:
