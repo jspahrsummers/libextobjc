@@ -120,33 +120,18 @@ typedef void (^action2)(id, id);
 		return signature;
 	
 	size_t argCount = argumentCountForSelectorName(sel_getName(aSelector));
+	const char *voidType = @encode(void);
 	const char *idType = @encode(id);
 	const char *selType = @encode(SEL);
-	NSString *typeString = nil;
 
-	switch (argCount) {
-	case 0:
-		// (id self, SEL _cmd)
-		typeString = [NSString stringWithFormat:@"%s%s", idType, selType];
-		break;
-		
-	case 1:
-		// (id self, SEL _cmd, id sender)
-		typeString = [NSString stringWithFormat:@"%s%s%s", idType, selType, idType];
-		break;
+	NSMutableString *typeString = [[NSMutableString alloc] initWithFormat:@"%s%s%s", voidType, idType, selType];
 
-	case 2:
-		// (id self, SEL _cmd, id sender, id event)
-		typeString = [NSString stringWithFormat:@"%s%s%s%s", idType, selType, idType, idType];
-		break;
-
-	default:
-		;
+	for (size_t i = 0;i < argCount;++i) {
+		[typeString appendFormat:@"%s", idType];
 	}
 
-	if (typeString) {
-		signature = [NSMethodSignature signatureWithObjCTypes:[typeString UTF8String]];
-	}
+	signature = [NSMethodSignature signatureWithObjCTypes:[typeString UTF8String]];
+	[typeString release];
 
 	return signature;
 }

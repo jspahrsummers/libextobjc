@@ -21,6 +21,11 @@
 	STAssertNotNil(target, @"could not initialize EXTBlockTarget instance");
 	STAssertFalse(executed, @"block should not have executed yet");
 
+	[target performSelector:@selector(setExecuted)];
+	STAssertTrue(executed, @"block should have been executed when selector was invoked manually");
+
+	executed = NO;
+
 	[target performSelector:@selector(setExecuted) withObject:nil afterDelay:0];
 	STAssertFalse(executed, @"block should not have executed yet");
 
