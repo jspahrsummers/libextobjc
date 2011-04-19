@@ -7,6 +7,7 @@
  */
 
 #import "EXTBlockMethod.h"
+#import "EXTBlockTarget.h"
 #import "EXTConcreteProtocol.h"
 #import "EXTDispatchObject.h"
 #import "EXTFinalMethod.h"
