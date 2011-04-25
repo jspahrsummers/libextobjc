@@ -26,7 +26,8 @@ static id singleton = nil;
 #pragma mark NSCoding
 
 - (id)initWithCoder:(NSCoder *)coder {
-	return [self init];
+	[[self init] release];
+	return [EXTNil null];
 }
 
 - (void)encodeWithCoder:(NSCoder *)coder {
