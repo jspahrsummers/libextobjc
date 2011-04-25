@@ -196,6 +196,10 @@
 	return [super isMemberOfClass:cls];
 }
 
+- (BOOL)isProxy {
+  	return YES;
+}
+
 - (BOOL)respondsToSelector:(SEL)aSelector {
 	// return YES if any targets respond to the specified selector
 	for (NSUInteger i = 0;i < targetCount;++i) {
