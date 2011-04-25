@@ -488,7 +488,7 @@ NSMethodSignature *ext_globalMethodSignatureForSelector (SEL aSelector) {
 			do { \
 				Method methodSignatureForSelector = class_getClassMethod(cls, lookupSel); \
 				if (methodSignatureForSelector) { \
-					methodSignatureForSelectorIMP impl = (methodSignatureForSelectorIMP)methodSignatureForSelector; \
+					methodSignatureForSelectorIMP impl = (methodSignatureForSelectorIMP)method_getImplementation(methodSignatureForSelector); \
 					signature = impl(cls, lookupSel, aSelector); \
 					if (signature) \
 						goto exitEarly; \
