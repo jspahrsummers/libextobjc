@@ -248,6 +248,15 @@ Method ext_getImmediateInstanceMethod (Class aClass, SEL aSelector);
 BOOL ext_getPropertyAccessorsForClass (objc_property_t property, Class aClass, Method *getter, Method *setter);
 
 /**
+ * For all classes registered with the runtime, invokes \c
+ * methodSignatureForSelector: and \c instanceMethodSignatureForSelector: to
+ * determine a method signature for \a aSelector. If one or more valid
+ * signatures is found, the first one is returned. If no valid signatures were
+ * found, \c nil is returned.
+ */
+NSMethodSignature *ext_globalMethodSignatureForSelector (SEL aSelector);
+
+/**
  * Highly-configurable method injection. Adds the first \a count entries from \a
  * methods into \a aClass according to \a behavior.
  *

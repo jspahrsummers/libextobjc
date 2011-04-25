@@ -13,6 +13,8 @@
 #import <stdlib.h>
 #import <string.h>
 
+typedef NSMethodSignature *(*methodSignatureForSelectorIMP)(id, SEL, SEL);
+
 unsigned ext_injectMethods (
 	Class aClass,
 	Method *methods,
@@ -467,6 +469,44 @@ BOOL ext_getPropertyAccessorsForClass (objc_property_t property, Class aClass, M
 	}
 	
 	return YES;
+}
+
+NSMethodSignature *ext_globalMethodSignatureForSelector (SEL aSelector) {
+	unsigned classCount = 0;
+	Class *classes = ext_copyClassList(&classCount);
+	if (!classes)
+		return nil;
+
+	NSMethodSignature *signature = nil;
+
+	for (unsigned i = 0;i < classCount;++i) {
+		Class cls = classes[i];
+
+		SEL lookupSel;
+	
+		#define RETURN_SIGNATURE_IF_FOUND \
+			do { \
+				Method methodSignatureForSelector = class_getClassMethod(cls, lookupSel); \
+				if (methodSignatureForSelector) { \
+					methodSignatureForSelectorIMP impl = (methodSignatureForSelectorIMP)methodSignatureForSelector; \
+					signature = impl(cls, lookupSel, aSelector); \
+					if (signature) \
+						goto exitEarly; \
+				} \
+			} while (0)
+
+		lookupSel = @selector(methodSignatureForSelector:);
+		RETURN_SIGNATURE_IF_FOUND;
+
+		lookupSel = @selector(instanceMethodSignatureForSelector:);
+		RETURN_SIGNATURE_IF_FOUND;
+
+		#undef RETURN_SIGNATURE_IF_FOUND
+	}
+
+exitEarly:
+	free(classes);
+	return signature;
 }
 
 void ext_removeMethod (Class aClass, SEL methodName) {
