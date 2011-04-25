@@ -189,6 +189,17 @@ BOOL ext_addMethodsFromClass (Class srcClass, Class dstClass, BOOL checkSupercla
 	return ext_injectMethodsFromClass(srcClass, dstClass, behavior, failedToAddCallback);
 }
 
+BOOL ext_classIsKindOfClass (Class receiver, Class aClass) {
+	while (receiver) {
+		if (receiver == aClass)
+			return YES;
+
+		receiver = class_getSuperclass(receiver);
+	}
+
+	return NO;
+}
+
 Class *ext_copyClassListConformingToProtocol (Protocol *protocol, unsigned *count) {
 	unsigned classCount = 0;
 	Class *allClasses = ext_copyClassList(&classCount);
@@ -478,9 +489,15 @@ NSMethodSignature *ext_globalMethodSignatureForSelector (SEL aSelector) {
 		return nil;
 
 	NSMethodSignature *signature = nil;
+	Class proxyClass = objc_getClass("NSProxy");
 
 	for (unsigned i = 0;i < classCount;++i) {
 		Class cls = classes[i];
+
+		// NSProxy crashes if you send it a meaningful message, like
+		// methodSignatureForSelector:
+		if (ext_classIsKindOfClass(cls, proxyClass))
+			continue;
 
 		SEL lookupSel;
 	

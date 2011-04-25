@@ -168,6 +168,11 @@ unsigned ext_addMethods (Class aClass, Method *methods, unsigned count, BOOL che
 BOOL ext_addMethodsFromClass (Class srcClass, Class dstClass, BOOL checkSuperclasses, ext_failedMethodCallback failedToAddCallback);
 
 /**
+ * Returns whether \a receiver is \a aClass, or inherits directly from it.
+ */
+BOOL ext_classIsKindOfClass (Class receiver, Class aClass);
+
+/**
  * Returns the full list of classes registered with the runtime, terminated with
  * \c NULL. If \a count is not \c NULL, it is filled in with the total number of
  * classes returned. You must \c free() the returned array.
