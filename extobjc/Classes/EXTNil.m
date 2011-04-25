@@ -75,12 +75,4 @@ static id singleton = nil;
 	else
 		return NO;
 }
-
-- (BOOL)isKindOfClass:(Class)cls {
-	return [EXTNil isKindOfClass:cls];
-}
-
-- (BOOL)isMemberOfClass:(Class)cls {
-	return [EXTNil isMemberOfClass:cls];
-}
 @end
