@@ -22,6 +22,10 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
+		D002DAF11365694C005348A5 /* EXTNil.h in Headers */ = {isa = PBXBuildFile; fileRef = D002DAEF1365694C005348A5 /* EXTNil.h */; };
+		D002DAF21365694C005348A5 /* EXTNil.h in Headers */ = {isa = PBXBuildFile; fileRef = D002DAEF1365694C005348A5 /* EXTNil.h */; };
+		D002DAF31365694C005348A5 /* EXTNil.m in Sources */ = {isa = PBXBuildFile; fileRef = D002DAF01365694C005348A5 /* EXTNil.m */; };
+		D002DAF41365694C005348A5 /* EXTNil.m in Sources */ = {isa = PBXBuildFile; fileRef = D002DAF01365694C005348A5 /* EXTNil.m */; };
 		D01DC92F12C822110009AB39 /* metamacros.h in Headers */ = {isa = PBXBuildFile; fileRef = D01DC92E12C822110009AB39 /* metamacros.h */; };
 		D01DC93012C822110009AB39 /* metamacros.h in Headers */ = {isa = PBXBuildFile; fileRef = D01DC92E12C822110009AB39 /* metamacros.h */; };
 		D03025FC128E8D9800638FD4 /* EXTSafeCategory.h in Headers */ = {isa = PBXBuildFile; fileRef = D03025FA128E8D9800638FD4 /* EXTSafeCategory.h */; };
@@ -143,6 +147,8 @@
 /* Begin PBXFileReference section */
 		0867D69BFE84028FC02AAC07 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
 		32DBCF5E0370ADEE00C91783 /* extobjc_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = extobjc_Prefix.pch; sourceTree = "<group>"; };
+		D002DAEF1365694C005348A5 /* EXTNil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXTNil.h; sourceTree = "<group>"; };
+		D002DAF01365694C005348A5 /* EXTNil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXTNil.m; sourceTree = "<group>"; };
 		D01DC92E12C822110009AB39 /* metamacros.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = metamacros.h; sourceTree = "<group>"; };
 		D03025FA128E8D9800638FD4 /* EXTSafeCategory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXTSafeCategory.h; sourceTree = "<group>"; };
 		D03025FB128E8D9800638FD4 /* EXTSafeCategory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXTSafeCategory.m; sourceTree = "<group>"; };
@@ -283,6 +289,8 @@
 				D0ACF895132B417100900962 /* EXTDispatchObject.m */,
 				D0CFB5CD128A8109006DC377 /* EXTMultiObject.h */,
 				D0CFB5CE128A8109006DC377 /* EXTMultiObject.m */,
+				D002DAEF1365694C005348A5 /* EXTNil.h */,
+				D002DAF01365694C005348A5 /* EXTNil.m */,
 				D0ACF8A1132B463400900962 /* EXTPrototype.h */,
 				D0ACF8A2132B463400900962 /* EXTPrototype.m */,
 			);
@@ -403,6 +411,7 @@
 				D0ACF8BE132B5D3100900962 /* NSInvocation+EXT.h in Headers */,
 				D0ACF8C4132B5EFA00900962 /* NSMethodSignature+EXT.h in Headers */,
 				D07F83AC135D472F008B9D6D /* EXTBlockTarget.h in Headers */,
+				D002DAF21365694C005348A5 /* EXTNil.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -427,6 +436,7 @@
 				D0ACF8BD132B5D3100900962 /* NSInvocation+EXT.h in Headers */,
 				D0ACF8C3132B5EFA00900962 /* NSMethodSignature+EXT.h in Headers */,
 				D07F83AB135D472F008B9D6D /* EXTBlockTarget.h in Headers */,
+				D002DAF11365694C005348A5 /* EXTNil.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -600,6 +610,7 @@
 				D0ACF8C0132B5D3100900962 /* NSInvocation+EXT.m in Sources */,
 				D0ACF8C6132B5EFA00900962 /* NSMethodSignature+EXT.m in Sources */,
 				D07F83AE135D472F008B9D6D /* EXTBlockTarget.m in Sources */,
+				D002DAF41365694C005348A5 /* EXTNil.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -654,6 +665,7 @@
 				D0ACF8BF132B5D3100900962 /* NSInvocation+EXT.m in Sources */,
 				D0ACF8C5132B5EFA00900962 /* NSMethodSignature+EXT.m in Sources */,
 				D07F83AD135D472F008B9D6D /* EXTBlockTarget.m in Sources */,
+				D002DAF31365694C005348A5 /* EXTNil.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
