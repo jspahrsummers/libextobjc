@@ -19,7 +19,7 @@
  * will respond to certain \c NSObject protocol methods where an actually \c nil
  * object would not.
  */
-@interface EXTNil : NSObject {
+@interface EXTNil : NSObject <NSCoding, NSCopying> {
     
 }
 

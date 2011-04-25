@@ -23,6 +23,21 @@ static id singleton = nil;
 	return singleton;
 }
 
+#pragma mark NSCoding
+
+- (id)initWithCoder:(NSCoder *)coder {
+	return [self init];
+}
+
+- (void)encodeWithCoder:(NSCoder *)coder {
+}
+
+#pragma mark NSCopying
+
+- (id)copyWithZone:(NSZone *)zone {
+  	return [self retain];
+}
+
 #pragma mark Forwarding machinery
 
 - (void)forwardInvocation:(NSInvocation *)anInvocation {
