@@ -41,6 +41,8 @@ static id singleton = nil;
 #pragma mark Forwarding machinery
 
 - (void)forwardInvocation:(NSInvocation *)anInvocation {
+	NSLog(@"%s:%lu: %@", __func__, (unsigned long)__LINE__, anInvocation);
+
 	NSUInteger returnLength = [[anInvocation methodSignature] methodReturnLength];
 
 	// set return value to all zero bits
@@ -51,6 +53,8 @@ static id singleton = nil;
 }
 
 - (NSMethodSignature *)methodSignatureForSelector:(SEL)aSelector {
+	NSLog(@"%s:%lu: %@", __func__, (unsigned long)__LINE__, NSStringFromSelector(aSelector));
+
 	NSMethodSignature *signature = [super methodSignatureForSelector:aSelector];
 	if (signature)
 		return signature;

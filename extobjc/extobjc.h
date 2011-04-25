@@ -13,6 +13,7 @@
 #import "EXTFinalMethod.h"
 #import "EXTMixin.h"
 #import "EXTMultiObject.h"
+#import "EXTNil.h"
 #import "EXTPrivateMethod.h"
 #import "EXTProtocolCategory.h"
 #import "EXTPrototype.h"
