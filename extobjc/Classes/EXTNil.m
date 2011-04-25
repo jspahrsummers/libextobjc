@@ -27,7 +27,7 @@ static id singleton = nil;
 
 - (id)initWithCoder:(NSCoder *)coder {
 	[[self init] release];
-	return [EXTNil null];
+	return [[EXTNil null] retain];
 }
 
 - (void)encodeWithCoder:(NSCoder *)coder {
