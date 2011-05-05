@@ -93,6 +93,12 @@
 		D0B6C99E128B121B00137E97 /* EXTConcreteProtocol.m in Sources */ = {isa = PBXBuildFile; fileRef = D0B6C99C128B121B00137E97 /* EXTConcreteProtocol.m */; };
 		D0B6C9BC128B1A6F00137E97 /* libextobjc_OSX.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D2AAC07E0554694100DB518D /* libextobjc_OSX.a */; };
 		D0B6C9BF128B1A7100137E97 /* libextobjc_iOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D0A8B029128A4261004AACE0 /* libextobjc_iOS.a */; };
+		D0B9B0AF13727A6600EC1224 /* EXTScope.m in Sources */ = {isa = PBXBuildFile; fileRef = D0B9B0AD13727A6600EC1224 /* EXTScope.m */; };
+		D0B9B0B013727A6600EC1224 /* EXTScope.m in Sources */ = {isa = PBXBuildFile; fileRef = D0B9B0AD13727A6600EC1224 /* EXTScope.m */; };
+		D0B9B0B113727A6600EC1224 /* EXTScope.h in Headers */ = {isa = PBXBuildFile; fileRef = D0B9B0AE13727A6600EC1224 /* EXTScope.h */; };
+		D0B9B0B213727A6600EC1224 /* EXTScope.h in Headers */ = {isa = PBXBuildFile; fileRef = D0B9B0AE13727A6600EC1224 /* EXTScope.h */; };
+		D0B9B0B513727EF800EC1224 /* EXTScopeTest.m in Sources */ = {isa = PBXBuildFile; fileRef = D0B9B0B413727EF800EC1224 /* EXTScopeTest.m */; };
+		D0B9B0B613727EF800EC1224 /* EXTScopeTest.m in Sources */ = {isa = PBXBuildFile; fileRef = D0B9B0B413727EF800EC1224 /* EXTScopeTest.m */; };
 		D0C1D918128A57B600E96C0F /* EXTConcreteProtocolTest.m in Sources */ = {isa = PBXBuildFile; fileRef = D0C1D917128A57B600E96C0F /* EXTConcreteProtocolTest.m */; };
 		D0CFB5CF128A8109006DC377 /* EXTMultiObject.h in Headers */ = {isa = PBXBuildFile; fileRef = D0CFB5CD128A8109006DC377 /* EXTMultiObject.h */; };
 		D0CFB5D0128A8109006DC377 /* EXTMultiObject.m in Sources */ = {isa = PBXBuildFile; fileRef = D0CFB5CE128A8109006DC377 /* EXTMultiObject.m */; };
@@ -194,6 +200,10 @@
 		D0ACF8C1132B5EFA00900962 /* NSMethodSignature+EXT.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSMethodSignature+EXT.h"; path = "Extensions/NSMethodSignature+EXT.h"; sourceTree = "<group>"; };
 		D0ACF8C2132B5EFA00900962 /* NSMethodSignature+EXT.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "NSMethodSignature+EXT.m"; path = "Extensions/NSMethodSignature+EXT.m"; sourceTree = "<group>"; };
 		D0B6C99C128B121B00137E97 /* EXTConcreteProtocol.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXTConcreteProtocol.m; sourceTree = "<group>"; };
+		D0B9B0AD13727A6600EC1224 /* EXTScope.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXTScope.m; sourceTree = "<group>"; };
+		D0B9B0AE13727A6600EC1224 /* EXTScope.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXTScope.h; sourceTree = "<group>"; };
+		D0B9B0B313727EF800EC1224 /* EXTScopeTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXTScopeTest.h; sourceTree = "<group>"; };
+		D0B9B0B413727EF800EC1224 /* EXTScopeTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXTScopeTest.m; sourceTree = "<group>"; };
 		D0C1D916128A57B600E96C0F /* EXTConcreteProtocolTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXTConcreteProtocolTest.h; sourceTree = "<group>"; };
 		D0C1D917128A57B600E96C0F /* EXTConcreteProtocolTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXTConcreteProtocolTest.m; sourceTree = "<group>"; };
 		D0CFB5CD128A8109006DC377 /* EXTMultiObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXTMultiObject.h; sourceTree = "<group>"; };
@@ -351,6 +361,8 @@
 				D0FD397313243A31009300A7 /* EXTRuntimeExtensionsTest.m */,
 				D0E7E839128F7F2E00FE0263 /* EXTSafeCategoryTest.h */,
 				D0E7E83A128F7F2E00FE0263 /* EXTSafeCategoryTest.m */,
+				D0B9B0B313727EF800EC1224 /* EXTScopeTest.h */,
+				D0B9B0B413727EF800EC1224 /* EXTScopeTest.m */,
 				D0A8B30C128A4B56004AACE0 /* EXTSwizzleTest.h */,
 				D0A8B30D128A4B56004AACE0 /* EXTSwizzleTest.m */,
 				D0A8B2DD128A495D004AACE0 /* OSX-Info.plist */,
@@ -377,6 +389,8 @@
 				D0555B83132317FA00874D66 /* EXTRuntimeExtensions.m */,
 				D03025FA128E8D9800638FD4 /* EXTSafeCategory.h */,
 				D03025FB128E8D9800638FD4 /* EXTSafeCategory.m */,
+				D0B9B0AE13727A6600EC1224 /* EXTScope.h */,
+				D0B9B0AD13727A6600EC1224 /* EXTScope.m */,
 				D0A8B2F7128A49E9004AACE0 /* EXTSwizzle.h */,
 			);
 			path = Modules;
@@ -418,6 +432,7 @@
 				D0ACF8C4132B5EFA00900962 /* NSMethodSignature+EXT.h in Headers */,
 				D07F83AC135D472F008B9D6D /* EXTBlockTarget.h in Headers */,
 				D002DAF21365694C005348A5 /* EXTNil.h in Headers */,
+				D0B9B0B213727A6600EC1224 /* EXTScope.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -443,6 +458,7 @@
 				D0ACF8C3132B5EFA00900962 /* NSMethodSignature+EXT.h in Headers */,
 				D07F83AB135D472F008B9D6D /* EXTBlockTarget.h in Headers */,
 				D002DAF11365694C005348A5 /* EXTNil.h in Headers */,
+				D0B9B0B113727A6600EC1224 /* EXTScope.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -617,6 +633,7 @@
 				D0ACF8C6132B5EFA00900962 /* NSMethodSignature+EXT.m in Sources */,
 				D07F83AE135D472F008B9D6D /* EXTBlockTarget.m in Sources */,
 				D002DAF41365694C005348A5 /* EXTNil.m in Sources */,
+				D0B9B0B013727A6600EC1224 /* EXTScope.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -635,6 +652,7 @@
 				D05F5BFB1335F5E800A34927 /* EXTPrototypeTest.m in Sources */,
 				D07F83B2135D50E9008B9D6D /* EXTBlockTargetTest.m in Sources */,
 				D002DAF813656CDF005348A5 /* EXTNilTest.m in Sources */,
+				D0B9B0B513727EF800EC1224 /* EXTScopeTest.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -653,6 +671,7 @@
 				D05F5BFC1335F5E800A34927 /* EXTPrototypeTest.m in Sources */,
 				D07F83B3135D50E9008B9D6D /* EXTBlockTargetTest.m in Sources */,
 				D002DAF913656CDF005348A5 /* EXTNilTest.m in Sources */,
+				D0B9B0B613727EF800EC1224 /* EXTScopeTest.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -674,6 +693,7 @@
 				D0ACF8C5132B5EFA00900962 /* NSMethodSignature+EXT.m in Sources */,
 				D07F83AD135D472F008B9D6D /* EXTBlockTarget.m in Sources */,
 				D002DAF31365694C005348A5 /* EXTNil.m in Sources */,
+				D0B9B0AF13727A6600EC1224 /* EXTScope.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
