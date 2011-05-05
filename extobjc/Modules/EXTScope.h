@@ -13,7 +13,9 @@
  * \c goto, \c return, \c break, and \c continue.
  *
  * Provided code will go into a block to be executed later. Keep this in mind as
- * it pertains to memory management, restrictions on assignment, etc.
+ * it pertains to memory management, restrictions on assignment, etc. Because
+ * the code is used within a block, \c return is a legal (though perhaps
+ * confusing) way to exit the cleanup block early.
  *
  * @note This statement cannot be used within scopes defined without braces
  * (like a one line \c if). In practice, this is not an issue, since \@onExit is
