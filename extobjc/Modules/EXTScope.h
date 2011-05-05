@@ -11,6 +11,13 @@
  * code must be enclosed in braces and terminated with a semicolon, and will be
  * executed regardless of how the scope is exited, including from exceptions,
  * \c goto, \c return, \c break, and \c continue.
+ *
+ * Provided code will go into a block to be executed later. Keep this in mind as
+ * it pertains to memory management, restrictions on assignment, etc.
+ *
+ * @note This statement cannot be used within scopes defined without braces
+ * (like a one line \c if). In practice, this is not an issue, since \@onExit is
+ * a useless construct in such a case anyways.
  */
 #define onExit \
 	try {} @finally {} \
