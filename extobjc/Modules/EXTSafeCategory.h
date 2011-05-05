@@ -10,7 +10,7 @@
 #import "metamacros.h"
 
 /**
- * Defines the implementation of a safe category named \a CATEGORY on \a CLASS.
+ * \@safecategory defines the implementation of a safe category named \a CATEGORY on \a CLASS.
  * A safe category will only add methods to \a CLASS if a method by the same
  * name does not already exist (\e not including superclasses). If \c DEBUG is
  * defined and \c NDEBUG is not defined, any method conflicts will abort the

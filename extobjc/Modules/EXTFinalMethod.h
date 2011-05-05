@@ -10,7 +10,7 @@
 #import "metamacros.h"
 
 /**
- * Declares final methods for \a CLASS. Any methods declared in this block
+ * \@final declares final methods for \a CLASS. Any methods declared in this block
  * cannot be overridden by subclasses. If \c DEBUG is defined and \c NDEBUG is
  * not defined, any overriding of final methods will abort the application at
  * startup; otherwise, the error is logged and execution continues using the

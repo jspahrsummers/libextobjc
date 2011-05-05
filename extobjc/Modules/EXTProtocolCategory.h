@@ -10,7 +10,7 @@
 #import <stdio.h>
 
 /**
- * Defines the interface for a category named \a CATEGORY on protocol \a
+ * \@pcategoryinterface defines the interface for a category named \a CATEGORY on protocol \a
  * PROTOCOL. Protocol categories contain methods that are automatically applied
  * to any class that declares itself to conform to \a PROTOCOL. This macro
  * should be used in header files.
@@ -30,7 +30,7 @@
 	interface NSObject (CATEGORY)
 
 /**
- * Defines the implementation for a category named \a CATEGORY on protocol \a
+ * \@pcategoryimplementation defines the implementation for a category named \a CATEGORY on protocol \a
  * PROTOCOL. Protocol categories contain methods that are automatically applied
  * to any class that declares itself to conform to \a PROTOCOL. This macro
  * should be used in implementation files.

@@ -12,7 +12,7 @@
 #import "metamacros.h"
 
 /**
- * Declares private methods for \a CLASS. Any methods declared inside this block
+ * \@ private declares private methods for \a CLASS. Any methods declared inside this block
  * will not be visible to or invokable by other classes, and will not conflict
  * with private or public methods by the same name declared in any subclasses.
  *
