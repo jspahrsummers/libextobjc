@@ -6,6 +6,8 @@
 //  Released into the public domain.
 //
 
+#import "metamacros.h"
+
 /**
  * \@onExit defines some code to be executed when the current scope exits. The
  * code must be enclosed in braces and terminated with a semicolon, and will be
@@ -23,7 +25,7 @@
  */
 #define onExit \
 	try {} @finally {} \
-	ext_cleanupBlock_t ext_exitBlock_ ## __LINE__ __attribute__((cleanup(ext_executeCleanupBlock), unused)) = ^
+	ext_cleanupBlock_t metamacro_concat(ext_exitBlock_, __LINE__) __attribute__((cleanup(ext_executeCleanupBlock), unused)) = ^
 
 /*** implementation details follow ***/
 typedef void (^ext_cleanupBlock_t)();

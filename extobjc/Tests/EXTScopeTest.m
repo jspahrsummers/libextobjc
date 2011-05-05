@@ -8,6 +8,10 @@
 
 #import "EXTScopeTest.h"
 
+@interface EXTScopeTest ()
+- (void)nestedAppend:(NSMutableString *)str;
+@end
+
 @implementation EXTScopeTest
 
 - (void)testOnExit {
@@ -65,6 +69,26 @@
 	}
 
 	STAssertEquals(executed, 2U, @"onExit blocks should be executed even when goto is used");
+
+	str = [@"foo" mutableCopy];
+	@onExit {
+		[str release];
+	};
+
+	[self nestedAppend:str];
+
+	STAssertEqualObjects(str, @"foobar", @"'bar' should've been appended to 'foo' at the end of a called method that exited early");
+}
+
+- (void)nestedAppend:(NSMutableString *)str {
+	@onExit {
+		[str appendString:@"bar"];
+	};
+
+	if ([str isEqualToString:@"foo"])
+		return;
+	
+	[str appendString:@"buzz"];
 }
 
 @end
