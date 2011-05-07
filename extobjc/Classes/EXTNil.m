@@ -11,6 +11,12 @@
 
 static id singleton = nil;
 
+@interface EXTNil () {
+	BOOL m_initialized;
+}
+
+@end
+
 @implementation EXTNil
 + (void)initialize {
 	if (self == [EXTNil class]) {
@@ -21,6 +27,18 @@ static id singleton = nil;
 
 + (EXTNil *)null {
 	return singleton;
+}
+
+- (id)init {
+	// this captures the case of -init being sent to a nil object (like for
+	// a Nil class)
+	if (!m_initialized) {
+		self = [super init];
+
+		m_initialized = YES;
+	}
+
+	return self;
 }
 
 #pragma mark NSCoding
@@ -61,6 +79,10 @@ static id singleton = nil;
 
 #pragma mark NSObject protocol
 
+- (id)autorelease {
+  	return self;
+}
+
 - (BOOL)conformsToProtocol:(Protocol *)aProtocol {
 	return NO;
 }
@@ -75,4 +97,15 @@ static id singleton = nil;
 	else
 		return NO;
 }
+
+- (void)release {}
+
+- (id)retain {
+  	return self;
+}
+
+- (NSUInteger)retainCount {
+	return UINT_MAX;
+}
+
 @end
