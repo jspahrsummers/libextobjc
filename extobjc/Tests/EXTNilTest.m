@@ -15,13 +15,18 @@
 
 	// irony
 	STAssertNotNil(obj, @"");
+	
+	STAssertEqualObjects(obj, obj, @"EXTNil should equal itself");
+	STAssertEquals([obj init], obj, @"-init on EXTNil should return the same object without any change");
+	STAssertNil([obj alloc], @"+alloc on EXTNil instance should return nil");
+	STAssertEquals([obj retain], obj, @"-retain on EXTNil should return the same object without any change");
+	STAssertEquals([obj autorelease], obj, @"-autorelease on EXTNil should return the same object without any change");
+	STAssertEquals(obj, [[obj copy] autorelease], @"EXTNil copy should equal EXTNil");
 
 	STAssertEquals([obj uppercaseString], (NSString *)nil, @"any method on EXTNil object should return zero value");
 	STAssertEquals((NSInteger)[obj length], (NSInteger)0, @"any method on EXTNil object should return zero value");
 	STAssertEqualsWithAccuracy([obj doubleValue], 0.0, 0.01, @"any method on EXTNil object should return zero value");
 	STAssertTrue(NSEqualRanges([obj rangeOfString:@""], NSMakeRange(0, 0)), @"any method on EXTNil object should return zero value");
-	STAssertEqualObjects(obj, obj, @"EXTNil should equal itself");
-	STAssertEqualObjects(obj, [[obj copy] autorelease], @"EXTNil copy should equal EXTNil");
 
 	NSArray *arr = [NSArray arrayWithObject:obj];
 	STAssertNotNil(arr, @"");
