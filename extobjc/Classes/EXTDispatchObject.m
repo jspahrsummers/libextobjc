@@ -55,7 +55,9 @@
 
 	targets[0] = firstObj;
 	for (NSUInteger i = 1;i < count;++i) {
-		targets[i] = va_arg(argsCopy, id);
+		id obj = va_arg(argsCopy, id);
+		targets[i] = [obj retain];
+
 		NSAssert(targets[i] != nil, @"argument should not be nil after previously being non-nil");
 	}
 
@@ -76,6 +78,10 @@
 	// copy the object pointers out into a C array for speed
 	id *targets = malloc(sizeof(id) * count);
 	[objects getObjects:targets range:NSMakeRange(0, count)];
+
+	for (NSUInteger i = 0;i < count;++i) {
+		[targets[i] retain];
+	}
 
 	// initialize the object and fill in its ivars
 	EXTDispatchObject *obj = [[[EXTDispatchObject alloc] init] autorelease];
