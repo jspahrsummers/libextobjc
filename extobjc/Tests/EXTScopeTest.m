@@ -192,7 +192,7 @@
 		lockForScope(aLock);
 	}
 
-	STAssertTrue([aLock tryLock], @"acquireLockForScope() did not automatically unlock");
+	STAssertTrue([aLock tryLock], @"lockForScope() did not automatically unlock");
 	STAssertNoThrow([aLock unlock], @"");
 
 	BOOL didLock = NO;
