@@ -31,7 +31,29 @@
 	try {} @finally {} \
 	ext_cleanupBlock_t metamacro_concat(ext_exitBlock_, __LINE__) __attribute__((cleanup(ext_executeCleanupBlock), unused)) = ^
 
+/**
+ * Used in the declaration of an object variable, \c scope will ensure that the
+ * value is released when the current scope exits. The object will be released
+ * regardless of how the scope is exited, including from exceptions, \c goto, \c
+ * return, \c break, and \c continue.
+ *
+ * In addition to being more efficient than an autorelease pool, \c scope also
+ * makes it easier to deterministically release scarce resources, including file
+ * handles, sockets, mutexes, database connections, etc.
+ *
+ * @code
+
+// this file handle will be automatically closed and released when the current scope ends
+scope NSFileHandle *handle = [[NSFileHandle alloc] initWithFileDescriptor:fildes];
+
+ * @endcode
+ */
+#define scope \
+	__attribute__((cleanup(ext_releaseScopeObject)))
+
 /*** implementation details follow ***/
 typedef void (^ext_cleanupBlock_t)();
 
 void ext_executeCleanupBlock (ext_cleanupBlock_t *block);
+void ext_releaseScopeObject (id *objPtr);
+

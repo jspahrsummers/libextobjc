@@ -11,3 +11,8 @@
 void ext_executeCleanupBlock (ext_cleanupBlock_t *block) {
 	(*block)();
 }
+
+void ext_releaseScopeObject (id *objPtr) {
+	[*objPtr release];
+}
+

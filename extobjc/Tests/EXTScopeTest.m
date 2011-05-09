@@ -166,4 +166,22 @@
 	STAssertEqualObjects(str, @"foobar", @"'bar' should've been appended to 'foo' at the end of a called method that threw an exception");
 }
 
+- (void)testScopeKeyword {
+	id obj = nil;
+	NSUInteger retainCount = 0;
+
+	{
+		scope NSMutableString *str = [[NSMutableString alloc] initWithString:@"foo"];
+		[str appendString:@"bar"];
+
+		STAssertEqualObjects(str, @"foobar", @"'bar' should've been appended to 'foo'");
+
+		retainCount = [str retainCount];
+		obj = [str retain];
+	}
+
+	STAssertEquals([obj retainCount], retainCount, @"retain count of 'obj' should be identical to that of 'str' before retain and release");
+	STAssertNoThrow([obj release], @"");
+}
+
 @end
