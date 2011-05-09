@@ -19,6 +19,10 @@
  * the code is used within a block, \c return is a legal (though perhaps
  * confusing) way to exit the cleanup block early.
  *
+ * Multiple \@onExit statements in the same scope are executed in reverse
+ * lexical order. This helps when pairing resource acquisition with \@onExit
+ * statements, as it guarantees teardown in the opposite order of acquisition.
+ *
  * @note This statement cannot be used within scopes defined without braces
  * (like a one line \c if). In practice, this is not an issue, since \@onExit is
  * a useless construct in such a case anyways.

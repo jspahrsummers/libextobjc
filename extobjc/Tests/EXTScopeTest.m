@@ -91,4 +91,36 @@
 	[str appendString:@"buzz"];
 }
 
+- (void)testLexicalOrdering {
+	__block unsigned lastBlockEntered = 0;
+
+	{
+		@onExit {
+			STAssertEquals(lastBlockEntered, 2U, @"lexical ordering of @onExit blocks is not correct!");
+
+			lastBlockEntered = 1;
+		};
+
+		@onExit {
+			STAssertEquals(lastBlockEntered, 3U, @"lexical ordering of @onExit blocks is not correct!");
+
+			lastBlockEntered = 2;
+		};
+
+		@onExit {
+			STAssertEquals(lastBlockEntered, 4U, @"lexical ordering of @onExit blocks is not correct!");
+
+			lastBlockEntered = 3;
+		};
+
+		@onExit {
+			STAssertEquals(lastBlockEntered, 0U, @"lexical ordering of @onExit blocks is not correct!");
+
+			lastBlockEntered = 4;
+		};
+	}
+
+	STAssertEquals(lastBlockEntered, 1U, @"lexical ordering of @onExit blocks is not correct, or cleanup blocks did not execute at all!");
+}
+
 @end
