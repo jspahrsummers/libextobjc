@@ -10,6 +10,7 @@
 
 @interface EXTScopeTest ()
 - (void)nestedAppend:(NSMutableString *)str;
+- (void)nestedThrowingAppend:(NSMutableString *)str;
 @end
 
 @implementation EXTScopeTest
@@ -91,6 +92,17 @@
 	[str appendString:@"buzz"];
 }
 
+- (void)nestedThrowingAppend:(NSMutableString *)str {
+	@onExit {
+		[str appendString:@"bar"];
+	};
+
+	if ([str isEqualToString:@"foo"])
+		[NSException raise:@"EXTScopeTestException" format:@"test exception for @onExit cleanup in method"];
+	
+	[str appendString:@"buzz"];
+}
+
 - (void)testLexicalOrdering {
 	__block unsigned lastBlockEntered = 0;
 
@@ -121,6 +133,37 @@
 	}
 
 	STAssertEquals(lastBlockEntered, 1U, @"lexical ordering of @onExit blocks is not correct, or cleanup blocks did not execute at all!");
+}
+
+- (void)testExceptionCleanup {
+	__block BOOL cleanupBlockRun = NO;
+
+	@try {
+		@onExit {
+			cleanupBlockRun = YES;
+		};
+
+		[NSException raise:@"EXTScopeTestException" format:@"test exception for @onExit cleanup in @try"];
+	} @catch (NSException *exception) {
+		STAssertEqualObjects([exception name], @"EXTScopeTestException", @"unexpected exception %@ thrown");
+	} @finally {
+		STAssertTrue(cleanupBlockRun, @"@onExit block was not run when an exception was thrown");
+	}
+
+	STAssertTrue(cleanupBlockRun, @"@onExit block was not run when an exception was thrown");
+
+	NSMutableString *str = [@"foo" mutableCopy];
+	@onExit {
+		[str release];
+	};
+
+	@try {
+		[self nestedThrowingAppend:str];
+	} @catch (NSException *exception) {
+		STAssertEqualObjects([exception name], @"EXTScopeTestException", @"unexpected exception %@ thrown");
+	}
+
+	STAssertEqualObjects(str, @"foobar", @"'bar' should've been appended to 'foo' at the end of a called method that threw an exception");
 }
 
 @end
