@@ -184,4 +184,16 @@
 	STAssertNoThrow([obj release], @"");
 }
 
+- (void)testScopeLock {
+	scope NSLock *aLock = [[NSLock alloc] init];
+	STAssertNotNil(aLock, @"could not allocate test NSLock object");
+
+	{
+		lockForScope(aLock);
+	}
+
+	STAssertTrue([aLock tryLock], @"acquireLockForScope() did not automatically unlock");
+	STAssertNoThrow([aLock unlock], @"");
+}
+
 @end

@@ -51,9 +51,20 @@ scope NSFileHandle *handle = [[NSFileHandle alloc] initWithFileDescriptor:fildes
 #define scope \
 	__attribute__((cleanup(ext_releaseScopeObject)))
 
+/**
+ * Given an object that conforms to the \c NSLocking protocol, this will acquire
+ * the lock for the duration of the current scope. The lock will be released
+ * when the scope ends, regardless of how the scope is exited, including from
+ * exceptions, \c goto, \c return, \c break, and \c continue.
+ */
+#define lockForScope(LOCK) \
+	id<NSLocking> metamacro_concat(ext_scopeLock_, __LINE__) __attribute__((cleanup(ext_releaseScopeLock), unused)) = ext_lockAndReturn(LOCK)
+
 /*** implementation details follow ***/
 typedef void (^ext_cleanupBlock_t)();
 
 void ext_executeCleanupBlock (ext_cleanupBlock_t *block);
+id<NSLocking> ext_lockAndReturn (id<NSLocking> lock);
+void ext_releaseScopeLock (id<NSLocking> *lockPtr);
 void ext_releaseScopeObject (id *objPtr);
 
