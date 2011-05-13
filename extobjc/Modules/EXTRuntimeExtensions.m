@@ -137,6 +137,17 @@ BOOL ext_injectMethodsFromClass (
 	return success;
 }
 
+Class ext_classBeforeSuperclass (Class receiver, Class superclass) {
+	Class previousClass = nil;
+
+	while (![receiver isEqual:superclass]) {
+		previousClass = receiver;
+		receiver = class_getSuperclass(receiver);
+	}
+
+	return previousClass;
+}
+
 Class *ext_copyClassList (unsigned *count) {
 	// get the number of classes registered with the runtime
 	int classCount = objc_getClassList(NULL, 0);

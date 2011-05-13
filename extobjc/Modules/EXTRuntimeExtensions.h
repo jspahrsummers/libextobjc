@@ -168,6 +168,13 @@ unsigned ext_addMethods (Class aClass, Method *methods, unsigned count, BOOL che
 BOOL ext_addMethodsFromClass (Class srcClass, Class dstClass, BOOL checkSuperclasses, ext_failedMethodCallback failedToAddCallback);
 
 /**
+ * Returns the superclass of \a receiver which immediately descends from \a
+ * superclass. If \a superclass is not in the hierarchy of \a receiver, or is
+ * equal to \a receiver, \c nil is returned.
+ */
+Class ext_classBeforeSuperclass (Class receiver, Class superclass);
+
+/**
  * Returns whether \a receiver is \a aClass, or inherits directly from it.
  */
 BOOL ext_classIsKindOfClass (Class receiver, Class aClass);
