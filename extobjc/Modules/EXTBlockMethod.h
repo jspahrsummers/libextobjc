@@ -31,12 +31,12 @@ id isIdentical = blockMethod(id self, id obj){
 /**
  * The type for a block-based property getter.
  */
-typedef id (^ext_blockGetter)(void);
+typedef id (^ext_blockGetter)(SEL, id);
 
 /**
  * The type for a block-based property setter.
  */
-typedef void (^ext_blockSetter)(id);
+typedef void (^ext_blockSetter)(SEL, id, id);
 
 /**
  * Uses \a block as the implementation for a new method \a name on \a aClass. \a
@@ -78,19 +78,7 @@ void ext_replaceBlockMethod (Class aClass, SEL name, id block, const char *types
  * Neither \a getter and \a setter should be \c NULL. Both are autoreleased by
  * default.
  *
- * @note \a getter and \a setter do \e not automatically match a #blockMethod in
- * type. Since blocks are composable, it is relatively straightforward to create
- * a #blockMethod from them:
- *
- * @code
-
-ext_blockGetter getter, setter;
-ext_synthesizeBlockProperty(ext_propertyMemoryManagementPolicyRetain, YES, &getter, &setter);
-
-id getterMethod = blockMethod(id self){ return getter(); }
-id setterMethod = blockMethod(id self, id val){ setter(val); }
-
- * @endcode
+ * @note \a getter and \a setter match a #blockMethod in type.
  */
 void ext_synthesizeBlockProperty (ext_propertyMemoryManagementPolicy memoryManagementPolicy, BOOL atomic, ext_blockGetter *getter, ext_blockSetter *setter);
 

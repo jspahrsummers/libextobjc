@@ -461,18 +461,13 @@ void invokeBlockMethodWithSelf (id block, NSInvocation *invocation, id self) {
 
 	// TODO: should the mutex be locked for both of these slot modifications? it
 	// could be useful, but then would require a recursive mutex...
-	[self setValue:blockMethod(id self){
-		return getter();
-	} forSlot:slotName];
+	[self setValue:getter forSlot:slotName];
 
 	NSMutableString *setterSlot = [[NSMutableString alloc] initWithString:@"set"];
 	[setterSlot appendString:[[slotName substringToIndex:1] uppercaseString]];
 	[setterSlot appendString:[slotName substringFromIndex:1]];
 
-	[self setBlock:blockMethod(id self, id newValue){
-		setter(newValue);
-	} forSlot:setterSlot argumentCount:2];
-
+	[self setBlock:setter forSlot:setterSlot argumentCount:2];
 	[setterSlot release];
 }
 

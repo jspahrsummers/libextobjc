@@ -336,11 +336,11 @@ void ext_synthesizeBlockProperty (ext_propertyMemoryManagementPolicy memoryManag
 	ext_blockGetter localGetter = nil;
 	ext_blockSetter localSetter = nil;
 
-	localGetter = ^{
+	localGetter = blockMethod(id self){
 		return [[backingVar retain] autorelease];
 	};
 
-	localSetter = ^(id newValue){
+	localSetter = blockMethod(id self, id newValue){
 		switch (memoryManagementPolicy) {
 		case ext_propertyMemoryManagementPolicyRetain:
 			[newValue retain];
