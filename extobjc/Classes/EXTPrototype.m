@@ -454,7 +454,7 @@ void invokeBlockMethodWithSelf (id block, NSInvocation *invocation, id self) {
 	ext_blockSetter setter = NULL;
 
 	// pass NO for atomic, since we synchronize slots anyways
-	ext_synthesizeBlockProperty(policy, NO, &getter, &setter);
+	ext_synthesizeBlockProperty(@encode(id), policy, NO, &getter, &setter);
 
 	NSAssert(getter != NULL, @"Block property synthesis should never fail!");
 	NSAssert(setter != NULL, @"Block property synthesis should never fail!");

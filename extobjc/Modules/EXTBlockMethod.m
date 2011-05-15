@@ -27,6 +27,9 @@ typedef NSMethodSignature *(*methodSignatureForSelectorIMP)(id, SEL, SEL);
 typedef void (*forwardInvocationIMP)(id, SEL, NSInvocation *);
 typedef BOOL (*respondsToSelectorIMP)(id, SEL, SEL);
 
+typedef struct { int i; } *empty_struct_ptr_t;
+typedef union { int i; } *empty_union_ptr_t;
+
 static
 id ext_blockWithSelector (Class cls, SEL aSelector) {
 	return objc_getAssociatedObject(cls, aSelector);
@@ -330,49 +333,349 @@ void ext_replaceBlockMethod (Class aClass, SEL name, id block, const char *types
 	);
 }
 
-void ext_synthesizeBlockProperty (ext_propertyMemoryManagementPolicy memoryManagementPolicy, BOOL atomic, ext_blockGetter *getter, ext_blockSetter *setter) {
-	__block volatile id backingVar = nil;
+void ext_synthesizeBlockProperty (const char * restrict type, ext_propertyMemoryManagementPolicy memoryManagementPolicy, BOOL atomic, ext_blockGetter * restrict getter, ext_blockSetter * restrict setter) {
+	// skip attributes in the provided type encoding
+	while (
+		*type == 'r' ||
+		*type == 'n' ||
+		*type == 'N' ||
+		*type == 'o' ||
+		*type == 'O' ||
+		*type == 'R' ||
+		*type == 'V'
+	) {
+		++type;
+	}
 
-	ext_blockGetter localGetter = nil;
-	ext_blockSetter localSetter = nil;
+	#define SET_ATOMIC_VAR(VARTYPE, CASTYPE) \
+		VARTYPE existingValue; \
+		\
+		for (;;) { \
+			existingValue = backingVar; \
+			if (OSAtomicCompareAndSwap ## CASTYPE ## Barrier(existingValue, newValue, (VARTYPE volatile *)&backingVar)) { \
+				break; \
+			} \
+		} \
+	
+	#define SYNTHESIZE_COMPATIBLE_PRIMITIVE(RETTYPE, VARTYPE, CASTYPE) \
+		do { \
+			if (atomic) { \
+				__block VARTYPE volatile backingVar = 0; \
+				\
+				id localGetter = blockMethod(id self){ \
+					return (RETTYPE)backingVar; \
+				}; \
+				\
+				id localSetter = blockMethod(id self, RETTYPE newRealValue){ \
+					VARTYPE newValue = (VARTYPE)newRealValue; \
+					SET_ATOMIC_VAR(VARTYPE, CASTYPE); \
+				}; \
+				\
+				*getter = [[localGetter copy] autorelease]; \
+				*setter = [[localSetter copy] autorelease]; \
+			} else { \
+				__block RETTYPE backingVar = 0; \
+				\
+				id localGetter = blockMethod(id self){ \
+					return backingVar; \
+				}; \
+				\
+				id localSetter = blockMethod(id self, RETTYPE newRealValue){ \
+					backingVar = newRealValue; \
+				}; \
+				\
+				*getter = [[localGetter copy] autorelease]; \
+				*setter = [[localSetter copy] autorelease]; \
+			} \
+		} while (0)
+	
+	#define SYNTHESIZE_PRIMITIVE(RETTYPE, VARTYPE, CASTYPE) \
+		do { \
+			if (atomic) { \
+				__block VARTYPE volatile backingVar = 0; \
+				\
+				id localGetter = blockMethod(id self){ \
+					union { \
+						VARTYPE backing; \
+						RETTYPE real; \
+					} u; \
+					\
+					u.backing = backingVar; \
+					return u.real; \
+				}; \
+				\
+				id localSetter = blockMethod(id self, RETTYPE newRealValue){ \
+					union { \
+						VARTYPE backing; \
+						RETTYPE real; \
+					} u; \
+					\
+					u.backing = 0; \
+					u.real = newRealValue; \
+					VARTYPE newValue = u.backing; \
+					\
+					SET_ATOMIC_VAR(VARTYPE, CASTYPE); \
+				}; \
+				\
+				*getter = [[localGetter copy] autorelease]; \
+				*setter = [[localSetter copy] autorelease]; \
+			} else { \
+				__block RETTYPE backingVar = 0; \
+				\
+				id localGetter = blockMethod(id self){ \
+					return backingVar; \
+				}; \
+				\
+				id localSetter = blockMethod(id self, RETTYPE newRealValue){ \
+					backingVar = newRealValue; \
+				}; \
+				\
+				*getter = [[localGetter copy] autorelease]; \
+				*setter = [[localSetter copy] autorelease]; \
+			} \
+		} while (0)
 
-	localGetter = blockMethod(id self){
-		return [[backingVar retain] autorelease];
-	};
-
-	localSetter = blockMethod(id self, id newValue){
-		switch (memoryManagementPolicy) {
-		case ext_propertyMemoryManagementPolicyRetain:
-			[newValue retain];
-			break;
-
-		case ext_propertyMemoryManagementPolicyCopy:
-			newValue = [newValue copy];
-			break;
-
-		default:
-			;
-		}
-
-		if (atomic) {
-			for (;;) {
-				id existingValue = backingVar;
-				if (OSAtomicCompareAndSwapPtrBarrier(existingValue, newValue, (void * volatile *)&backingVar)) {
-					if (memoryManagementPolicy != ext_propertyMemoryManagementPolicyAssign)
-						[existingValue release];
-
-					break;
-				}
-			}
+	switch (*type) {
+	case 'c':
+		SYNTHESIZE_PRIMITIVE(char, int, Int);
+		break;
+	
+	case 'i':
+		SYNTHESIZE_COMPATIBLE_PRIMITIVE(int, int, Int);
+		break;
+	
+	case 's':
+		SYNTHESIZE_PRIMITIVE(short, int, Int);
+		break;
+	
+	case 'l':
+		SYNTHESIZE_COMPATIBLE_PRIMITIVE(long, long, Long);
+		break;
+	
+	case 'q':
+		SYNTHESIZE_PRIMITIVE(long long, int64_t, 64);
+		break;
+	
+	case 'C':
+		SYNTHESIZE_PRIMITIVE(unsigned char, int, Int);
+		break;
+	
+	case 'I':
+		SYNTHESIZE_COMPATIBLE_PRIMITIVE(unsigned int, int, Int);
+		break;
+	
+	case 'S':
+		SYNTHESIZE_PRIMITIVE(unsigned short, int, Int);
+		break;
+	
+	case 'L':
+		SYNTHESIZE_COMPATIBLE_PRIMITIVE(unsigned long, long, Long);
+		break;
+	
+	case 'Q':
+		SYNTHESIZE_PRIMITIVE(unsigned long long, int64_t, 64);
+		break;
+	
+	case 'f':
+		if (sizeof(float) > sizeof(int32_t)) {
+			SYNTHESIZE_PRIMITIVE(float, int64_t, 64);
 		} else {
-			if (memoryManagementPolicy != ext_propertyMemoryManagementPolicyAssign)
-				[backingVar release];
-
-			backingVar = newValue;
+			SYNTHESIZE_PRIMITIVE(float, int32_t, 32);
 		}
-	};
 
-	*getter = [[localGetter copy] autorelease];
-	*setter = [[localSetter copy] autorelease];
+		break;
+	
+	case 'd':
+		SYNTHESIZE_PRIMITIVE(double, int64_t, 64);
+		break;
+	
+	case 'B':
+		SYNTHESIZE_PRIMITIVE(_Bool, int, Int);
+		break;
+	
+	case '*':
+		SYNTHESIZE_COMPATIBLE_PRIMITIVE(char *, void *, Ptr);
+		break;
+	
+	case '@':
+		if (atomic) {
+			__block volatile id backingVar = nil;
+
+			id localGetter = blockMethod(id self){
+				return [[backingVar retain] autorelease];
+			};
+
+			id localSetter = blockMethod(id self, id newValue){
+				switch (memoryManagementPolicy) {
+				case ext_propertyMemoryManagementPolicyRetain:
+					[newValue retain];
+					break;
+
+				case ext_propertyMemoryManagementPolicyCopy:
+					newValue = [newValue copy];
+					break;
+
+				default:
+					;
+				}
+
+				SET_ATOMIC_VAR(void *, Ptr);
+
+				if (memoryManagementPolicy != ext_propertyMemoryManagementPolicyAssign)
+					[(id)existingValue release];
+			};
+
+			*getter = [[localGetter copy] autorelease];
+			*setter = [[localSetter copy] autorelease];
+		} else {
+			__block id backingVar = nil;
+
+			id localGetter = blockMethod(id self){
+				return [[backingVar retain] autorelease];
+			};
+
+			id localSetter = blockMethod(id self, id newValue){
+				switch (memoryManagementPolicy) {
+				case ext_propertyMemoryManagementPolicyRetain:
+					[newValue retain];
+					break;
+
+				case ext_propertyMemoryManagementPolicyCopy:
+					newValue = [newValue copy];
+					break;
+
+				default:
+					;
+				}
+
+				id existingValue = backingVar;
+				backingVar = newValue;
+
+				if (memoryManagementPolicy != ext_propertyMemoryManagementPolicyAssign)
+					[existingValue release];
+			};
+
+			*getter = [[localGetter copy] autorelease];
+			*setter = [[localSetter copy] autorelease];
+		}
+		
+		break;
+	
+	case '#':
+		SYNTHESIZE_COMPATIBLE_PRIMITIVE(Class, void *, Ptr);
+		break;
+	
+	case ':':
+		SYNTHESIZE_COMPATIBLE_PRIMITIVE(SEL, void *, Ptr);
+		break;
+	
+	case '[':
+		NSLog(@"Cannot synthesize property for array with type code \"%s\"", type);
+		return;
+	
+	case 'b':
+		NSLog(@"Cannot synthesize property for bitfield with type code \"%s\"", type);
+		return;
+	
+	case '{':
+		NSLog(@"Cannot synthesize property for struct with type code \"%s\"", type);
+		return;
+		
+	case '(':
+		NSLog(@"Cannot synthesize property for union with type code \"%s\"", type);
+		return;
+	
+	case '^':
+		switch (type[1]) {
+		case 'c':
+		case 'C':
+			SYNTHESIZE_COMPATIBLE_PRIMITIVE(char *, void *, Ptr);
+			break;
+		
+		case 'i':
+		case 'I':
+			SYNTHESIZE_COMPATIBLE_PRIMITIVE(int *, void *, Ptr);
+			break;
+		
+		case 's':
+		case 'S':
+			SYNTHESIZE_COMPATIBLE_PRIMITIVE(short *, void *, Ptr);
+			break;
+		
+		case 'l':
+		case 'L':
+			SYNTHESIZE_COMPATIBLE_PRIMITIVE(long *, void *, Ptr);
+			break;
+		
+		case 'q':
+		case 'Q':
+			SYNTHESIZE_COMPATIBLE_PRIMITIVE(long long *, void *, Ptr);
+			break;
+		
+		case 'f':
+			SYNTHESIZE_COMPATIBLE_PRIMITIVE(float *, void *, Ptr);
+			break;
+		
+		case 'd':
+			SYNTHESIZE_COMPATIBLE_PRIMITIVE(double *, void *, Ptr);
+			break;
+		
+		case 'B':
+			SYNTHESIZE_COMPATIBLE_PRIMITIVE(_Bool *, void *, Ptr);
+			break;
+		
+		case 'v':
+			SYNTHESIZE_COMPATIBLE_PRIMITIVE(void *, void *, Ptr);
+			break;
+		
+		case '*':
+		case '@':
+		case '#':
+		case '^':
+		case '[':
+			SYNTHESIZE_COMPATIBLE_PRIMITIVE(void **, void *, Ptr);
+			break;
+		
+		case ':':
+			SYNTHESIZE_COMPATIBLE_PRIMITIVE(SEL *, void *, Ptr);
+			break;
+		
+		case '{':
+			SYNTHESIZE_COMPATIBLE_PRIMITIVE(empty_struct_ptr_t, void *, Ptr);
+			break;
+		
+		case '(':
+			SYNTHESIZE_COMPATIBLE_PRIMITIVE(empty_union_ptr_t, void *, Ptr);
+			break;
+
+		case '?':
+			SYNTHESIZE_COMPATIBLE_PRIMITIVE(IMP *, void *, Ptr);
+			break;
+		
+		case 'b':
+		default:
+			NSLog(@"Cannot synthesize property for unknown pointer type with type code \"%s\"", type);
+			return;
+		}
+		
+		break;
+	
+	case '?':
+		// this is PROBABLY a function pointer, but the documentation
+		// leaves room open for uncertainty, so at least log a message
+		NSLog(@"Assuming type code \"%s\" is a function pointer", type);
+
+		// using a backing variable of void * would be unsafe, since function
+		// pointers and pointers may be different sizes
+		SYNTHESIZE_PRIMITIVE(IMP, int64_t, 64);
+		break;
+		
+	default:
+		NSLog(@"Unexpected type code \"%s\", cannot synthesize property", type);
+	}
+
+	#undef SET_ATOMIC_VAR
+	#undef SYNTHESIZE_PRIMITIVE
+	#undef SYNTHESIZE_COMPATIBLE_PRIMITIVE
 }
 
