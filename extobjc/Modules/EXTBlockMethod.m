@@ -371,8 +371,8 @@ void ext_synthesizeBlockProperty (const char * restrict type, ext_propertyMemory
 					SET_ATOMIC_VAR(VARTYPE, CASTYPE); \
 				}; \
 				\
-				*getter = [[localGetter copy] autorelease]; \
-				*setter = [[localSetter copy] autorelease]; \
+				*getter = [Block_copy(localGetter) autorelease]; \
+				*setter = [Block_copy(localSetter) autorelease]; \
 			} else { \
 				__block RETTYPE backingVar = 0; \
 				\
@@ -384,8 +384,8 @@ void ext_synthesizeBlockProperty (const char * restrict type, ext_propertyMemory
 					backingVar = newRealValue; \
 				}; \
 				\
-				*getter = [[localGetter copy] autorelease]; \
-				*setter = [[localSetter copy] autorelease]; \
+				*getter = [Block_copy(localGetter) autorelease]; \
+				*setter = [Block_copy(localSetter) autorelease]; \
 			} \
 		} while (0)
 	
@@ -417,8 +417,8 @@ void ext_synthesizeBlockProperty (const char * restrict type, ext_propertyMemory
 					SET_ATOMIC_VAR(VARTYPE, CASTYPE); \
 				}; \
 				\
-				*getter = [[localGetter copy] autorelease]; \
-				*setter = [[localSetter copy] autorelease]; \
+				*getter = [Block_copy(localGetter) autorelease]; \
+				*setter = [Block_copy(localSetter) autorelease]; \
 			} else { \
 				__block RETTYPE backingVar = 0; \
 				\
@@ -430,8 +430,8 @@ void ext_synthesizeBlockProperty (const char * restrict type, ext_propertyMemory
 					backingVar = newRealValue; \
 				}; \
 				\
-				*getter = [[localGetter copy] autorelease]; \
-				*setter = [[localSetter copy] autorelease]; \
+				*getter = [Block_copy(localGetter) autorelease]; \
+				*setter = [Block_copy(localSetter) autorelease]; \
 			} \
 		} while (0)
 
@@ -525,8 +525,8 @@ void ext_synthesizeBlockProperty (const char * restrict type, ext_propertyMemory
 					[(id)existingValue release];
 			};
 
-			*getter = [[localGetter copy] autorelease];
-			*setter = [[localSetter copy] autorelease];
+			*getter = [Block_copy(localGetter) autorelease];
+			*setter = [Block_copy(localSetter) autorelease];
 		} else {
 			__block id backingVar = nil;
 
@@ -555,8 +555,8 @@ void ext_synthesizeBlockProperty (const char * restrict type, ext_propertyMemory
 					[existingValue release];
 			};
 
-			*getter = [[localGetter copy] autorelease];
-			*setter = [[localSetter copy] autorelease];
+			*getter = [Block_copy(localGetter) autorelease];
+			*setter = [Block_copy(localSetter) autorelease];
 		}
 		
 		break;
