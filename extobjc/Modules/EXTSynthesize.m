@@ -9,6 +9,8 @@
 #import "EXTSynthesize.h"
 #import "EXTBlockMethod.h"
 
+#define DEBUG_LOGGING 1
+
 void ext_synthesizePropertiesForClass (Class cls) {
 	unsigned count = 0;
 	objc_property_t *properties = class_copyPropertyList(cls, &count);
@@ -25,17 +27,20 @@ void ext_synthesizePropertiesForClass (Class cls) {
 	size_t idSelLen = idLen + selLen;
 	size_t voidLen = strlen(voidType);
 
+	#if DEBUG_LOGGING
 	NSLog(@"Property count for class %s: %u", class_getName(cls), count);
+	#endif
 
 	for (unsigned i = 0;i < count;++i) {
+		#if DEBUG_LOGGING
 		NSLog(@"Considering property %s, attributes %s", property_getName(properties[i]), property_getAttributes(properties[i]));
-		
-		fflush(stdout);
+		#endif
 
 		ext_propertyAttributes *attribs = ext_copyPropertyAttributes(properties[i]);
+
+		#if DEBUG_LOGGING
 		NSLog(@"About to synthesize property for %s", attribs->ivar);
-		
-		fflush(stdout);
+		#endif
 
 		if (!attribs->dynamic) {
 			BOOL foundGetter = NO;
@@ -53,12 +58,10 @@ void ext_synthesizePropertiesForClass (Class cls) {
 				}
 			}
 
+			#if DEBUG_LOGGING
 			NSLog(@"foundGetter: %i", (int)foundGetter);
-		
-		fflush(stdout);
 			NSLog(@"foundSetter: %i", (int)foundSetter);
-		
-		fflush(stdout);
+			#endif
 
 			// if no getter exists, or a setter should exist but does not, we
 			// should synthesize something
@@ -77,12 +80,10 @@ void ext_synthesizePropertiesForClass (Class cls) {
 					&setter
 				);
 
+				#if DEBUG_LOGGING
 				NSLog(@"New getter: %p", (void *)getter);
-		
-		fflush(stdout);
 				NSLog(@"New setter: %p", (void *)setter);
-		
-		fflush(stdout);
+				#endif
 
 				size_t typeLen = strlen(attribs->type);
 
@@ -113,8 +114,6 @@ void ext_synthesizePropertiesForClass (Class cls) {
 						NSLog(@"Error installing synthesized setter %s on %@", sel_getName(attribs->setter), cls);
 				}
 			}
-		
-		fflush(stdout);
 		}
 
 		free(attribs);
