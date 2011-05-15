@@ -9,7 +9,12 @@
 #import "EXTRuntimeExtensions.h"
 
 /**
- * @warning Not yet finished. Do not use!
+ * \@synthesizeall will synthesize on the current class all properties that are
+ * not \c @dynamic, if any. Existing getters and setters are left untouched.
+ *
+ * @note This defines a \c +load method for your class. If you need to define
+ * \c +load, consider using \c +initialize or a manual call to
+ * ext_synthesizePropertiesForClass() instead.
  */
 #define synthesizeall \
 	protocol NSObject; \
@@ -32,5 +37,8 @@
  */
 void ext_synthesizeProperty (Class aClass, const ext_propertyAttributes * restrict attributes);
 
-/*** implementation details follow ***/
+/**
+ * Synthesizes all properties on \a cls according to the semantics of
+ * ext_synthesizeProperty().
+ */
 void ext_synthesizePropertiesForClass (Class cls);
