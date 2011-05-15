@@ -9,6 +9,8 @@
 #import "EXTRuntimeExtensions.h"
 
 #define synthesizeall \
+	protocol NSObject; \
+	\
 	+ (void)load { \
 		Class thisClass_ = ext_classBeforeSuperclass(self, [super class]); \
 		ext_synthesizePropertiesForClass(thisClass_); \

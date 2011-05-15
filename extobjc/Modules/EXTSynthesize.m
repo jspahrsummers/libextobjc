@@ -54,6 +54,7 @@ void ext_synthesizePropertiesForClass (Class cls) {
 
 				// TODO: use an existing Ivar if possible
 
+				// TODO: THIS DOES NOT WORK FOR MULTIPLE INSTANCES OF A CLASS!
 				ext_synthesizeBlockProperty(
 					attribs->type,
 					attribs->memoryManagementPolicy,
