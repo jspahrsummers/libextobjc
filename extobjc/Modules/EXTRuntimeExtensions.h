@@ -155,9 +155,15 @@ typedef struct {
  * at least \a ivarSize bytes in length.
  *
  * Returns the offset (in bytes) of the newly-reserved indexed ivar. The offset
- * is guaranteed to be aligned for the requested size.
+ * is guaranteed to be aligned to a multiple of \a ivarAlignment. Add the offset
+ * to the pointer returned by \c object_getIndexedIvars() to get to the new
+ * ivar.
+ *
+ * @warning This will only affect instances of \a aClass (or its subclasses)
+ * allocated \e after this function is called. Instances allocated prior will
+ * not have this extra storage.
  */
-size_t ext_addIndexedIvar (Class aClass, size_t ivarSize);
+size_t ext_addIndexedIvar (Class aClass, size_t ivarSize, size_t ivarAlignment);
 
 /**
  * Iterates through the first \a count entries in \a methods and attempts to add

@@ -169,14 +169,14 @@ BOOL ext_injectMethodsFromClass (
 	return success;
 }
 
-size_t ext_addIndexedIvar (Class aClass, size_t ivarSize) {
+size_t ext_addIndexedIvar (Class aClass, size_t ivarSize, size_t ivarAlignment) {
 	NSNumber *num = objc_getAssociatedObject(aClass, kIndexedIvarSizeKey);
 	NSUInteger offset = [num unsignedIntegerValue];
 
-	// align to ivarSize
-	if ((offset & (ivarSize - 1)) != 0) {
-		// round up to a multiple of ivarSize
-		offset = (offset & (ivarSize - 1)) + ivarSize;
+	// align to ivarAlignment
+	if ((offset & (ivarAlignment - 1)) != 0) {
+		// round up to a multiple of ivarAlignment
+		offset = (offset & (ivarAlignment - 1)) + ivarAlignment;
 	}
 
 	num = [NSNumber numberWithUnsignedInteger:offset + ivarSize];
