@@ -24,7 +24,7 @@
 	STAssertNotNil(obj, @"could not create instance of SynthesisTestClass");
 
 	STAssertNil(obj.str, @"synthesized NSString property should be nil at initialization");
-	STAssertEquals(obj.someChar, '\0', @"synthesized char property should be NUL at initialization");
+	STAssertEquals((char)obj.someChar, (char)'\0', @"synthesized char property should be NUL at initialization");
 
 	NSMutableString *mutStr = [[NSMutableString alloc] initWithString:@"foo"];
 	obj.str = mutStr;

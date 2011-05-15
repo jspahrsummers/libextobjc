@@ -25,12 +25,19 @@ void ext_synthesizePropertiesForClass (Class cls) {
 	size_t idSelLen = idLen + selLen;
 	size_t voidLen = strlen(voidType);
 
-	for (unsigned i = 0;i < count;++i) {
-		ext_propertyAttributes *attribs = ext_copyPropertyAttributes(properties[i]);
+	NSLog(@"Property count for class %s: %u", class_getName(cls), count);
 
-		// if 'ivar' is NULL, this property is @dynamic, and we should not
-		// synthesize something for it
-		if (attribs->ivar) {
+	for (unsigned i = 0;i < count;++i) {
+		NSLog(@"Considering property %s, attributes %s", property_getName(properties[i]), property_getAttributes(properties[i]));
+		
+		fflush(stdout);
+
+		ext_propertyAttributes *attribs = ext_copyPropertyAttributes(properties[i]);
+		NSLog(@"About to synthesize property for %s", attribs->ivar);
+		
+		fflush(stdout);
+
+		if (!attribs->dynamic) {
 			BOOL foundGetter = NO;
 			BOOL foundSetter = NO;
 
@@ -45,6 +52,13 @@ void ext_synthesizePropertiesForClass (Class cls) {
 					break;
 				}
 			}
+
+			NSLog(@"foundGetter: %i", (int)foundGetter);
+		
+		fflush(stdout);
+			NSLog(@"foundSetter: %i", (int)foundSetter);
+		
+		fflush(stdout);
 
 			// if no getter exists, or a setter should exist but does not, we
 			// should synthesize something
@@ -62,6 +76,13 @@ void ext_synthesizePropertiesForClass (Class cls) {
 					&getter,
 					&setter
 				);
+
+				NSLog(@"New getter: %p", (void *)getter);
+		
+		fflush(stdout);
+				NSLog(@"New setter: %p", (void *)setter);
+		
+		fflush(stdout);
 
 				size_t typeLen = strlen(attribs->type);
 
@@ -92,6 +113,8 @@ void ext_synthesizePropertiesForClass (Class cls) {
 						NSLog(@"Error installing synthesized setter %s on %@", sel_getName(attribs->setter), cls);
 				}
 			}
+		
+		fflush(stdout);
 		}
 
 		free(attribs);

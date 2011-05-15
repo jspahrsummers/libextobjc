@@ -105,6 +105,11 @@ typedef struct {
 	BOOL canBeCollected;
 
 	/**
+	 * Whether this property is defined with \c @dynamic.
+	 */
+	BOOL dynamic;
+
+	/**
 	 * The memory management policy for this property. This will always be
 	 * #ext_propertyMemoryManagementPolicyAssign if #readonly is \c YES.
 	 */
@@ -128,8 +133,9 @@ typedef struct {
 	SEL setter;
 
 	/**
-	 * The backing instance variable for this property, or \c NULL if the
-	 * property is implemented dynamically.
+	 * The backing instance variable for this property, or \c NULL if \c
+	 * @synthesize was not used, and therefore no instance variable exists. This
+	 * would also be the case if the property is implemented dynamically.
 	 */
 	const char *ivar;
 

@@ -12,8 +12,7 @@
 	protocol NSObject; \
 	\
 	+ (void)load { \
-		Class thisClass_ = ext_classBeforeSuperclass(self, [super class]); \
-		ext_synthesizePropertiesForClass(thisClass_); \
+		ext_synthesizePropertiesForClass(self); \
 	}
 
 /*** implementation details follow ***/

@@ -334,6 +334,7 @@ ext_propertyAttributes *ext_copyPropertyAttributes (objc_property_t property) {
 			break;
 
 		case 'D':
+			attributes->dynamic = YES;
 			attributes->ivar = NULL;
 			break;
 
