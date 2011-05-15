@@ -8,6 +8,9 @@
 
 #import "EXTRuntimeExtensions.h"
 
+/**
+ * @warning Not yet finished. Do not use!
+ */
 #define synthesizeall \
 	protocol NSObject; \
 	\
