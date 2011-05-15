@@ -28,6 +28,10 @@
 		D002DAF41365694C005348A5 /* EXTNil.m in Sources */ = {isa = PBXBuildFile; fileRef = D002DAF01365694C005348A5 /* EXTNil.m */; };
 		D002DAF813656CDF005348A5 /* EXTNilTest.m in Sources */ = {isa = PBXBuildFile; fileRef = D002DAF713656CDF005348A5 /* EXTNilTest.m */; };
 		D002DAF913656CDF005348A5 /* EXTNilTest.m in Sources */ = {isa = PBXBuildFile; fileRef = D002DAF713656CDF005348A5 /* EXTNilTest.m */; };
+		D01BB7E2137CE523004380EA /* EXTSynthesize.m in Sources */ = {isa = PBXBuildFile; fileRef = D01BB7E0137CE523004380EA /* EXTSynthesize.m */; };
+		D01BB7E3137CE523004380EA /* EXTSynthesize.m in Sources */ = {isa = PBXBuildFile; fileRef = D01BB7E0137CE523004380EA /* EXTSynthesize.m */; };
+		D01BB7E4137CE523004380EA /* EXTSynthesize.h in Headers */ = {isa = PBXBuildFile; fileRef = D01BB7E1137CE523004380EA /* EXTSynthesize.h */; };
+		D01BB7E5137CE523004380EA /* EXTSynthesize.h in Headers */ = {isa = PBXBuildFile; fileRef = D01BB7E1137CE523004380EA /* EXTSynthesize.h */; };
 		D01DC92F12C822110009AB39 /* metamacros.h in Headers */ = {isa = PBXBuildFile; fileRef = D01DC92E12C822110009AB39 /* metamacros.h */; };
 		D01DC93012C822110009AB39 /* metamacros.h in Headers */ = {isa = PBXBuildFile; fileRef = D01DC92E12C822110009AB39 /* metamacros.h */; };
 		D03025FC128E8D9800638FD4 /* EXTSafeCategory.h in Headers */ = {isa = PBXBuildFile; fileRef = D03025FA128E8D9800638FD4 /* EXTSafeCategory.h */; };
@@ -159,6 +163,8 @@
 		D002DAF01365694C005348A5 /* EXTNil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXTNil.m; sourceTree = "<group>"; };
 		D002DAF613656CDF005348A5 /* EXTNilTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXTNilTest.h; sourceTree = "<group>"; };
 		D002DAF713656CDF005348A5 /* EXTNilTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXTNilTest.m; sourceTree = "<group>"; };
+		D01BB7E0137CE523004380EA /* EXTSynthesize.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXTSynthesize.m; sourceTree = "<group>"; };
+		D01BB7E1137CE523004380EA /* EXTSynthesize.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXTSynthesize.h; sourceTree = "<group>"; };
 		D01DC92E12C822110009AB39 /* metamacros.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = metamacros.h; sourceTree = "<group>"; };
 		D03025FA128E8D9800638FD4 /* EXTSafeCategory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXTSafeCategory.h; sourceTree = "<group>"; };
 		D03025FB128E8D9800638FD4 /* EXTSafeCategory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXTSafeCategory.m; sourceTree = "<group>"; };
@@ -392,6 +398,8 @@
 				D0B9B0AE13727A6600EC1224 /* EXTScope.h */,
 				D0B9B0AD13727A6600EC1224 /* EXTScope.m */,
 				D0A8B2F7128A49E9004AACE0 /* EXTSwizzle.h */,
+				D01BB7E1137CE523004380EA /* EXTSynthesize.h */,
+				D01BB7E0137CE523004380EA /* EXTSynthesize.m */,
 			);
 			path = Modules;
 			sourceTree = "<group>";
@@ -433,6 +441,7 @@
 				D07F83AC135D472F008B9D6D /* EXTBlockTarget.h in Headers */,
 				D002DAF21365694C005348A5 /* EXTNil.h in Headers */,
 				D0B9B0B213727A6600EC1224 /* EXTScope.h in Headers */,
+				D01BB7E5137CE523004380EA /* EXTSynthesize.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -459,6 +468,7 @@
 				D07F83AB135D472F008B9D6D /* EXTBlockTarget.h in Headers */,
 				D002DAF11365694C005348A5 /* EXTNil.h in Headers */,
 				D0B9B0B113727A6600EC1224 /* EXTScope.h in Headers */,
+				D01BB7E4137CE523004380EA /* EXTSynthesize.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -634,6 +644,7 @@
 				D07F83AE135D472F008B9D6D /* EXTBlockTarget.m in Sources */,
 				D002DAF41365694C005348A5 /* EXTNil.m in Sources */,
 				D0B9B0B013727A6600EC1224 /* EXTScope.m in Sources */,
+				D01BB7E3137CE523004380EA /* EXTSynthesize.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -694,6 +705,7 @@
 				D07F83AD135D472F008B9D6D /* EXTBlockTarget.m in Sources */,
 				D002DAF31365694C005348A5 /* EXTNil.m in Sources */,
 				D0B9B0AF13727A6600EC1224 /* EXTScope.m in Sources */,
+				D01BB7E2137CE523004380EA /* EXTSynthesize.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
