@@ -8,6 +8,7 @@
 
 #import "EXTBlockMethod.h"
 #import "NSMethodSignature+EXT.h"
+#import <ctype.h>
 #import <libkern/OSAtomic.h>
 #import <stdio.h>
 #import <string.h>
@@ -42,7 +43,7 @@ typedef struct {
 } ext_blockDescriptor_t;
 
 typedef struct {
-    id isa;
+    void *isa;
     int flags;
     int reserved; 
     void (*invoke)(void *, ...);
@@ -53,11 +54,13 @@ typedef struct {
 } ext_block_t;
 
 typedef struct ext_blockVariable_t {
-    id isa;
+    void *isa;
     struct ext_blockVariable_t *forwarding;
     int flags;
     int size;
 
+	// these may or may not be present... flags will be 0 if they are NOT
+	// present
     void (*byref_keep)(void  *dst, void *src);
     void (*byref_dispose)(void *);
 
@@ -343,13 +346,65 @@ IMP ext_blockImplementation (id block) {
 	ext_block_t *blockInnards = (ext_block_t *)block;
 
 	#if DEBUG_LOGGING
-	if (blockInnards->flags & BLOCK_HAS_SIGNATURE)
-		NSLog(@"block %@ has signature: %s", block, blockInnards->descriptor->signature);
-	else
+	char *encoding = ext_copyBlockTypeEncoding(block);
+	if (encoding) {
+		NSLog(@"block %@ has signature: %s", block, encoding);
+		free(encoding);
+	} else
 		NSLog(@"block %@ has no signature", block);
 	#endif
 
 	return (IMP)blockInnards->invoke;
+}
+
+char *ext_copyBlockTypeEncoding (id block) {
+	ext_block_t *blockInnards = (ext_block_t *)block;
+
+	if (!(blockInnards->flags & BLOCK_HAS_SIGNATURE))
+		return NULL;
+
+	const char *blockSignature = blockInnards->descriptor->signature;
+	if (!blockSignature)
+		return NULL;
+	
+	size_t blockSignatureLen = strlen(blockSignature);
+
+	char * restrict sanitized = malloc(blockSignatureLen);
+	size_t sanitizedPos = 0;
+	if (!sanitized)
+		return NULL;
+	
+	@try {
+		while (*blockSignature != '\0') {
+			const char *next = NSGetSizeAndAlignment(blockSignature, NULL, NULL);
+			if (!next)
+				break;
+
+			// copy the valid part of the type encoding into the sanitized string
+			strncpy(sanitized + sanitizedPos, blockSignature, next - blockSignature);
+			sanitizedPos += (next - blockSignature);
+
+			// and skip over any (invalid) digits
+			while (isdigit(*next))
+				++next;
+
+			blockSignature = next;
+		}
+	} @catch (NSException *ex) {
+		// a thrown exception almost certainly means that this type encoding
+		// is invalid
+		free(sanitized);
+		return NULL;
+	}
+
+	if (sanitizedPos == 0) {
+		// a zero-length encoding won't work, just return NULL
+		free(sanitized);
+		return NULL;
+	}
+
+	sanitized[sanitizedPos] = '\0';
+	return sanitized;
 }
 
 void ext_replaceBlockMethod (Class aClass, SEL name, id block, const char *types) {

@@ -67,6 +67,15 @@ BOOL ext_addBlockMethod (Class aClass, SEL name, id block, const char *types);
 IMP ext_blockImplementation (id block);
 
 /**
+ * If \a block has a type signature, this will return a sanitized copy of the
+ * signature, suitable for use as a method's type encoding. Not all blocks have
+ * type signatures -- if \a block does not or its type signature is invalid, \c
+ * NULL is returned. You must \c free() the returned string when you are
+ * finished.
+ */
+char *ext_copyBlockTypeEncoding (id block);
+
+/**
  * Replaces the implementation of \a name on \a aClass using \a block. \a
  * types describes the return and argument types of the method. \a block must
  * have been originally defined using #blockMethod. This will overwrite any

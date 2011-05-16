@@ -146,6 +146,14 @@ typedef union { int i; } *empty_union_ptr_t;
 			{
 				id val = va_arg(args, id);
 				[self setArgument:&val atIndex:i];
+
+				if (type[1] == '?') {
+					// @? is undocumented, but apparently used to represent
+					// a block -- not sure how to disambiguate it from
+					// a separate @ and ?, but I assume that a block parameter
+					// is a more common case than that
+					++type;
+				}
 			}
 			
 			break;
