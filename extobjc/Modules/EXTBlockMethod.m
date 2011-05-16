@@ -27,6 +27,43 @@ typedef NSMethodSignature *(*methodSignatureForSelectorIMP)(id, SEL, SEL);
 typedef void (*forwardInvocationIMP)(id, SEL, NSInvocation *);
 typedef BOOL (*respondsToSelectorIMP)(id, SEL, SEL);
 
+/*
+ * The following block-related structures are taken from:
+ * http://clang.llvm.org/docs/Block-ABI-Apple.txt
+ */
+typedef struct {
+	unsigned long int reserved;
+	unsigned long int size;
+
+	void (*copy_helper)(void *dst, void *src);
+	void (*dispose_helper)(void *src);
+
+	const char *signature;
+} ext_blockDescriptor_t;
+
+typedef struct {
+    id isa;
+    int flags;
+    int reserved; 
+    void (*invoke)(void *, ...);
+
+    ext_blockDescriptor_t *descriptor;
+
+    // variables begin here
+} ext_block_t;
+
+typedef struct ext_blockVariable_t {
+    id isa;
+    struct ext_blockVariable_t *forwarding;
+    int flags;
+    int size;
+
+    void (*byref_keep)(void  *dst, void *src);
+    void (*byref_dispose)(void *);
+
+	// variable data begins here
+} ext_blockVariable_t;
+
 typedef struct { int i; } *empty_struct_ptr_t;
 typedef union { int i; } *empty_union_ptr_t;
 

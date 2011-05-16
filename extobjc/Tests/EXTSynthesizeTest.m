@@ -22,6 +22,7 @@
 - (void)testSynthesizeAll {
 	SynthesisTestClass *obj = [[SynthesisTestClass alloc] init];
 	STAssertNotNil(obj, @"could not create instance of SynthesisTestClass");
+	STAssertEquals([obj retainCount], (NSUInteger)1, @"retain count of SynthesisTestClass instance should be 1 after instantiation");
 
 	STAssertNil(obj.str, @"synthesized NSString property should be nil at initialization");
 	STAssertEquals((char)obj.someChar, (char)'\0', @"synthesized char property should be NUL at initialization");
@@ -45,6 +46,7 @@
 
 	SynthesisTestClass *obj2 = [[SynthesisTestClass alloc] init];
 	STAssertNotNil(obj2, @"could not create second instance of SynthesisTestClass");
+	STAssertEquals([obj2 retainCount], (NSUInteger)1, @"retain count of SynthesisTestClass instance should be 1 after instantiation");
 
 	STAssertNil(obj2.str, @"synthesized NSString property should be nil at initialization");
 	STAssertEquals((char)obj2.someChar, (char)'\0', @"synthesized char property should be NUL at initialization");

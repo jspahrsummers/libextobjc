@@ -801,7 +801,10 @@
 				RUN_CLANG_STATIC_ANALYZER = YES;
 				SDKROOT = macosx10.6;
 				TEST_AFTER_BUILD = YES;
-				WARNING_CFLAGS = "-Wno-unused-value";
+				WARNING_CFLAGS = (
+					"-Wno-unused-value",
+					"-fdiagnostics-show-category=name",
+				);
 			};
 			name = Debug;
 		};
@@ -830,15 +833,14 @@
 				GCC_WARN_UNUSED_LABEL = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				LLVM_LTO = YES;
-				OTHER_CFLAGS = (
-					"-ftrapv",
-					"-fcatch-undefined-behavior",
-				);
 				PREBINDING = NO;
 				RUN_CLANG_STATIC_ANALYZER = YES;
 				SDKROOT = macosx10.6;
 				TEST_AFTER_BUILD = YES;
-				WARNING_CFLAGS = "-Wno-unused-value";
+				WARNING_CFLAGS = (
+					"-Wno-unused-value",
+					"-fdiagnostics-show-category=name",
+				);
 			};
 			name = Release;
 		};
