@@ -28,7 +28,7 @@ typedef void (*forwardInvocationIMP)(id, SEL, NSInvocation *);
 typedef BOOL (*respondsToSelectorIMP)(id, SEL, SEL);
 
 /*
- * The following block-related structures are taken from:
+ * The following block-related definitions are taken from:
  * http://clang.llvm.org/docs/Block-ABI-Apple.txt
  */
 typedef struct {
@@ -63,6 +63,14 @@ typedef struct ext_blockVariable_t {
 
 	// variable data begins here
 } ext_blockVariable_t;
+
+enum {
+    BLOCK_HAS_COPY_DISPOSE =  (1 << 25),
+    BLOCK_HAS_CTOR =          (1 << 26),
+    BLOCK_IS_GLOBAL =         (1 << 28),
+    BLOCK_HAS_STRET =         (1 << 29),
+    BLOCK_HAS_SIGNATURE =     (1 << 30), 
+};
 
 typedef struct { int i; } *empty_struct_ptr_t;
 typedef union { int i; } *empty_union_ptr_t;
@@ -333,6 +341,14 @@ BOOL ext_addBlockMethod (Class aClass, SEL name, id block, const char *types) {
 
 IMP ext_blockImplementation (id block) {
 	ext_block_t *blockInnards = (ext_block_t *)block;
+
+	#if DEBUG_LOGGING
+	if (blockInnards->flags & BLOCK_HAS_SIGNATURE)
+		NSLog(@"block %@ has signature: %s", block, blockInnards->descriptor->signature);
+	else
+		NSLog(@"block %@ has no signature", block);
+	#endif
+
 	return (IMP)blockInnards->invoke;
 }
 
