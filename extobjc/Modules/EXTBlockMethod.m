@@ -46,6 +46,9 @@ typedef struct {
     void *isa;
     int flags;
     int reserved; 
+
+	// the first argument will be the block structure, followed by any actual
+	// arguments to the block
     void (*invoke)(void *, ...);
 
     ext_blockDescriptor_t *descriptor;
@@ -368,11 +371,11 @@ char *ext_copyBlockTypeEncoding (id block) {
 		return NULL;
 	
 	size_t blockSignatureLen = strlen(blockSignature);
-
 	char * restrict sanitized = malloc(blockSignatureLen);
-	size_t sanitizedPos = 0;
 	if (!sanitized)
 		return NULL;
+
+	size_t sanitizedPos = 0;
 	
 	@try {
 		while (*blockSignature != '\0') {

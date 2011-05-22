@@ -105,7 +105,7 @@ typedef struct {
 	BOOL canBeCollected;
 
 	/**
-	 * Whether this property is defined with \c @dynamic.
+	 * Whether this property is defined with \c \@dynamic.
 	 */
 	BOOL dynamic;
 
@@ -134,14 +134,14 @@ typedef struct {
 
 	/**
 	 * The backing instance variable for this property, or \c NULL if \c
-	 * @synthesize was not used, and therefore no instance variable exists. This
+	 * \c @synthesize was not used, and therefore no instance variable exists. This
 	 * would also be the case if the property is implemented dynamically.
 	 */
 	const char *ivar;
 
 	/**
 	 * The type encoding for the value of this property. This is the type as it
-	 * would be returned by the \c @encode() directive.
+	 * would be returned by the \c \@encode() directive.
 	 */
 	char type[];
 } ext_propertyAttributes;
