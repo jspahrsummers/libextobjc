@@ -7,7 +7,8 @@
 //
 
 #import <SenTestingKit/SenTestingKit.h>
-#import "extobjc.h"
+#import <Foundation/Foundation.h>
+#import "EXTFinalMethod.h"
 
 @interface EXTFinalMethodTest : SenTestCase {
 @private

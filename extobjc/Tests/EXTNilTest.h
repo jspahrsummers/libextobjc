@@ -7,7 +7,8 @@
 //
 
 #import <SenTestingKit/SenTestingKit.h>
-#import "extobjc.h"
+#import <Foundation/Foundation.h>
+#import "EXTNil.h"
 
 @interface EXTNilTest : SenTestCase {
 @private

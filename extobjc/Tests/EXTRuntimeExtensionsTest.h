@@ -7,6 +7,7 @@
 //
 
 #import <SenTestingKit/SenTestingKit.h>
+#import <Foundation/Foundation.h>
 #import "EXTRuntimeExtensions.h"
 
 @interface EXTRuntimeExtensionsTest : SenTestCase {

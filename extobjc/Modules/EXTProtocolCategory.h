@@ -8,6 +8,7 @@
 
 #import <objc/runtime.h>
 #import <stdio.h>
+#import "metamacros.h"
 
 /**
  * \@pcategoryinterface defines the interface for a category named \a CATEGORY on protocol \a
