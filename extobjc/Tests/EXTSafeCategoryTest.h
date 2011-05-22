@@ -8,7 +8,6 @@
 
 #import <SenTestingKit/SenTestingKit.h>
 #import <Foundation/Foundation.h>
-#import "EXTSafeCategory.h"
 
 @interface EXTSafeCategoryTest : SenTestCase {
 

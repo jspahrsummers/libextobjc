@@ -8,6 +8,16 @@
 
 #import "EXTSafeCategoryTest.h"
 
+// make sure failed safe categories don't crash the test (since we explicitly
+// test such a case below)
+#ifndef NDEBUG
+#define NDEBUG
+#endif
+
+#undef DEBUG
+
+#import "EXTSafeCategory.h"
+
 /*** category interface ***/
 @interface NSObject (TestExtensions)
 - (NSString *)description;
