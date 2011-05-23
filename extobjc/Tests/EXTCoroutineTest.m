@@ -14,12 +14,11 @@
 - (void)testYield {
 	__block int i;
 
-	int (^myCoroutine)(void) =
-		coroutine(void)({
-			for (i = 0;i < 3;++i) {
-				yield i;
-			}
-		});
+	int (^myCoroutine)(void) = coroutine(void)({
+		for (i = 0;i < 3;++i) {
+			yield i;
+		}
+	});
 
 	STAssertEquals(myCoroutine(), 0, @"expected first coroutine call to yield 0");
 	STAssertEquals(myCoroutine(), 1, @"expected second coroutine call to yield 1");
