@@ -16,7 +16,7 @@
  *
  * The syntax for using this macro is a bit odd. After the argument list
  * consisting of the coroutine's parameters, you must pass another argument list
- * that consists exclusively of a statement, to be used as the coroutine's body.
+ * that consists exclusively of a statement to be used as the coroutine's body.
  *
  * For example, this defines a coroutine which takes an integer and double
  * argument and yields (returns) twice:
