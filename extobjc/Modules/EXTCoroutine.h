@@ -38,6 +38,12 @@ double y = myCoroutine(42, 2.0);
  * however, it is completely legal to do so, and your coroutine code should be
  * prepared for such a case.
  *
+ * @note Coroutines are implemented using blocks. Consequently, to store data
+ * above and beyond the execution state of the coroutine, you can use variables
+ * qualified \c __block in the enclosing scope. Variables without the \c __block
+ * qualifier will be lost (perhaps even indeterminate) between invocations of
+ * the coroutine.
+ *
  * @warning Coroutines are not thread-safe. Because coroutines inherently
  * contain some execution state, executing the same coroutine on multiple
  * threads is considered undefined behavior. It is, however, legal to
