@@ -59,7 +59,9 @@ double y = myCoroutine(42, 2.0);
 
 /**
  * Returns from the coroutine, passing back the given value. If the coroutine's
- * return type is \c void, no value should be given to this macro.
+ * return type is \c void, no value should be given to this macro. If the
+ * coroutine is subsequently invoked again, it will resume execution from the
+ * point at which \c yield was used.
  *
  * This macro can be used identically to the \c return keyword, with or without
  * parentheses.
