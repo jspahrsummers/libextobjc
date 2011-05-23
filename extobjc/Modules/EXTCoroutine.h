@@ -6,8 +6,6 @@
 //  Released into the public domain.
 //
 
-#import "metamacros.h"
-
 /**
  * Defines a coroutine, which is a generalized version of a subroutine that
  * supports multiple entry and exit points. This macro takes as its arguments
