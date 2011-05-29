@@ -54,6 +54,12 @@ unsigned ext_injectMethods (
 	ext_methodInjectionBehavior behavior,
 	ext_failedMethodCallback failedToAddCallback
 ) {
+	/*
+	 * set up an autorelease pool in case any Cocoa classes invoke +initialize
+	 * during this process
+	 */
+	NSAutoreleasePool *pool = [NSAutoreleasePool new];
+
 	unsigned successes = 0;
 	BOOL isMeta = class_isMetaClass(aClass);
 
@@ -122,6 +128,7 @@ unsigned ext_injectMethods (
 			failedToAddCallback(aClass, method);
 	}
 
+	[pool drain];
 	return successes;
 }
 
@@ -170,6 +177,12 @@ BOOL ext_injectMethodsFromClass (
 }
 
 size_t ext_addIndexedIvar (Class aClass, size_t ivarSize, size_t ivarAlignment) {
+	/*
+	 * set up an autorelease pool in case any Cocoa classes invoke +initialize
+	 * during this process
+	 */
+	NSAutoreleasePool *pool = [NSAutoreleasePool new];
+
 	NSNumber *num = objc_getAssociatedObject(aClass, kIndexedIvarSizeKey);
 	NSUInteger offset = [num unsignedIntegerValue];
 
@@ -192,6 +205,7 @@ size_t ext_addIndexedIvar (Class aClass, size_t ivarSize, size_t ivarAlignment) 
 		);
 	}
 
+	[pool drain];
 	return offset;
 }
 
@@ -270,6 +284,12 @@ BOOL ext_classIsKindOfClass (Class receiver, Class aClass) {
 }
 
 Class *ext_copyClassListConformingToProtocol (Protocol *protocol, unsigned *count) {
+	/*
+	 * set up an autorelease pool in case any Cocoa classes invoke +initialize
+	 * during this process
+	 */
+	NSAutoreleasePool *pool = [NSAutoreleasePool new];
+
 	unsigned classCount = 0;
 	Class *allClasses = ext_copyClassList(&classCount);
 
@@ -287,6 +307,7 @@ Class *ext_copyClassListConformingToProtocol (Protocol *protocol, unsigned *coun
 	if (count)
 		*count = returnIndex;
 	
+	[pool drain];
 	return allClasses;
 }
 
@@ -538,9 +559,16 @@ BOOL ext_getPropertyAccessorsForClass (objc_property_t property, Class aClass, M
 	free(attributes);
 	attributes = NO;
 
+	/*
+	 * set up an autorelease pool in case this sends aClass its first message
+	 */
+	NSAutoreleasePool *pool = [NSAutoreleasePool new];
+
 	Method foundGetter = class_getInstanceMethod(aClass, getterName);
-	if (!foundGetter)
+	if (!foundGetter) {
+		[pool drain];
 		return NO;
+	}
 	
 	if (getter)
 		*getter = foundGetter;
@@ -551,6 +579,7 @@ BOOL ext_getPropertyAccessorsForClass (objc_property_t property, Class aClass, M
 			*setter = foundSetter;
 	}
 	
+	[pool drain];
 	return YES;
 }
 
@@ -559,6 +588,12 @@ NSMethodSignature *ext_globalMethodSignatureForSelector (SEL aSelector) {
 	Class *classes = ext_copyClassList(&classCount);
 	if (!classes)
 		return nil;
+
+	/*
+	 * set up an autorelease pool in case any Cocoa classes invoke +initialize
+	 * during this process
+	 */
+	NSAutoreleasePool *pool = [NSAutoreleasePool new];
 
 	NSMethodSignature *signature = nil;
 	Class proxyClass = objc_getClass("NSProxy");
@@ -594,14 +629,23 @@ NSMethodSignature *ext_globalMethodSignatureForSelector (SEL aSelector) {
 	}
 
 exitEarly:
+	[pool drain];
 	free(classes);
+
 	return signature;
 }
 
 void ext_removeMethod (Class aClass, SEL methodName) {
 	Method existingMethod = ext_getImmediateInstanceMethod(aClass, methodName);
-	if (!existingMethod)
+	if (!existingMethod) {
 		return;
+	}
+
+	/*
+	 * set up an autorelease pool in case any Cocoa classes invoke +initialize
+	 * during this process
+	 */
+	NSAutoreleasePool *pool = [NSAutoreleasePool new];
 	
 	Method superclassMethod = NULL;
 	Class superclass = class_getSuperclass(aClass);
@@ -617,6 +661,8 @@ void ext_removeMethod (Class aClass, SEL methodName) {
 
 		method_setImplementation(existingMethod, forward);
 	}
+
+	[pool drain];
 }
 
 void ext_replaceMethods (Class aClass, Method *methods, unsigned count) {
