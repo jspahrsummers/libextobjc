@@ -98,7 +98,7 @@ static id singleton = nil;
 		return NO;
 }
 
-- (void)release {}
+- (oneway void)release {}
 
 - (id)retain {
   	return self;
