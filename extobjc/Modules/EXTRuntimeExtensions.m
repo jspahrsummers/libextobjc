@@ -54,81 +54,81 @@ unsigned ext_injectMethods (
 	ext_methodInjectionBehavior behavior,
 	ext_failedMethodCallback failedToAddCallback
 ) {
+	unsigned successes = 0;
+
 	/*
 	 * set up an autorelease pool in case any Cocoa classes invoke +initialize
 	 * during this process
 	 */
-	NSAutoreleasePool *pool = [NSAutoreleasePool new];
+	@autoreleasepool {
+		BOOL isMeta = class_isMetaClass(aClass);
 
-	unsigned successes = 0;
-	BOOL isMeta = class_isMetaClass(aClass);
-
-	if (!isMeta) {
-		// clear any +load and +initialize ignore flags
-		behavior &= ~(ext_methodInjectionIgnoreLoad | ext_methodInjectionIgnoreInitialize);
-	}
-
-	for (unsigned methodIndex = 0;methodIndex < count;++methodIndex) {
-		Method method = methods[methodIndex];
-		SEL methodName = method_getName(method);
-
-		if (behavior & ext_methodInjectionIgnoreLoad) {
-			if (methodName == @selector(load)) {
-				++successes;
-				continue;
-			}
+		if (!isMeta) {
+			// clear any +load and +initialize ignore flags
+			behavior &= ~(ext_methodInjectionIgnoreLoad | ext_methodInjectionIgnoreInitialize);
 		}
 
-		if (behavior & ext_methodInjectionIgnoreInitialize) {
-			if (methodName == @selector(initialize)) {
-				++successes;
-				continue;
+		for (unsigned methodIndex = 0;methodIndex < count;++methodIndex) {
+			Method method = methods[methodIndex];
+			SEL methodName = method_getName(method);
+
+			if (behavior & ext_methodInjectionIgnoreLoad) {
+				if (methodName == @selector(load)) {
+					++successes;
+					continue;
+				}
 			}
-		}
 
-		BOOL success = YES;
-		IMP impl = method_getImplementation(method);
-		const char *type = method_getTypeEncoding(method);
+			if (behavior & ext_methodInjectionIgnoreInitialize) {
+				if (methodName == @selector(initialize)) {
+					++successes;
+					continue;
+				}
+			}
 
-		switch (behavior & ext_methodInjectionOverwriteBehaviorMask) {
-		case ext_methodInjectionFailOnExisting:
-			success = class_addMethod(aClass, methodName, impl, type);
-			break;
+			BOOL success = YES;
+			IMP impl = method_getImplementation(method);
+			const char *type = method_getTypeEncoding(method);
 
-		case ext_methodInjectionFailOnAnyExisting:
-			if (class_getInstanceMethod(aClass, methodName)) {
-				success = NO;
+			switch (behavior & ext_methodInjectionOverwriteBehaviorMask) {
+			case ext_methodInjectionFailOnExisting:
+				success = class_addMethod(aClass, methodName, impl, type);
 				break;
-			}
 
-			// else fall through
-
-		case ext_methodInjectionReplace:
-			class_replaceMethod(aClass, methodName, impl, type);
-			break;
-
-		case ext_methodInjectionFailOnSuperclassExisting:
-			{
-				Class superclass = class_getSuperclass(aClass);
-				if (superclass && class_getInstanceMethod(superclass, methodName))
+			case ext_methodInjectionFailOnAnyExisting:
+				if (class_getInstanceMethod(aClass, methodName)) {
 					success = NO;
-				else
-					class_replaceMethod(aClass, methodName, impl, type);
+					break;
+				}
+
+				// else fall through
+
+			case ext_methodInjectionReplace:
+				class_replaceMethod(aClass, methodName, impl, type);
+				break;
+
+			case ext_methodInjectionFailOnSuperclassExisting:
+				{
+					Class superclass = class_getSuperclass(aClass);
+					if (superclass && class_getInstanceMethod(superclass, methodName))
+						success = NO;
+					else
+						class_replaceMethod(aClass, methodName, impl, type);
+				}
+
+				break;
+
+			default:
+				fprintf(stderr, "ERROR: Unrecognized method injection behavior: %i\n", (int)(behavior & ext_methodInjectionOverwriteBehaviorMask));
 			}
 
-			break;
-
-		default:
-			fprintf(stderr, "ERROR: Unrecognized method injection behavior: %i\n", (int)(behavior & ext_methodInjectionOverwriteBehaviorMask));
+			if (success)
+				++successes;
+			else
+				failedToAddCallback(aClass, method);
 		}
-
-		if (success)
-			++successes;
-		else
-			failedToAddCallback(aClass, method);
 	}
 
-	[pool drain];
 	return successes;
 }
 
@@ -177,35 +177,36 @@ BOOL ext_injectMethodsFromClass (
 }
 
 size_t ext_addIndexedIvar (Class aClass, size_t ivarSize, size_t ivarAlignment) {
+	NSUInteger offset;
+
 	/*
 	 * set up an autorelease pool in case any Cocoa classes invoke +initialize
 	 * during this process
 	 */
-	NSAutoreleasePool *pool = [NSAutoreleasePool new];
+	@autoreleasepool {
+		NSNumber *num = objc_getAssociatedObject(aClass, kIndexedIvarSizeKey);
+		offset = [num unsignedIntegerValue];
 
-	NSNumber *num = objc_getAssociatedObject(aClass, kIndexedIvarSizeKey);
-	NSUInteger offset = [num unsignedIntegerValue];
+		// align to ivarAlignment
+		if ((offset & (ivarAlignment - 1)) != 0) {
+			// round up to a multiple of ivarAlignment
+			offset = (offset & (ivarAlignment - 1)) + ivarAlignment;
+		}
 
-	// align to ivarAlignment
-	if ((offset & (ivarAlignment - 1)) != 0) {
-		// round up to a multiple of ivarAlignment
-		offset = (offset & (ivarAlignment - 1)) + ivarAlignment;
+		num = [NSNumber numberWithUnsignedInteger:offset + ivarSize];
+		objc_setAssociatedObject(aClass, kIndexedIvarSizeKey, num, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+
+		Method allocWithZone = class_getClassMethod(aClass, @selector(allocWithZone:));
+		if (method_getImplementation(allocWithZone) != (IMP)&ext_allocWithZonePlusIndexedIvars) {
+			class_replaceMethod(
+				object_getClass(aClass),
+				@selector(allocWithZone:),
+				(IMP)&ext_allocWithZonePlusIndexedIvars,
+				method_getTypeEncoding(allocWithZone)
+			);
+		}
 	}
 
-	num = [NSNumber numberWithUnsignedInteger:offset + ivarSize];
-	objc_setAssociatedObject(aClass, kIndexedIvarSizeKey, num, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-
-	Method allocWithZone = class_getClassMethod(aClass, @selector(allocWithZone:));
-	if (method_getImplementation(allocWithZone) != (IMP)&ext_allocWithZonePlusIndexedIvars) {
-		class_replaceMethod(
-			object_getClass(aClass),
-			@selector(allocWithZone:),
-			(IMP)&ext_allocWithZonePlusIndexedIvars,
-			method_getTypeEncoding(allocWithZone)
-		);
-	}
-
-	[pool drain];
 	return offset;
 }
 
@@ -284,30 +285,31 @@ BOOL ext_classIsKindOfClass (Class receiver, Class aClass) {
 }
 
 Class *ext_copyClassListConformingToProtocol (Protocol *protocol, unsigned *count) {
+	Class *allClasses;
+
 	/*
 	 * set up an autorelease pool in case any Cocoa classes invoke +initialize
 	 * during this process
 	 */
-	NSAutoreleasePool *pool = [NSAutoreleasePool new];
+	@autoreleasepool {
+		unsigned classCount = 0;
+		allClasses = ext_copyClassList(&classCount);
 
-	unsigned classCount = 0;
-	Class *allClasses = ext_copyClassList(&classCount);
+		// we're going to reuse allClasses for the return value, so returnIndex will
+		// keep track of the indices we replace with new values
+		unsigned returnIndex = 0;
 
-	// we're going to reuse allClasses for the return value, so returnIndex will
-	// keep track of the indices we replace with new values
-	unsigned returnIndex = 0;
+		for (unsigned classIndex = 0;classIndex < classCount;++classIndex) {
+			Class cls = allClasses[classIndex];
+			if (class_conformsToProtocol(cls, protocol))
+				allClasses[returnIndex++] = cls;
+		}
 
-	for (unsigned classIndex = 0;classIndex < classCount;++classIndex) {
-		Class cls = allClasses[classIndex];
-		if (class_conformsToProtocol(cls, protocol))
-			allClasses[returnIndex++] = cls;
+		allClasses[returnIndex] = NULL;
+		if (count)
+			*count = returnIndex;
 	}
-
-	allClasses[returnIndex] = NULL;
-	if (count)
-		*count = returnIndex;
 	
-	[pool drain];
 	return allClasses;
 }
 
@@ -562,24 +564,22 @@ BOOL ext_getPropertyAccessorsForClass (objc_property_t property, Class aClass, M
 	/*
 	 * set up an autorelease pool in case this sends aClass its first message
 	 */
-	NSAutoreleasePool *pool = [NSAutoreleasePool new];
+	@autoreleasepool {
+		Method foundGetter = class_getInstanceMethod(aClass, getterName);
+		if (!foundGetter) {
+			return NO;
+		}
+		
+		if (getter)
+			*getter = foundGetter;
 
-	Method foundGetter = class_getInstanceMethod(aClass, getterName);
-	if (!foundGetter) {
-		[pool drain];
-		return NO;
+		if (setter) {
+			Method foundSetter = class_getInstanceMethod(aClass, setterName);
+			if (foundSetter)
+				*setter = foundSetter;
+		}
 	}
 	
-	if (getter)
-		*getter = foundGetter;
-
-	if (setter) {
-		Method foundSetter = class_getInstanceMethod(aClass, setterName);
-		if (foundSetter)
-			*setter = foundSetter;
-	}
-	
-	[pool drain];
 	return YES;
 }
 
@@ -589,49 +589,46 @@ NSMethodSignature *ext_globalMethodSignatureForSelector (SEL aSelector) {
 	if (!classes)
 		return nil;
 
+	NSMethodSignature *signature = nil;
+
 	/*
 	 * set up an autorelease pool in case any Cocoa classes invoke +initialize
 	 * during this process
 	 */
-	NSAutoreleasePool *pool = [NSAutoreleasePool new];
+	@autoreleasepool {
+		Class proxyClass = objc_getClass("NSProxy");
+		SEL selectorsToTry[] = {
+			@selector(methodSignatureForSelector:),
+			@selector(instanceMethodSignatureForSelector:)
+		};
 
-	NSMethodSignature *signature = nil;
-	Class proxyClass = objc_getClass("NSProxy");
+		for (unsigned i = 0;i < classCount;++i) {
+			Class cls = classes[i];
 
-	for (unsigned i = 0;i < classCount;++i) {
-		Class cls = classes[i];
+			// NSProxy crashes if you send it a meaningful message, like
+			// methodSignatureForSelector:
+			if (ext_classIsKindOfClass(cls, proxyClass))
+				continue;
 
-		// NSProxy crashes if you send it a meaningful message, like
-		// methodSignatureForSelector:
-		if (ext_classIsKindOfClass(cls, proxyClass))
-			continue;
+			for (size_t selIndex = 0;selIndex < sizeof(selectorsToTry) / sizeof(*selectorsToTry);++selIndex) {
+				SEL lookupSel = selectorsToTry[selIndex];
+				Method methodSignatureForSelector = class_getClassMethod(cls, lookupSel);
 
-		SEL lookupSel;
-	
-		#define RETURN_SIGNATURE_IF_FOUND \
-			do { \
-				Method methodSignatureForSelector = class_getClassMethod(cls, lookupSel); \
-				if (methodSignatureForSelector) { \
-					methodSignatureForSelectorIMP impl = (methodSignatureForSelectorIMP)method_getImplementation(methodSignatureForSelector); \
-					signature = impl(cls, lookupSel, aSelector); \
-					if (signature) \
-						goto exitEarly; \
-				} \
-			} while (0)
+				if (methodSignatureForSelector) {
+					methodSignatureForSelectorIMP impl = (methodSignatureForSelectorIMP)method_getImplementation(methodSignatureForSelector);
+					signature = impl(cls, lookupSel, aSelector);
+					
+					if (signature)
+						break;
+				}
+			}
 
-		lookupSel = @selector(methodSignatureForSelector:);
-		RETURN_SIGNATURE_IF_FOUND;
-
-		lookupSel = @selector(instanceMethodSignatureForSelector:);
-		RETURN_SIGNATURE_IF_FOUND;
-
-		#undef RETURN_SIGNATURE_IF_FOUND
+			if (signature)
+				break;
+		}
 	}
 
-exitEarly:
-	[pool drain];
 	free(classes);
-
 	return signature;
 }
 
@@ -645,24 +642,22 @@ void ext_removeMethod (Class aClass, SEL methodName) {
 	 * set up an autorelease pool in case any Cocoa classes invoke +initialize
 	 * during this process
 	 */
-	NSAutoreleasePool *pool = [NSAutoreleasePool new];
-	
-	Method superclassMethod = NULL;
-	Class superclass = class_getSuperclass(aClass);
-	if (superclass)
-		superclassMethod = class_getInstanceMethod(superclass, methodName);
-	
-	if (superclassMethod) {
-		method_setImplementation(existingMethod, method_getImplementation(superclassMethod));
-	} else {
-		// since we now know that the method doesn't exist on any
-		// superclass, get an IMP internal to the runtime for message forwarding
-		IMP forward = class_getMethodImplementation(superclass, methodName);
+	@autoreleasepool {
+		Method superclassMethod = NULL;
+		Class superclass = class_getSuperclass(aClass);
+		if (superclass)
+			superclassMethod = class_getInstanceMethod(superclass, methodName);
+		
+		if (superclassMethod) {
+			method_setImplementation(existingMethod, method_getImplementation(superclassMethod));
+		} else {
+			// since we now know that the method doesn't exist on any
+			// superclass, get an IMP internal to the runtime for message forwarding
+			IMP forward = class_getMethodImplementation(superclass, methodName);
 
-		method_setImplementation(existingMethod, forward);
+			method_setImplementation(existingMethod, forward);
+		}
 	}
-
-	[pool drain];
 }
 
 void ext_replaceMethods (Class aClass, Method *methods, unsigned count) {
