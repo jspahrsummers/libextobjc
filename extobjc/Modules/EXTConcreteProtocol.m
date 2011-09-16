@@ -61,9 +61,12 @@ int ext_compareConcreteProtocolLoadPriority (const void *a, const void *b) {
 	// if B conforms to A, B should come first
 	else if (protocol_conformsToProtocol(protoB->protocol, protoA->protocol))
 		return 1;
-	// otherwise, ordering shouldn't matter
+	// otherwise, enforce a total ordering (but we really don't care which way
+	// it goes)
+	else if (protoA < protoB)
+		return -1;
 	else
-		return 0;
+		return 1;
 }
 
 // the full list of concrete protocols (an array of EXTConcreteProtocol structs)
