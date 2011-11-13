@@ -28,7 +28,7 @@
 }
 
 + (float)privateClassValue {
-	return 3.14;
+	return 3.14f;
 }
 
 - (int)stuff {
@@ -59,7 +59,7 @@
 }
 
 + (float)privateClassValue {
-	return -85.24;
+	return -85.24f;
 }
 
 - (int)getValue {

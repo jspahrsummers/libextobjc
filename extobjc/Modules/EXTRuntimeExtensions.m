@@ -474,7 +474,7 @@ ext_propertyAttributes *ext_copyPropertyAttributes (objc_property_t property) {
 		strncpy(setterName + 3, propertyName, propertyNameLength);
 
 		// capitalize property name for the setter
-		setterName[3] = toupper(setterName[3]);
+		setterName[3] = (char)toupper(setterName[3]);
 
 		setterName[setterLength - 1] = ':';
 		setterName[setterLength] = '\0';

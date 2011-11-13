@@ -550,7 +550,7 @@ void invokeBlockMethodWithSelf (id block, NSInvocation *invocation, id self) {
 			char lowercaseSlot[slotLength];
 
 			strncpy(lowercaseSlot, name + 3, slotLength);
-			lowercaseSlot[0] = tolower(lowercaseSlot[0]);
+			lowercaseSlot[0] = (char)tolower(lowercaseSlot[0]);
 
 			slotKey = CFStringCreateWithBytes(
 				NULL,
