@@ -20,13 +20,11 @@ id isIdentical = blockMethod(id self, id obj){
 };
  * @endcode
  *
- * \c _cmd will be declared for your block, and, when invoked as a method
- * implementation, will be initialized to the selector of the method. Your block
- * must have at least one argument, the first of which is the object upon which
- * the block is being invoked.
+ * Your block must have at least one argument, the first of which is the object
+ * upon which the block is being invoked.
  */
 #define blockMethod(...) \
-	^(SEL _cmd, __VA_ARGS__)
+	^(__VA_ARGS__)
 
 /**
  * The type for a block-based property getter. A block declared as this type may
@@ -34,7 +32,7 @@ id isIdentical = blockMethod(id self, id obj){
  * similarly to \c objc_msgSend, where the block should be cast to the proper
  * type before invocation.
  */
-typedef id (^ext_blockGetter)(SEL, id);
+typedef id (^ext_blockGetter)(id);
 
 /**
  * The type for a block-based property setter. A block declared as this type may
@@ -42,7 +40,7 @@ typedef id (^ext_blockGetter)(SEL, id);
  * similarly to \c objc_msgSend, where the block should be cast to the proper
  * type before invocation.
  */
-typedef void (^ext_blockSetter)(SEL, id, id);
+typedef void (^ext_blockSetter)(id, id);
 
 /**
  * Uses \a block as the implementation for a new method \a name on \a aClass. \a
@@ -54,17 +52,6 @@ typedef void (^ext_blockSetter)(SEL, id, id);
  * (such as due to a naming conflict).
  */
 BOOL ext_addBlockMethod (Class aClass, SEL name, id block, const char *types);
-
-/**
- * Returns the implementation of \a block as an \c IMP, suitable for use as
- * a method implementation. Note that this does not (and cannot do) any argument
- * checking to ensure that \a block meets the requirements for an Objective-C
- * method -- that is the responsibility of the caller.
- *
- * @note On Mac OS X 10.7 or iOS 4.3, a public \c imp_implementationWithBlock()
- * function is available that supersedes the functionality of this one.
- */
-IMP ext_blockImplementation (id block);
 
 /**
  * If \a block has a type signature, this will return a sanitized copy of the
