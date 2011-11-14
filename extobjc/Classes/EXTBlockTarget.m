@@ -87,7 +87,7 @@ typedef void (^action2)(id, id);
 		{
 			action1 impl = (action1)self.implementation;
 
-			id sender = nil;
+			__unsafe_unretained id sender = nil;
 			[anInvocation getArgument:&sender atIndex:2];
 			impl(sender);
 		}
@@ -98,10 +98,10 @@ typedef void (^action2)(id, id);
 		{
 			action2 impl = (action2)self.implementation;
 
-			id sender = nil;
+			__unsafe_unretained id sender = nil;
 			[anInvocation getArgument:&sender atIndex:2];
 
-			id event = nil;
+			__unsafe_unretained id event = nil;
 			[anInvocation getArgument:&sender atIndex:3];
 
 			impl(sender, event);
