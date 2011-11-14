@@ -30,7 +30,7 @@ typedef struct {
 	Class methodContainer;
 
 	// the actual protocol declaration (@protocol block)
-	Protocol *protocol;
+	__unsafe_unretained Protocol *protocol;
 
 	// whether both of the above objects have been fully loaded and prepared in
 	// memory
