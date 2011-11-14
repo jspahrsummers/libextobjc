@@ -14,38 +14,6 @@
 #import <string.h>
 
 typedef NSMethodSignature *(*methodSignatureForSelectorIMP)(id, SEL, SEL);
-typedef size_t (*indexedIvarSizeIMP)(id, SEL);
-
-static void * const kIndexedIvarSizeKey = "IndexedIvarSize";
-
-static
-id ext_allocWithZonePlusIndexedIvars (id self, SEL _cmd, NSZone *zone) {
-	NSUInteger indexedIvarSize = 0;
-
-	Class cls = self;
-	while (cls) {
-		NSNumber *num = objc_getAssociatedObject(cls, kIndexedIvarSizeKey);
-		NSUInteger numValue = [num unsignedIntegerValue];
-		
-		if (numValue) {
-			// keep each class' ivars aligned at 32 bytes for safety
-			if ((indexedIvarSize & 0x1F) != 0) {
-				// round up to a multiple of 32
-				indexedIvarSize = (indexedIvarSize & 0x1F) + 0x20;
-			}
-
-			indexedIvarSize += numValue;
-		}
-
-		cls = class_getSuperclass(cls);
-	}
-
-	return NSAllocateObject(
-		self,
-		indexedIvarSize,
-		zone
-	);
-}
 
 unsigned ext_injectMethods (
 	Class aClass,
@@ -176,40 +144,6 @@ BOOL ext_injectMethodsFromClass (
 	return success;
 }
 
-size_t ext_addIndexedIvar (Class aClass, size_t ivarSize, size_t ivarAlignment) {
-	NSUInteger offset;
-
-	/*
-	 * set up an autorelease pool in case any Cocoa classes invoke +initialize
-	 * during this process
-	 */
-	@autoreleasepool {
-		NSNumber *num = objc_getAssociatedObject(aClass, kIndexedIvarSizeKey);
-		offset = [num unsignedIntegerValue];
-
-		// align to ivarAlignment
-		if ((offset & (ivarAlignment - 1)) != 0) {
-			// round up to a multiple of ivarAlignment
-			offset = (offset & (ivarAlignment - 1)) + ivarAlignment;
-		}
-
-		num = [NSNumber numberWithUnsignedInteger:offset + ivarSize];
-		objc_setAssociatedObject(aClass, kIndexedIvarSizeKey, num, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-
-		Method allocWithZone = class_getClassMethod(aClass, @selector(allocWithZone:));
-		if (method_getImplementation(allocWithZone) != (IMP)&ext_allocWithZonePlusIndexedIvars) {
-			class_replaceMethod(
-				object_getClass(aClass),
-				@selector(allocWithZone:),
-				(IMP)&ext_allocWithZonePlusIndexedIvars,
-				method_getTypeEncoding(allocWithZone)
-			);
-		}
-	}
-
-	return offset;
-}
-
 Class ext_classBeforeSuperclass (Class receiver, Class superclass) {
 	Class previousClass = nil;
 
@@ -232,7 +166,7 @@ Class *ext_copyClassList (unsigned *count) {
 	}
 
 	// allocate space for them plus NULL
-	Class *allClasses = malloc(sizeof(Class) * (classCount + 1));
+	Class *allClasses = (Class *)malloc(sizeof(Class) * (classCount + 1));
 	if (!allClasses) {
 		fprintf(stderr, "ERROR: Could allocate memory for all classes\n");
 		if (count)

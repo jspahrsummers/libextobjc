@@ -15,6 +15,38 @@
 typedef struct { int i; } *empty_struct_ptr_t;
 typedef union { int i; } *empty_union_ptr_t;
 
+typedef size_t (*indexedIvarSizeIMP)(id, SEL);
+
+static void * const kIndexedIvarSizeKey = "IndexedIvarSize";
+
+static
+id ext_allocWithZonePlusIndexedIvars (id self, SEL _cmd, NSZone *zone) {
+	NSUInteger indexedIvarSize = 0;
+
+	Class cls = self;
+	while (cls) {
+		NSNumber *num = objc_getAssociatedObject(cls, kIndexedIvarSizeKey);
+		NSUInteger numValue = [num unsignedIntegerValue];
+		
+		if (numValue) {
+			// keep each class' ivars aligned at 32 bytes for safety
+			if ((indexedIvarSize & 0x1F) != 0) {
+				// round up to a multiple of 32
+				indexedIvarSize = (indexedIvarSize & 0x1F) + 0x20;
+			}
+
+			indexedIvarSize += numValue;
+		}
+
+		cls = class_getSuperclass(cls);
+	}
+
+	return class_createInstance(
+		self,
+		indexedIvarSize
+	);
+}
+
 static
 void ext_synthesizePropertyAtIndexedOffset (Class cls, const ext_propertyAttributes * restrict attribs, size_t offset, ext_blockGetter * restrict getter, ext_blockSetter * restrict setter);
 
@@ -490,4 +522,38 @@ void ext_synthesizePropertyAtIndexedOffset (Class cls, const ext_propertyAttribu
 	#undef SET_ATOMIC_VAR
 	#undef SYNTHESIZE_PRIMITIVE
 	#undef SYNTHESIZE_COMPATIBLE_PRIMITIVE
+}
+
+size_t ext_addIndexedIvar (Class aClass, size_t ivarSize, size_t ivarAlignment) {
+	NSUInteger offset;
+
+	/*
+	 * set up an autorelease pool in case any Cocoa classes invoke +initialize
+	 * during this process
+	 */
+	@autoreleasepool {
+		NSNumber *num = objc_getAssociatedObject(aClass, kIndexedIvarSizeKey);
+		offset = [num unsignedIntegerValue];
+
+		// align to ivarAlignment
+		if ((offset & (ivarAlignment - 1)) != 0) {
+			// round up to a multiple of ivarAlignment
+			offset = (offset & (ivarAlignment - 1)) + ivarAlignment;
+		}
+
+		num = [NSNumber numberWithUnsignedInteger:offset + ivarSize];
+		objc_setAssociatedObject(aClass, kIndexedIvarSizeKey, num, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+
+		Method allocWithZone = class_getClassMethod(aClass, @selector(allocWithZone:));
+		if (method_getImplementation(allocWithZone) != (IMP)&ext_allocWithZonePlusIndexedIvars) {
+			class_replaceMethod(
+				object_getClass(aClass),
+				@selector(allocWithZone:),
+				(IMP)&ext_allocWithZonePlusIndexedIvars,
+				method_getTypeEncoding(allocWithZone)
+			);
+		}
+	}
+
+	return offset;
 }

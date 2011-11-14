@@ -147,25 +147,6 @@ typedef struct {
 } ext_propertyAttributes;
 
 /**
- * Overrides the \c allocWithZone: method of of \a aClass to return objects that
- * have extra space for indexed instance variables. If this is the first use of
- * ext_addIndexedIvar() on \a aClass or any of its superclasses, the extra space
- * will be exactly \a ivarSize bytes in length. If ext_addIndexedIvar() has been
- * used on \a aClass or one of its superclasses before, the extra space will be
- * at least \a ivarSize bytes in length.
- *
- * Returns the offset (in bytes) of the newly-reserved indexed ivar. The offset
- * is guaranteed to be aligned to a multiple of \a ivarAlignment. Add the offset
- * to the pointer returned by \c object_getIndexedIvars() to get to the new
- * ivar.
- *
- * @warning This will only affect instances of \a aClass (or its subclasses)
- * allocated \e after this function is called. Instances allocated prior will
- * not have this extra storage.
- */
-size_t ext_addIndexedIvar (Class aClass, size_t ivarSize, size_t ivarAlignment);
-
-/**
  * Iterates through the first \a count entries in \a methods and attempts to add
  * each one to \a aClass. If a method by the same name already exists on \a
  * aClass, it is \e not overridden. If \a checkSuperclasses is \c YES, and
