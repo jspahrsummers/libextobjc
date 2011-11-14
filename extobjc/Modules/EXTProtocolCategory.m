@@ -22,7 +22,7 @@
 
 typedef struct {
 	Class methodContainer;
-	Protocol *protocol;
+	__unsafe_unretained Protocol *protocol;
 	BOOL loaded;
 } EXTProtocolCategory;
 
