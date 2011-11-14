@@ -29,7 +29,7 @@
  */
 #define onExit \
 	try {} @finally {} \
-	ext_cleanupBlock_t metamacro_concat(ext_exitBlock_, __LINE__) __attribute__((cleanup(ext_executeCleanupBlock), unused)) = ^
+	__strong ext_cleanupBlock_t metamacro_concat(ext_exitBlock_, __LINE__) __attribute__((cleanup(ext_executeCleanupBlock), unused)) = ^
 
 /**
  * Used in the declaration of an object variable, \c scope will ensure that the
@@ -84,7 +84,7 @@ scope NSFileHandle *handle = [[NSFileHandle alloc] initWithFileDescriptor:fildes
 /*** implementation details follow ***/
 typedef void (^ext_cleanupBlock_t)();
 
-void ext_executeCleanupBlock (ext_cleanupBlock_t *block);
+void ext_executeCleanupBlock (__strong ext_cleanupBlock_t *block);
 id<NSLocking> ext_lockAndReturn (id<NSLocking> lock);
 void ext_releaseScopeLock (id<NSLocking> *lockPtr);
 void ext_releaseScopeObject (id *objPtr);
