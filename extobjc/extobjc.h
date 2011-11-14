@@ -16,11 +16,9 @@
 #import "EXTNil.h"
 #import "EXTPrivateMethod.h"
 #import "EXTProtocolCategory.h"
-#import "EXTPrototype.h"
 #import "EXTSafeCategory.h"
 #import "EXTScope.h"
 #import "EXTSwizzle.h"
-#import "EXTSynthesize.h"
 #import "NSInvocation+EXT.h"
 #import "NSMethodSignature+EXT.h"
 
