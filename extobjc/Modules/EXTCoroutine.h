@@ -52,7 +52,7 @@ double y = myCoroutine(42, 2.0);
 	^{ \
 		__block unsigned long ext_coroutine_line_ = 0; \
 		\
-		return [[ \
+		return [ \
 			^(__VA_ARGS__) coroutine_body
 
 /**
@@ -79,5 +79,5 @@ double y = myCoroutine(42, 2.0);
 						default: \
 							STATEMENT \
 			} \
-		copy] autorelease]; \
+		copy]; \
 	}()

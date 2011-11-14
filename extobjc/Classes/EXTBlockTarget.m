@@ -48,7 +48,7 @@ typedef void (^action2)(id, id);
 }
 
 + (id)blockTargetWithSelector:(SEL)actionName action:(id)block {
-	return [[[self alloc] initWithSelector:actionName action:block] autorelease];
+	return [[self alloc] initWithSelector:actionName action:block];
 }
 
 - (id)initWithSelector:(SEL)actionName action:(id)block {
@@ -60,10 +60,6 @@ typedef void (^action2)(id, id);
 	return self;
 }
 
-- (void)dealloc {
-	self.implementation = nil;
-	[super dealloc];
-}
 
 #pragma mark Forwarding machinery
 
@@ -131,7 +127,6 @@ typedef void (^action2)(id, id);
 	}
 
 	signature = [NSMethodSignature signatureWithObjCTypes:[typeString UTF8String]];
-	[typeString release];
 
 	return signature;
 }

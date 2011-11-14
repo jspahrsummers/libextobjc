@@ -44,8 +44,7 @@ static id singleton = nil;
 #pragma mark NSCoding
 
 - (id)initWithCoder:(NSCoder *)coder {
-	[[self init] release];
-	return [[EXTNil null] retain];
+	return [EXTNil null];
 }
 
 - (void)encodeWithCoder:(NSCoder *)coder {
@@ -54,7 +53,7 @@ static id singleton = nil;
 #pragma mark NSCopying
 
 - (id)copyWithZone:(NSZone *)zone {
-  	return [self retain];
+  	return self;
 }
 
 #pragma mark Forwarding machinery

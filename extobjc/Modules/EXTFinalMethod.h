@@ -30,8 +30,8 @@
 	@interface CLASS (FinalMethodsProtocol) <ext_ ## CLASS ## _FinalMethodsFakeProtocol> \
 	@end \
 	\
-	extern Class ext_finalMethodsClass_; \
-	extern Protocol *ext_finalMethodsFakeProtocol_; \
+	extern __unsafe_unretained Class ext_finalMethodsClass_; \
+	extern __unsafe_unretained Protocol *ext_finalMethodsFakeProtocol_; \
 	\
 	__attribute__((constructor)) \
 	static void ext_ ## CLASS ## _prepareFinalMethods (void) { \
@@ -55,7 +55,7 @@
 		Class targetClass = ext_finalMethodsClass_; \
 		\
 		unsigned listCount = 0; \
-		Protocol **protocolList = protocol_copyProtocolList(ext_finalMethodsFakeProtocol_, &listCount); \
+		__unsafe_unretained Protocol **protocolList = protocol_copyProtocolList(ext_finalMethodsFakeProtocol_, &listCount); \
 		\
 		Protocol *finalMethodsProtocol = protocolList[0]; \
 		free(protocolList); \

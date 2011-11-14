@@ -32,33 +32,13 @@
 	__strong ext_cleanupBlock_t metamacro_concat(ext_exitBlock_, __LINE__) __attribute__((cleanup(ext_executeCleanupBlock), unused)) = ^
 
 /**
- * Used in the declaration of an object variable, \c scope will ensure that the
- * value is released when the current scope exits. The object will be released
- * regardless of how the scope is exited, including from exceptions, \c goto, \c
- * return, \c break, and \c continue.
- *
- * In addition to being more efficient than an autorelease pool, \c scope also
- * makes it easier to deterministically release scarce resources, including file
- * handles, sockets, mutexes, database connections, etc.
- *
- * @code
-
-// this file handle will be automatically closed and released when the current scope ends
-scope NSFileHandle *handle = [[NSFileHandle alloc] initWithFileDescriptor:fildes];
-
- * @endcode
- */
-#define scope \
-	__attribute__((cleanup(ext_releaseScopeObject)))
-
-/**
  * Given an object that conforms to the \c NSLocking protocol, this will acquire
  * the lock for the remaining lifetime of the current scope. The object will be
  * unlocked when the scope ends, regardless of how the scope is exited,
  * including from exceptions, \c goto, \c return, \c break, and \c continue.
  */
 #define lockForScope(LOCK) \
-	id<NSLocking> metamacro_concat(ext_scopeLock_, __LINE__) __attribute__((cleanup(ext_releaseScopeLock), unused)) = ext_lockAndReturn(LOCK)
+	__strong id<NSLocking> metamacro_concat(ext_scopeLock_, __LINE__) __attribute__((cleanup(ext_releaseScopeLock), unused)) = ext_lockAndReturn(LOCK)
 
 /**
  * Given an object that conforms to the \c NSLocking protocol and implements an
@@ -79,13 +59,12 @@ scope NSFileHandle *handle = [[NSFileHandle alloc] initWithFileDescriptor:fildes
  */
 #define ifTryLock(LOCK) \
 	for (BOOL ext_done_ = NO; !ext_done_; ext_done_ = YES) \
-		for (id ext_scopeLock_ __attribute__((cleanup(ext_releaseScopeLock))) = (LOCK); !ext_done_ && [ext_scopeLock_ tryLock]; ext_done_ = YES)
+		for (__strong id ext_scopeLock_ __attribute__((cleanup(ext_releaseScopeLock))) = (LOCK); !ext_done_ && [ext_scopeLock_ tryLock]; ext_done_ = YES)
 
 /*** implementation details follow ***/
 typedef void (^ext_cleanupBlock_t)();
 
 void ext_executeCleanupBlock (__strong ext_cleanupBlock_t *block);
 id<NSLocking> ext_lockAndReturn (id<NSLocking> lock);
-void ext_releaseScopeLock (id<NSLocking> *lockPtr);
-void ext_releaseScopeObject (id *objPtr);
+void ext_releaseScopeLock (__strong id<NSLocking> *lockPtr);
 

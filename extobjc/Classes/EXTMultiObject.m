@@ -62,7 +62,7 @@
 	va_end(argsCopy);
 
 	// then initialize the actual object and fill in its ivars
-	EXTMultiObject *multiObj = [[[EXTMultiObject alloc] init] autorelease];
+	EXTMultiObject *multiObj = [[EXTMultiObject alloc] init];
 	multiObj->targets = [NSArray arrayWithObjects:targets count:count];
 	return multiObj;
 }
@@ -73,16 +73,9 @@
 		return nil;
 
 	// initialize the object and fill in its ivars
-	EXTMultiObject *multiObj = [[[EXTMultiObject alloc] init] autorelease];
+	EXTMultiObject *multiObj = [[EXTMultiObject alloc] init];
 	multiObj->targets = [objects copy];
 	return multiObj;
-}
-
-- (void)dealloc {
-	[targets release];
-	targets = nil;
-
-	[super dealloc];
 }
 
 #pragma mark Forwarding machinery

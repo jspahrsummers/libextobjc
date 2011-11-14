@@ -69,16 +69,26 @@ typedef struct { int i; } *empty_struct_ptr_t;
 typedef union { int i; } *empty_union_ptr_t;
 
 BOOL ext_addBlockMethod (Class aClass, SEL name, id block, const char *types) {
-	return class_addMethod(
+	block = [block copy];
+
+	BOOL success = class_addMethod(
 		aClass,
 		name,
-		imp_implementationWithBlock(block),
+		imp_implementationWithBlock((__bridge void *)block),
 		types
 	);
+
+	if (!success) {
+		return NO;
+	}
+	
+	objc_setAssociatedObject(aClass, name, block, OBJC_ASSOCIATION_COPY);
+
+	return YES;
 }
 
 char *ext_copyBlockTypeEncoding (id block) {
-	ext_block_t *blockInnards = (ext_block_t *)block;
+	ext_block_t *blockInnards = (__bridge ext_block_t *)block;
 
 	if (!(blockInnards->flags & BLOCK_HAS_SIGNATURE))
 		return NULL;
@@ -128,15 +138,19 @@ char *ext_copyBlockTypeEncoding (id block) {
 }
 
 void ext_replaceBlockMethod (Class aClass, SEL name, id block, const char *types) {
+	block = [block copy];
+
 	class_replaceMethod(
 		aClass,
 		name,
-		imp_implementationWithBlock(block),
+		imp_implementationWithBlock((__bridge void *)block),
 		types
 	);
+
+	objc_setAssociatedObject(aClass, name, block, OBJC_ASSOCIATION_COPY);
 }
 
-void ext_synthesizeBlockProperty (const char * restrict type, ext_propertyMemoryManagementPolicy memoryManagementPolicy, BOOL atomic, ext_blockGetter * restrict getter, ext_blockSetter * restrict setter) {
+void ext_synthesizeBlockProperty (const char * restrict type, ext_propertyMemoryManagementPolicy memoryManagementPolicy, BOOL atomic, __autoreleasing ext_blockGetter * restrict getter, __autoreleasing ext_blockSetter * restrict setter) {
 	// skip attributes in the provided type encoding
 	while (
 		*type == 'r' ||
@@ -174,8 +188,8 @@ void ext_synthesizeBlockProperty (const char * restrict type, ext_propertyMemory
 					SET_ATOMIC_VAR(VARTYPE, CASTYPE); \
 				}; \
 				\
-				*getter = [Block_copy(localGetter) autorelease]; \
-				*setter = [Block_copy(localSetter) autorelease]; \
+				*getter = [localGetter copy]; \
+				*setter = [localSetter copy]; \
 			} else { \
 				__block RETTYPE backingVar = 0; \
 				\
@@ -187,8 +201,8 @@ void ext_synthesizeBlockProperty (const char * restrict type, ext_propertyMemory
 					backingVar = newRealValue; \
 				}; \
 				\
-				*getter = [Block_copy(localGetter) autorelease]; \
-				*setter = [Block_copy(localSetter) autorelease]; \
+				*getter = [localGetter copy]; \
+				*setter = [localSetter copy]; \
 			} \
 		} while (0)
 	
@@ -220,8 +234,8 @@ void ext_synthesizeBlockProperty (const char * restrict type, ext_propertyMemory
 					SET_ATOMIC_VAR(VARTYPE, CASTYPE); \
 				}; \
 				\
-				*getter = [Block_copy(localGetter) autorelease]; \
-				*setter = [Block_copy(localSetter) autorelease]; \
+				*getter = [localGetter copy]; \
+				*setter = [localSetter copy]; \
 			} else { \
 				__block RETTYPE backingVar = 0; \
 				\
@@ -233,9 +247,36 @@ void ext_synthesizeBlockProperty (const char * restrict type, ext_propertyMemory
 					backingVar = newRealValue; \
 				}; \
 				\
-				*getter = [Block_copy(localGetter) autorelease]; \
-				*setter = [Block_copy(localSetter) autorelease]; \
+				*getter = [localGetter copy]; \
+				*setter = [localSetter copy]; \
 			} \
+		} while (0)
+
+	#define SYNTHESIZE_OBJECT(POLICY) \
+		do { \
+			__block POLICY volatile id backingVar = nil; \
+			__block OSSpinLock spinLock = 0; \
+			\
+			id localGetter = blockMethod(id self){ \
+				OSSpinLockLock(&spinLock); \
+				id value = backingVar; \
+				OSSpinLockUnlock(&spinLock); \
+			\
+				return value; \
+			}; \
+			\
+			id localSetter = blockMethod(id self, id newValue){ \
+				if (memoryManagementPolicy == ext_propertyMemoryManagementPolicyCopy) { \
+					newValue = [newValue copy]; \
+				} \
+				\
+				OSSpinLockLock(&spinLock); \
+				backingVar = newValue; \
+				OSSpinLockUnlock(&spinLock); \
+			}; \
+			\
+			*getter = [localGetter copy]; \
+			*setter = [localSetter copy]; \
 		} while (0)
 
 	switch (*type) {
@@ -300,72 +341,30 @@ void ext_synthesizeBlockProperty (const char * restrict type, ext_propertyMemory
 		SYNTHESIZE_COMPATIBLE_PRIMITIVE(char *, void *, Ptr);
 		break;
 	
+	// all the logic around object memory management isn't strictly necessary
+	// for class objects, but it's an easy way to avoid reimplementing it all
+	case '#':
 	case '@':
 		if (atomic) {
-			__block volatile id backingVar = nil;
-
-			id localGetter = blockMethod(id self){
-				return [[backingVar retain] autorelease];
-			};
-
-			id localSetter = blockMethod(id self, id newValue){
-				switch (memoryManagementPolicy) {
-				case ext_propertyMemoryManagementPolicyRetain:
-					[newValue retain];
-					break;
-
-				case ext_propertyMemoryManagementPolicyCopy:
-					newValue = [newValue copy];
-					break;
-
-				default:
-					;
-				}
-
-				SET_ATOMIC_VAR(void *, Ptr);
-
-				if (memoryManagementPolicy != ext_propertyMemoryManagementPolicyAssign)
-					[(id)existingValue release];
-			};
-
-			*getter = [Block_copy(localGetter) autorelease];
-			*setter = [Block_copy(localSetter) autorelease];
+			if (memoryManagementPolicy == ext_propertyMemoryManagementPolicyAssign) {
+				SYNTHESIZE_OBJECT(__unsafe_unretained);
+			} else {
+				SYNTHESIZE_OBJECT(__strong);
+			}
 		} else {
-			__block id backingVar = nil;
+			#define OSSpinLock(...)
+			#define OSSpinUnlock(...)
 
-			id localGetter = blockMethod(id self){
-				return [[backingVar retain] autorelease];
-			};
+			if (memoryManagementPolicy == ext_propertyMemoryManagementPolicyAssign) {
+				SYNTHESIZE_OBJECT(__unsafe_unretained);
+			} else {
+				SYNTHESIZE_OBJECT(__strong);
+			}
 
-			id localSetter = blockMethod(id self, id newValue){
-				switch (memoryManagementPolicy) {
-				case ext_propertyMemoryManagementPolicyRetain:
-					[newValue retain];
-					break;
-
-				case ext_propertyMemoryManagementPolicyCopy:
-					newValue = [newValue copy];
-					break;
-
-				default:
-					;
-				}
-
-				id existingValue = backingVar;
-				backingVar = newValue;
-
-				if (memoryManagementPolicy != ext_propertyMemoryManagementPolicyAssign)
-					[existingValue release];
-			};
-
-			*getter = [Block_copy(localGetter) autorelease];
-			*setter = [Block_copy(localSetter) autorelease];
+			#undef OSSpinLock
+			#undef OSSpinUnlock
 		}
 		
-		break;
-	
-	case '#':
-		SYNTHESIZE_COMPATIBLE_PRIMITIVE(Class, void *, Ptr);
 		break;
 	
 	case ':':
