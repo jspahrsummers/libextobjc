@@ -79,10 +79,6 @@ static id singleton = nil;
 
 #pragma mark NSObject protocol
 
-- (id)autorelease {
-  	return self;
-}
-
 - (BOOL)conformsToProtocol:(Protocol *)aProtocol {
 	return NO;
 }
@@ -96,16 +92,6 @@ static id singleton = nil;
 		return YES;
 	else
 		return NO;
-}
-
-- (oneway void)release {}
-
-- (id)retain {
-  	return self;
-}
-
-- (NSUInteger)retainCount {
-	return UINT_MAX;
 }
 
 @end
