@@ -144,7 +144,7 @@ typedef union { int i; } *empty_union_ptr_t;
 		
 		case '@':
 			{
-				id val = va_arg(args, id);
+				__unsafe_unretained id val = va_arg(args, id);
 				[self setArgument:&val atIndex:i];
 
 				if (type[1] == '?') {
