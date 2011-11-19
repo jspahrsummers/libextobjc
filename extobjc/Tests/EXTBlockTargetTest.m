@@ -29,7 +29,7 @@
 	[target performSelector:@selector(setExecuted) withObject:nil afterDelay:0];
 	STAssertFalse(executed, @"block should not have executed yet");
 
-	[[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode beforeDate:[NSDate dateWithTimeIntervalSinceNow:0.1]];
+	[[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.1]];
 	STAssertTrue(executed, @"block should have executed after run loop has iterated a few times");
 }
 
