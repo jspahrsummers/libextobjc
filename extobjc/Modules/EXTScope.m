@@ -8,7 +8,7 @@
 
 #import "EXTScope.h"
 
-void ext_executeCleanupBlock (ext_cleanupBlock_t *block) {
+void ext_executeCleanupBlock (__strong ext_cleanupBlock_t *block) {
 	(*block)();
 }
 
@@ -17,11 +17,7 @@ id<NSLocking> ext_lockAndReturn (id<NSLocking> lock) {
 	return lock;
 }
 
-void ext_releaseScopeLock (id<NSLocking> *lockPtr) {
+void ext_releaseScopeLock (__strong id<NSLocking> *lockPtr) {
 	[*lockPtr unlock];
-}
-
-void ext_releaseScopeObject (id *objPtr) {
-	[*objPtr release];
 }
 

@@ -17,9 +17,6 @@
 
 - (void)testOnExit {
 	NSMutableString *str = [@"foo" mutableCopy];
-	@onExit {
-		[str release];
-	};
 
 	{
 		@onExit {
@@ -72,10 +69,6 @@
 	STAssertEquals(executed, 2U, @"onExit blocks should be executed even when goto is used");
 
 	str = [@"foo" mutableCopy];
-	@onExit {
-		[str release];
-	};
-
 	[self nestedAppend:str];
 
 	STAssertEqualObjects(str, @"foobar", @"'bar' should've been appended to 'foo' at the end of a called method that exited early");
@@ -153,9 +146,6 @@
 	STAssertTrue(cleanupBlockRun, @"@onExit block was not run when an exception was thrown");
 
 	NSMutableString *str = [@"foo" mutableCopy];
-	@onExit {
-		[str release];
-	};
 
 	@try {
 		[self nestedThrowingAppend:str];
@@ -166,26 +156,8 @@
 	STAssertEqualObjects(str, @"foobar", @"'bar' should've been appended to 'foo' at the end of a called method that threw an exception");
 }
 
-- (void)testScopeKeyword {
-	id obj = nil;
-	NSUInteger retainCount = 0;
-
-	{
-		scope NSMutableString *str = [[NSMutableString alloc] initWithString:@"foo"];
-		[str appendString:@"bar"];
-
-		STAssertEqualObjects(str, @"foobar", @"'bar' should've been appended to 'foo'");
-
-		retainCount = [str retainCount];
-		obj = [str retain];
-	}
-
-	STAssertEquals([obj retainCount], retainCount, @"retain count of 'obj' should be identical to that of 'str' before retain and release");
-	STAssertNoThrow([obj release], @"");
-}
-
 - (void)testScopeLock {
-	scope NSLock *aLock = [[NSLock alloc] init];
+	NSLock *aLock = [[NSLock alloc] init];
 	STAssertNotNil(aLock, @"could not allocate test NSLock object");
 
 	{

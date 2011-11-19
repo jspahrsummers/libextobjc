@@ -46,8 +46,8 @@
 	@interface NSObject (CLASS ## _PrivateMethodsProtocol) <ext_ ## CLASS ## _PrivateMethodsFakeProtocol> \
 	@end \
 	\
-	extern Class ext_privateMethodsClass_; \
-	extern Protocol *ext_privateMethodsFakeProtocol_; \
+	extern __unsafe_unretained Class ext_privateMethodsClass_; \
+	extern __unsafe_unretained Protocol *ext_privateMethodsFakeProtocol_; \
 	\
 	__attribute__((constructor)) \
 	static void ext_ ## CLASS ## _preparePrivateMethods (void) { \
@@ -71,7 +71,7 @@
 		Class targetClass = ext_privateMethodsClass_; \
 		\
 		unsigned listCount = 0; \
-		Protocol **protocolList = protocol_copyProtocolList(ext_privateMethodsFakeProtocol_, &listCount); \
+		__unsafe_unretained Protocol **protocolList = protocol_copyProtocolList(ext_privateMethodsFakeProtocol_, &listCount); \
 		\
 		Protocol *privateMethodsProtocol = protocolList[0]; \
 		free(protocolList); \

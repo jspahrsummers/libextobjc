@@ -30,7 +30,7 @@ typedef struct {
 	Class methodContainer;
 
 	// the actual protocol declaration (@protocol block)
-	Protocol *protocol;
+	__unsafe_unretained Protocol *protocol;
 
 	// whether both of the above objects have been fully loaded and prepared in
 	// memory
@@ -128,7 +128,7 @@ void ext_injectConcreteProtocols (void) {
 	 * set up an autorelease pool in case any Cocoa classes get used during
 	 * the injection process or +initialize
 	 */
-	NSAutoreleasePool *pool = [NSAutoreleasePool new];
+	@autoreleasepool {
 
 	// loop through the concrete protocols, and apply each one to all the
 	// classes in turn
@@ -138,105 +138,105 @@ void ext_injectConcreteProtocols (void) {
 	// X and Y that implement protocols A and B, respectively. B needs to get
 	// its implementation into Y before A gets into X (which would block the
 	// injection of B).
-	for (size_t i = 0;i < concreteProtocolCount;++i) {
-		Protocol *protocol = concreteProtocols[i].protocol;
+		for (size_t i = 0;i < concreteProtocolCount;++i) {
+			Protocol *protocol = concreteProtocols[i].protocol;
 
-		// get the class containing the methods of this concrete protocol
-		Class containerClass = concreteProtocols[i].methodContainer;
+			// get the class containing the methods of this concrete protocol
+			Class containerClass = concreteProtocols[i].methodContainer;
 
-		// get the full list of instance methods implemented by the concrete
-		// protocol
-		unsigned imethodCount = 0;
-		Method *imethodList = class_copyMethodList(containerClass, &imethodCount);
+			// get the full list of instance methods implemented by the concrete
+			// protocol
+			unsigned imethodCount = 0;
+			Method *imethodList = class_copyMethodList(containerClass, &imethodCount);
 
-		// get the full list of class methods implemented by the concrete
-		// protocol
-		unsigned cmethodCount = 0;
-		Method *cmethodList = class_copyMethodList(object_getClass(containerClass), &cmethodCount);
+			// get the full list of class methods implemented by the concrete
+			// protocol
+			unsigned cmethodCount = 0;
+			Method *cmethodList = class_copyMethodList(object_getClass(containerClass), &cmethodCount);
 
-		// loop through all classes
-		for (unsigned classIndex = 0;classIndex < classCount;++classIndex) {
-			Class class = allClasses[classIndex];
-			
-			// if this class doesn't conform to the protocol, continue to the
-			// next class immediately
-			if (!class_conformsToProtocol(class, protocol))
-				continue;
-
-			// get the metaclass of this class (the object on which class
-			// methods are implemented)
-			Class metaclass = object_getClass(class);
-
-			// inject all instance methods in the concrete protocol
-			for (unsigned methodIndex = 0;methodIndex < imethodCount;++methodIndex) {
-				Method method = imethodList[methodIndex];
-				SEL selector = method_getName(method);
-
-				// first, check to see if such an instance method already exists
-				// (on this class or on a superclass)
-				if (class_getInstanceMethod(class, selector)) {
-					// it does exist, so don't overwrite it
+			// loop through all classes
+			for (unsigned classIndex = 0;classIndex < classCount;++classIndex) {
+				Class class = allClasses[classIndex];
+				
+				// if this class doesn't conform to the protocol, continue to the
+				// next class immediately
+				if (!class_conformsToProtocol(class, protocol))
 					continue;
+
+				// get the metaclass of this class (the object on which class
+				// methods are implemented)
+				Class metaclass = object_getClass(class);
+
+				// inject all instance methods in the concrete protocol
+				for (unsigned methodIndex = 0;methodIndex < imethodCount;++methodIndex) {
+					Method method = imethodList[methodIndex];
+					SEL selector = method_getName(method);
+
+					// first, check to see if such an instance method already exists
+					// (on this class or on a superclass)
+					if (class_getInstanceMethod(class, selector)) {
+						// it does exist, so don't overwrite it
+						continue;
+					}
+
+					// add this instance method to the class in question
+					IMP imp = method_getImplementation(method);
+					const char *types = method_getTypeEncoding(method);
+					if (!class_addMethod(class, selector, imp, types)) {
+						fprintf(stderr, "ERROR: Could not implement instance method -%s from concrete protocol %s on class %s\n",
+							sel_getName(selector), protocol_getName(protocol), class_getName(class));
+					}
 				}
 
-				// add this instance method to the class in question
-				IMP imp = method_getImplementation(method);
-				const char *types = method_getTypeEncoding(method);
-				if (!class_addMethod(class, selector, imp, types)) {
-					fprintf(stderr, "ERROR: Could not implement instance method -%s from concrete protocol %s on class %s\n",
-						sel_getName(selector), protocol_getName(protocol), class_getName(class));
+				// inject all class methods in the concrete protocol
+				for (unsigned methodIndex = 0;methodIndex < cmethodCount;++methodIndex) {
+					Method method = cmethodList[methodIndex];
+					SEL selector = method_getName(method);
+
+					// +initialize is a special case that should never be copied
+					// into a class, as it performs initialization for the concrete
+					// protocol
+					if (selector == @selector(initialize)) {
+						// so just continue looking through the rest of the methods
+						continue;
+					}
+
+					// first, check to see if a class method already exists (on this
+					// class or on a superclass)
+					//
+					// since 'class' is considered to be an instance of 'metaclass',
+					// this is actually checking for class methods (despite the
+					// function name)
+					if (class_getInstanceMethod(metaclass, selector)) {
+						// it does exist, so don't overwrite it
+						continue;
+					}
+
+					// add this class method to the metaclass in question
+					IMP imp = method_getImplementation(method);
+					const char *types = method_getTypeEncoding(method);
+					if (!class_addMethod(metaclass, selector, imp, types)) {
+						fprintf(stderr, "ERROR: Could not implement class method +%s from concrete protocol %s on class %s\n",
+							sel_getName(selector), protocol_getName(protocol), class_getName(class));
+					}
 				}
 			}
 
-			// inject all class methods in the concrete protocol
-			for (unsigned methodIndex = 0;methodIndex < cmethodCount;++methodIndex) {
-				Method method = cmethodList[methodIndex];
-				SEL selector = method_getName(method);
+			// free the instance method list
+			free(imethodList); imethodList = NULL;
 
-				// +initialize is a special case that should never be copied
-				// into a class, as it performs initialization for the concrete
-				// protocol
-				if (selector == @selector(initialize)) {
-					// so just continue looking through the rest of the methods
-					continue;
-				}
+			// free the class method list
+			free(cmethodList); cmethodList = NULL;
 
-				// first, check to see if a class method already exists (on this
-				// class or on a superclass)
-				//
-				// since 'class' is considered to be an instance of 'metaclass',
-				// this is actually checking for class methods (despite the
-				// function name)
-				if (class_getInstanceMethod(metaclass, selector)) {
-					// it does exist, so don't overwrite it
-					continue;
-				}
-
-				// add this class method to the metaclass in question
-				IMP imp = method_getImplementation(method);
-				const char *types = method_getTypeEncoding(method);
-				if (!class_addMethod(metaclass, selector, imp, types)) {
-					fprintf(stderr, "ERROR: Could not implement class method +%s from concrete protocol %s on class %s\n",
-						sel_getName(selector), protocol_getName(protocol), class_getName(class));
-				}
-			}
+			// use [containerClass class] and discard the result to call +initialize
+			// on containerClass if it hasn't been called yet
+			//
+			// this is to allow the concrete protocol to perform custom initialization
+			(void)[containerClass class];
 		}
 
-		// free the instance method list
-		free(imethodList); imethodList = NULL;
-
-		// free the class method list
-		free(cmethodList); cmethodList = NULL;
-
-		// use [containerClass class] and discard the result to call +initialize
-		// on containerClass if it hasn't been called yet
-		//
-		// this is to allow the concrete protocol to perform custom initialization
-		(void)[containerClass class];
-	}
-
 	// drain the temporary autorelease pool
-	[pool drain];
+	}
 
 	// free the allocated class list
 	free(allClasses);

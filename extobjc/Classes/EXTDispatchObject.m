@@ -9,9 +9,7 @@
 #import "EXTDispatchObject.h"
 
 @interface EXTDispatchObject() {
-	// a C array is used rather than an NSArray for performance reasons
-	id *targets;
-	NSUInteger targetCount;
+	__strong NSArray *targets;
 }
 
 @end
@@ -47,7 +45,7 @@
 
 	// allocate an array of object pointers large enough for all of the
 	// arguments
-	id *targets = malloc(sizeof(id) * count);
+	__unsafe_unretained id *targets = (__unsafe_unretained id *)malloc(sizeof(id) * count);
 	if (!targets) {
 		va_end(argsCopy);
 		return nil;
@@ -56,7 +54,7 @@
 	targets[0] = firstObj;
 	for (NSUInteger i = 1;i < count;++i) {
 		id obj = va_arg(argsCopy, id);
-		targets[i] = [obj retain];
+		targets[i] = obj;
 
 		NSAssert(targets[i] != nil, @"argument should not be nil after previously being non-nil");
 	}
@@ -64,9 +62,11 @@
 	va_end(argsCopy);
 
 	// then initialize the actual object and fill in its ivars
-	EXTDispatchObject *obj = [[[EXTDispatchObject alloc] init] autorelease];
-	obj->targets = targets;
-	obj->targetCount = count;
+	EXTDispatchObject *obj = [[EXTDispatchObject alloc] init];
+
+	obj->targets = [NSArray arrayWithObjects:targets count:count];
+	free(targets);
+	
 	return obj;
 }
 
@@ -74,35 +74,11 @@
 	NSUInteger count = [objects count];
 	if (!count)
 		return nil;
-	
-	// copy the object pointers out into a C array for speed
-	id *targets = malloc(sizeof(id) * count);
-	[objects getObjects:targets range:NSMakeRange(0, count)];
-
-	for (NSUInteger i = 0;i < count;++i) {
-		[targets[i] retain];
-	}
 
 	// initialize the object and fill in its ivars
-	EXTDispatchObject *obj = [[[EXTDispatchObject alloc] init] autorelease];
-	obj->targets = targets;
-	obj->targetCount = count;
+	EXTDispatchObject *obj = [[EXTDispatchObject alloc] init];
+	obj->targets = [objects copy];
 	return obj;
-}
-
-- (void)dealloc {
-	// since we use a simple C array of objects (which are retained), we have to
-	// loop through and release each one individually before destroying the
-	// array
-	for (NSUInteger i = 0;i < targetCount;++i) {
-		[targets[i] release];
-	}
-
-	free(targets);
-	targets = NULL;
-	targetCount = 0;
-
-	[super dealloc];
 }
 
 #pragma mark Forwarding machinery
@@ -115,9 +91,9 @@
 
 	// find all targets that respond to the specified selector AND return
 	// the same method signature for that selector
-	for (NSUInteger i = 0;i < targetCount;++i) {
-		if ([targets[i] respondsToSelector:selector] && [[targets[i] methodSignatureForSelector:selector] isEqual:signature]) {
-			[anInvocation invokeWithTarget:targets[i]];
+	for (id target in targets) {
+		if ([target respondsToSelector:selector] && [[target methodSignatureForSelector:selector] isEqual:signature]) {
+			[anInvocation invokeWithTarget:target];
 
 			recognized = YES;
 		}
@@ -131,9 +107,9 @@
 
 - (NSMethodSignature *)methodSignatureForSelector:(SEL)aSelector {
 	// find the first target that responds to the specified selector
-	for (NSUInteger i = 0;i < targetCount;++i) {
-		if ([targets[i] respondsToSelector:aSelector]) {
-			return [targets[i] methodSignatureForSelector:aSelector];
+	for (id target in targets) {
+		if ([target respondsToSelector:aSelector]) {
+			return [target methodSignatureForSelector:aSelector];
 		}
 	}
 	
@@ -144,8 +120,8 @@
 
 - (BOOL)conformsToProtocol:(Protocol *)aProtocol {
 	// return YES if any targets conform to the specified protocol
-	for (NSUInteger i = 0;i < targetCount;++i) {
-		if ([targets[i] conformsToProtocol:aProtocol])
+	for (id target in targets) {
+		if ([target conformsToProtocol:aProtocol])
 			return YES;
 	}
 
@@ -165,8 +141,8 @@
 	
 	// then fall back to a more expensive check – return YES if any one of the
 	// targets are equal to the argument
-  	for (NSUInteger i = 0;i < targetCount;++i) {
-		if ([targets[i] isEqual:obj])
+	for (id target in targets) {
+		if ([target isEqual:obj])
 			return YES;
 	}
 
@@ -175,8 +151,8 @@
 
 - (BOOL)isKindOfClass:(Class)cls {
 	// return YES if any targets are a kind of the argument
-  	for (NSUInteger i = 0;i < targetCount;++i) {
-		if ([targets[i] isKindOfClass:cls])
+	for (id target in targets) {
+		if ([target isKindOfClass:cls])
 			return YES;
 	}
 
@@ -185,8 +161,8 @@
 
 - (BOOL)isMemberOfClass:(Class)cls {
 	// return YES if any targets are a member of the argument
-  	for (NSUInteger i = 0;i < targetCount;++i) {
-		if ([targets[i] isMemberOfClass:cls])
+	for (id target in targets) {
+		if ([target isMemberOfClass:cls])
 			return YES;
 	}
 
@@ -199,8 +175,8 @@
 
 - (BOOL)respondsToSelector:(SEL)aSelector {
 	// return YES if any targets respond to the specified selector
-	for (NSUInteger i = 0;i < targetCount;++i) {
-		if ([targets[i] respondsToSelector:aSelector])
+	for (id target in targets) {
+		if ([target respondsToSelector:aSelector])
 			return YES;
 	}
 

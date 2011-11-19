@@ -60,8 +60,6 @@
 		int result;
 		STAssertNoThrow(result = [obj multiplyByTwo:42], @"expected -multiplyByTwo: method to be available");
 		STAssertEquals(expected, result, @"expected -multiplyByTwo: method to be implemented using block implementation");
-
-		STAssertNoThrow([obj release], @"could not deallocate BlockTestClass instance");
 	}
 
 	{
@@ -73,8 +71,6 @@
 		int result;
 		STAssertNoThrow(result = [obj multiplyByTwo:42], @"expected -multiplyByTwo: method to be available");
 		STAssertEquals(expected, result, @"expected -multiplyByTwo: method to be implemented using block implementation");
-
-		STAssertNoThrow([obj release], @"could not deallocate BlockTestSubclass instance");
 	}
 }
 
@@ -118,8 +114,5 @@
 	STAssertTrue(testDescriptionCalled, @"expected -testDescription replacement to have been invoked and update context");
 
 	STAssertEqualObjects([subobj testDescription], @"subclass", @"expected -testDescription after replacement to be as defined in block");
-
-	STAssertNoThrow([obj release], @"could not deallocate BlockTestClass instance");
-	STAssertNoThrow([subobj release], @"could not deallocate BlockTestSubclass instance");
 }
 @end

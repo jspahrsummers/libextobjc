@@ -45,6 +45,5 @@
 	STAssertTrue([obj respondsToSelector:@selector(customDescription)], @"category'd object should respond to added method selector");
 	STAssertFalse([[obj description] isEqualToString:@"NSObject(TestExtensions)"], @"expected -description method to be original implementation, not overriden");
 	STAssertEqualObjects([obj customDescription], @"NSObject(TestExtensions)", @"expected -customDescription method to be implemented, and return custom value");
-	STAssertNoThrow([obj release], @"could not deallocate safe category'd object");
 }
 @end

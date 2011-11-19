@@ -56,7 +56,6 @@
 	STAssertTrue([request respondsToSelector:@selector(oldSelf)], @"expected NSURLRequest to respond to -oldSelf after renaming -self");
 	STAssertEquals([(id)request oldSelf], request, @"expected -oldSelf of NSURLRequest object to match itself after swapping implementation");
 	
-	STAssertNoThrow([request release], @"releasing a valid NSURLRequest after swizzling methods should not throw an exception");
 	request = nil;
 	
 	// ensure that superclass implementations are intact
@@ -67,7 +66,6 @@
 	STAssertFalse([obj respondsToSelector:@selector(oldSelf)], @"expected NSObject not to respond to -oldSelf even after renaming subclass method");
 	STAssertEquals(obj, [obj self], @"expected -self of NSObject object to match itself even after renaming subclass method");
 	
-	STAssertNoThrow([obj release], @"releasing a valid NSObject after swizzling on subclass should not throw an exception");
 	obj = nil;
 }
 

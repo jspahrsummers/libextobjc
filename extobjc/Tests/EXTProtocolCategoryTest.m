@@ -15,7 +15,7 @@
 
 @pcategoryimplementation(NSCopying, TestExtensions)
 + (id)duplicateOf:(id<NSCopying>)obj {
-	return [[obj copyWithZone:nil] autorelease];
+	return [obj copyWithZone:nil];
 }
 @end
 
@@ -31,18 +31,12 @@
 
 	STAssertNotNil(testObjects, @"could not allocate test array of NSCopying objects");
 	for (id obj in testObjects) {
-		NSAutoreleasePool *pool = [NSAutoreleasePool new];
-
 		STAssertTrue([[obj class] respondsToSelector:@selector(duplicateOf:)], @"class %@ conforming to NSCopying did not respond to category method selector", [obj class]);
 
 		id copiedObj = nil;
 		STAssertNoThrow((copiedObj = [[obj class] duplicateOf:obj]), @"could not invoke NSCopying category method on %@", obj);
 		STAssertEqualObjects(obj, copiedObj, @"NSCopying category method should've returned a copied object");
-		STAssertEqualObjects([[obj copy] autorelease], copiedObj, @"NSCopying category method should've returned a copied object");
-
-		STAssertNoThrow([pool drain], @"error draining autorelease pool containing category'd objects");
+		STAssertEqualObjects([obj copy], copiedObj, @"NSCopying category method should've returned a copied object");
 	}
-
-	STAssertNoThrow([testObjects release], @"could not deallocate test array of NSCopying objects");
 }
 @end

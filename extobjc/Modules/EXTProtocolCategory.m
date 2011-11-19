@@ -22,7 +22,7 @@
 
 typedef struct {
 	Class methodContainer;
-	Protocol *protocol;
+	__unsafe_unretained Protocol *protocol;
 	BOOL loaded;
 } EXTProtocolCategory;
 
@@ -51,38 +51,36 @@ void ext_injectProtocolCategories (void) {
 	 * set up an autorelease pool in case any Cocoa classes get used during
 	 * the injection process or +initialize
 	 */
-	NSAutoreleasePool *pool = [NSAutoreleasePool new];
+	@autoreleasepool {
+		for (unsigned classIndex = 0;classIndex < classCount;++classIndex) {
+			Class class = allClasses[classIndex];
 
-	for (unsigned classIndex = 0;classIndex < classCount;++classIndex) {
-		Class class = allClasses[classIndex];
+			for (size_t i = 0;i < protocolCategoryCount;++i) {
+				Protocol *protocol = protocolCategories[i].protocol;
+				if (!class_conformsToProtocol(class, protocol))
+					continue;
 
-		for (size_t i = 0;i < protocolCategoryCount;++i) {
-			Protocol *protocol = protocolCategories[i].protocol;
-			if (!class_conformsToProtocol(class, protocol))
-				continue;
+				Class containerClass = protocolCategories[i].methodContainer;
 
-			Class containerClass = protocolCategories[i].methodContainer;
+				ext_injectMethodsFromClass(
+					containerClass,
+					class,
 
-			ext_injectMethodsFromClass(
-				containerClass,
-				class,
+					// +initialize is a special case that should never be copied
+					// into a class, as it performs initialization for the protocol
+					// category
+					ext_methodInjectionIgnoreInitialize,
+					NULL
+				);
 
-				// +initialize is a special case that should never be copied
-				// into a class, as it performs initialization for the protocol
-				// category
-				ext_methodInjectionIgnoreInitialize,
-				NULL
-			);
-
-			// use [containerClass class] and discard the result to call +initialize
-			// on containerClass if it hasn't been called yet
-			//
-			// this is to allow the protocol category to perform custom initialization
-			(void)[containerClass class];
+				// use [containerClass class] and discard the result to call +initialize
+				// on containerClass if it hasn't been called yet
+				//
+				// this is to allow the protocol category to perform custom initialization
+				(void)[containerClass class];
+			}
 		}
 	}
-
-	[pool drain];
 
 	free(allClasses);
 
