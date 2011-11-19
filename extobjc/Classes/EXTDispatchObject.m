@@ -63,7 +63,10 @@
 
 	// then initialize the actual object and fill in its ivars
 	EXTDispatchObject *obj = [[EXTDispatchObject alloc] init];
+
 	obj->targets = [NSArray arrayWithObjects:targets count:count];
+	free(targets);
+	
 	return obj;
 }
 

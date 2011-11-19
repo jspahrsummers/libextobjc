@@ -63,7 +63,10 @@
 
 	// then initialize the actual object and fill in its ivars
 	EXTMultiObject *multiObj = [[EXTMultiObject alloc] init];
+
 	multiObj->targets = [NSArray arrayWithObjects:targets count:count];
+	free(targets);
+
 	return multiObj;
 }
 
