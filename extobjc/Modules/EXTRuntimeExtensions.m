@@ -179,6 +179,32 @@ Class *ext_copyClassList (unsigned *count) {
 	classCount = objc_getClassList(allClasses, classCount);
 	allClasses[classCount] = NULL;
 
+	@autoreleasepool {
+		// weed out classes that do weird things when reflected upon
+		for (int i = 0;i < classCount;) {
+			Class class = allClasses[i];
+			BOOL keep = YES;
+
+			if (keep)
+				keep &= class_respondsToSelector(class, @selector(methodSignatureForSelector:));
+
+			if (keep) {
+				if (class_respondsToSelector(class, @selector(isProxy)))
+					keep &= ![class isProxy];
+			}
+
+			if (!keep) {
+				if (--classCount > i) {
+					memmove(allClasses + i, allClasses + i + 1, (classCount - i - 1) * sizeof(*allClasses));
+				}
+
+				continue;
+			}
+
+			++i;
+		}
+	}
+
 	if (count)
 		*count = (unsigned)classCount;
 
