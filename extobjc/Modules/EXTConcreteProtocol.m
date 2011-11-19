@@ -39,36 +39,6 @@ typedef struct {
 	BOOL loaded;
 } EXTConcreteProtocol;
 
-/**
- * This comparison function is intended to be used with qsort(), and will
- * compare concrete protocols to determine load priority. If a concrete protocol
- * conforms to another concrete protocol, the former will be prioritized above
- * the latter; this way, a descendant protocol can redefine the default methods
- * in a "parent."
- */
-static
-int ext_compareConcreteProtocolLoadPriority (const void *a, const void *b) {
-	// if the pointers are equal, it must be the same protocol
-	if (a == b)
-		return 0;
-	
-	const EXTConcreteProtocol *protoA = a;
-	const EXTConcreteProtocol *protoB = b;
-
-	// if A conforms to B, A should come first
-	if (protocol_conformsToProtocol(protoA->protocol, protoB->protocol))
-		return -1;
-	// if B conforms to A, B should come first
-	else if (protocol_conformsToProtocol(protoB->protocol, protoA->protocol))
-		return 1;
-	// otherwise, enforce a total ordering (but we really don't care which way
-	// it goes)
-	else if (protoA < protoB)
-		return -1;
-	else
-		return 1;
-}
-
 // the full list of concrete protocols (an array of EXTConcreteProtocol structs)
 static EXTConcreteProtocol * restrict concreteProtocols = NULL;
 
@@ -105,14 +75,46 @@ void ext_injectConcreteProtocols (void) {
 	 * from public functions which already perform the synchronization
 	 */
 	
-	// re-sort the concrete protocols list to prioritize dependencies (see the
-	// comments in ext_compareConcreteProtocolLoadPriority)
-	qsort(
-		concreteProtocols,
-		concreteProtocolCount,
-		sizeof(EXTConcreteProtocol),
-		&ext_compareConcreteProtocolLoadPriority
-	);
+	/*
+	 * This will sort concrete protocols in the order they should be loaded. If
+	 * a concrete protocol conforms to another concrete protocol, the former
+	 * will be prioritized above the latter; this way, a descendant protocol can
+	 * redefine the default methods in a "parent."
+	 */
+	qsort_b(concreteProtocols, concreteProtocolCount, sizeof(EXTConcreteProtocol), ^(const void *a, const void *b){
+		// if the pointers are equal, it must be the same protocol
+		if (a == b)
+			return 0;
+
+		const EXTConcreteProtocol *protoA = a;
+		const EXTConcreteProtocol *protoB = b;
+
+		// A higher return value here means a higher priority
+		int (^protocolInjectionPriority)(const EXTConcreteProtocol *) = ^(const EXTConcreteProtocol *concreteProtocol){
+			int runningTotal = 0;
+
+			for (size_t i = 0;i < concreteProtocolCount;++i) {
+				// the pointer passed into this block is guaranteed to point
+				// into the 'concreteProtocols' array, so we can compare the
+				// pointers directly for identity
+				if (concreteProtocol == concreteProtocols + i)
+					continue;
+
+				if (protocol_conformsToProtocol(concreteProtocol->protocol, concreteProtocols[i].protocol))
+					runningTotal++;
+			}
+
+			return runningTotal;
+		};
+
+		/*
+		 * This will return:
+		 * 0 if the protocols are equal in priority (such that load order does not matter)
+		 * < 0 if A is more important than B
+		 * > 0 if B is more important than A
+		 */
+		return protocolInjectionPriority(protoB) - protocolInjectionPriority(protoA);
+	});
 
 	unsigned classCount = 0;
 	Class *allClasses = ext_copyClassList(&classCount);
