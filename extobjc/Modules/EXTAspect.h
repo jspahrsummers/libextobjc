@@ -32,6 +32,9 @@
 @end
 
  * @endcode
+ *
+ * Aspects are only applied to the class upon which the protocol is listed --
+ * they do not affect superclass methods.
  */
 #define aspect(NAME) \
     protocol NAME <NSObject> \
