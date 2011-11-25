@@ -107,6 +107,7 @@
 		D0D0CE2E1389F57D003ECD3D /* EXTCoroutine.h in Headers */ = {isa = PBXBuildFile; fileRef = D0D0CE2B1389F57D003ECD3D /* EXTCoroutine.h */; };
 		D0D0CE2F1389F57D003ECD3D /* EXTCoroutine.h in Headers */ = {isa = PBXBuildFile; fileRef = D0D0CE2B1389F57D003ECD3D /* EXTCoroutine.h */; };
 		D0E4D566147F4502002C3C9F /* libffi.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D0E4D563147F44F7002C3C9F /* libffi.a */; };
+		D0E4D568147F4624002C3C9F /* libffi.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D0E4D567147F4624002C3C9F /* libffi.a */; };
 		D0E7E85A128F81FA00FE0263 /* EXTSafeCategoryTest.m in Sources */ = {isa = PBXBuildFile; fileRef = D0E7E83A128F7F2E00FE0263 /* EXTSafeCategoryTest.m */; };
 		D0E7E85B128F81FA00FE0263 /* EXTSafeCategoryTest.m in Sources */ = {isa = PBXBuildFile; fileRef = D0E7E83A128F7F2E00FE0263 /* EXTSafeCategoryTest.m */; };
 		D0E7E886128F86F800FE0263 /* EXTProtocolCategory.h in Headers */ = {isa = PBXBuildFile; fileRef = D0E7E884128F86F800FE0263 /* EXTProtocolCategory.h */; };
@@ -239,6 +240,7 @@
 		D0CFB610128A8EEE006DC377 /* iOS-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "iOS-Info.plist"; sourceTree = "<group>"; };
 		D0D0CE2B1389F57D003ECD3D /* EXTCoroutine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXTCoroutine.h; sourceTree = "<group>"; };
 		D0E4D528147F3D2E002C3C9F /* libffi.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = libffi.xcodeproj; path = "../libffi-ios/libffi.xcodeproj"; sourceTree = "<group>"; };
+		D0E4D567147F4624002C3C9F /* libffi.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libffi.a; path = /usr/local/Cellar/libffi/HEAD/lib/libffi.a; sourceTree = "<absolute>"; };
 		D0E7E839128F7F2E00FE0263 /* EXTSafeCategoryTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXTSafeCategoryTest.h; sourceTree = "<group>"; };
 		D0E7E83A128F7F2E00FE0263 /* EXTSafeCategoryTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXTSafeCategoryTest.m; sourceTree = "<group>"; };
 		D0E7E884128F86F800FE0263 /* EXTProtocolCategory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXTProtocolCategory.h; sourceTree = "<group>"; };
@@ -282,6 +284,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D0E4D568147F4624002C3C9F /* libffi.a in Frameworks */,
 				D0A8B04F128A42F4004AACE0 /* Foundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -415,6 +418,7 @@
 		D0A8B20A128A430A004AACE0 /* Mac OS X */ = {
 			isa = PBXGroup;
 			children = (
+				D0E4D567147F4624002C3C9F /* libffi.a */,
 				D0E7E8C9128F8D1400FE0263 /* CoreFoundation.framework */,
 				0867D69BFE84028FC02AAC07 /* Foundation.framework */,
 			);
@@ -853,6 +857,10 @@
 			buildSettings = {
 				GCC_PREFIX_HEADER = extobjc_Prefix.pch;
 				INSTALL_PATH = /usr/local/lib;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					/usr/local/Cellar/libffi/HEAD/lib,
+				);
 				PRODUCT_NAME = extobjc_OSX;
 			};
 			name = Debug;
@@ -863,6 +871,10 @@
 			buildSettings = {
 				GCC_PREFIX_HEADER = extobjc_Prefix.pch;
 				INSTALL_PATH = /usr/local/lib;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					/usr/local/Cellar/libffi/HEAD/lib,
+				);
 				PRODUCT_NAME = extobjc_OSX;
 			};
 			name = Release;
@@ -877,7 +889,9 @@
 				GCC_WARN_UNKNOWN_PRAGMAS = YES;
 				GCC_WARN_UNUSED_VALUE = NO;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = "/usr/local/Cellar/libffi/**";
 				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
+				LIBRARY_SEARCH_PATHS = "/usr/local/Cellar/libffi/**";
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				TEST_AFTER_BUILD = YES;
 			};
@@ -893,7 +907,9 @@
 				GCC_WARN_UNKNOWN_PRAGMAS = YES;
 				GCC_WARN_UNUSED_VALUE = NO;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = "/usr/local/Cellar/libffi/**";
 				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
+				LIBRARY_SEARCH_PATHS = "/usr/local/Cellar/libffi/**";
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				TEST_AFTER_BUILD = YES;
 			};
