@@ -40,57 +40,57 @@
  * actually be invoked against \c self.
  */
 #define safecategory(CLASS, CATEGORY) \
-	/*
-	 * create a class used to contain all the methods used in this category – by
-	 * doing this, we can control and fine-tune the method injection process
-	 */ \
-	interface CLASS ## _ ## CATEGORY ## _MethodContainer : CLASS {} \
-	@end \
-	\
-	@implementation CLASS ## _ ## CATEGORY ## _MethodContainer \
-	/*
-	 * using the "constructor" function attribute, we can ensure that this
-	 * function is executed only AFTER all the Objective-C runtime setup (i.e.,
-	 * after all +load methods have been executed)
-	 */ \
-	__attribute__((constructor)) \
-	static void ext_ ## CLASS ## _ ## CATEGORY ## _inject (void) { \
-		/*
-		 * use this injection point to load the methods into the target class
-		 * this is guaranteed to execute after any regular categories have
-		 * loaded already (though the interaction with EXTProtocolCategory is
-		 * undefined)
-		 */ \
-		const char *className_ = metamacro_stringify(CLASS ## _ ## CATEGORY ## _MethodContainer); \
-		\
-		/*
-		 * get this class, and the class that is the target of injection
-		 */ \
-		Class methodContainer_ = objc_getClass(className_); \
-		Class targetClass_ = class_getSuperclass(methodContainer_); \
-		\
-		/*
-		 * if this method returns NO, we assume that one or more of the category
-		 * methods already existed on the target class, and therefore error out
-		 * (using ext_safeCategoryFailed)
-		 */ \
-		if (!ext_loadSafeCategory(methodContainer_, targetClass_)) {\
-			ext_safeCategoryFailed(CLASS, CATEGORY); \
-		} \
-	}
+    /*
+     * create a class used to contain all the methods used in this category – by
+     * doing this, we can control and fine-tune the method injection process
+     */ \
+    interface CLASS ## _ ## CATEGORY ## _MethodContainer : CLASS {} \
+    @end \
+    \
+    @implementation CLASS ## _ ## CATEGORY ## _MethodContainer \
+    /*
+     * using the "constructor" function attribute, we can ensure that this
+     * function is executed only AFTER all the Objective-C runtime setup (i.e.,
+     * after all +load methods have been executed)
+     */ \
+    __attribute__((constructor)) \
+    static void ext_ ## CLASS ## _ ## CATEGORY ## _inject (void) { \
+        /*
+         * use this injection point to load the methods into the target class
+         * this is guaranteed to execute after any regular categories have
+         * loaded already (though the interaction with EXTProtocolCategory is
+         * undefined)
+         */ \
+        const char *className_ = metamacro_stringify(CLASS ## _ ## CATEGORY ## _MethodContainer); \
+        \
+        /*
+         * get this class, and the class that is the target of injection
+         */ \
+        Class methodContainer_ = objc_getClass(className_); \
+        Class targetClass_ = class_getSuperclass(methodContainer_); \
+        \
+        /*
+         * if this method returns NO, we assume that one or more of the category
+         * methods already existed on the target class, and therefore error out
+         * (using ext_safeCategoryFailed)
+         */ \
+        if (!ext_loadSafeCategory(methodContainer_, targetClass_)) {\
+            ext_safeCategoryFailed(CLASS, CATEGORY); \
+        } \
+    }
 
 /*** implementation details follow ***/
 BOOL ext_loadSafeCategory (Class methodContainer, Class targetClass);
 
 // if this is a debug build...
 #if defined(DEBUG) && !defined(NDEBUG)
-	// abort if a safe category fails to load
-	#define ext_safeCategoryFailed(CLASS, CATEGORY) \
-		fprintf(stderr, "ERROR: Failed to fully load safe category %s (%s)\n", metamacro_stringify(CLASS), metamacro_stringify(CATEGORY)) \
-		abort()
+    // abort if a safe category fails to load
+    #define ext_safeCategoryFailed(CLASS, CATEGORY) \
+        fprintf(stderr, "ERROR: Failed to fully load safe category %s (%s)\n", metamacro_stringify(CLASS), metamacro_stringify(CATEGORY)) \
+        abort()
 #else
-	// otherwise, just print an error message
-	#define ext_safeCategoryFailed(CLASS, CATEGORY) \
-		fprintf(stderr, "ERROR: Failed to fully load safe category %s (%s)\n", metamacro_stringify(CLASS), metamacro_stringify(CATEGORY))
+    // otherwise, just print an error message
+    #define ext_safeCategoryFailed(CLASS, CATEGORY) \
+        fprintf(stderr, "ERROR: Failed to fully load safe category %s (%s)\n", metamacro_stringify(CLASS), metamacro_stringify(CATEGORY))
 #endif
 

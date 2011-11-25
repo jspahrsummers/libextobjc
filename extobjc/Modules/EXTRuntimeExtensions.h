@@ -18,41 +18,41 @@ typedef void (*ext_failedMethodCallback)(Class, Method);
  * Used with #ext_injectMethods to determine injection behavior.
  */
 typedef enum {
-	/**
-	 * Indicates that any existing methods on the destination class should be
-	 * overwritten.
-	 */
-	ext_methodInjectionReplace                  = 0x00,
+    /**
+     * Indicates that any existing methods on the destination class should be
+     * overwritten.
+     */
+    ext_methodInjectionReplace                  = 0x00,
 
-	/**
-	 * Avoid overwriting methods on the immediate destination class.
-	 */
-	ext_methodInjectionFailOnExisting           = 0x01,
-	
-	/**
-	 * Avoid overriding methods implemented in any superclass of the destination
-	 * class.
-	 */
-	ext_methodInjectionFailOnSuperclassExisting = 0x02,
+    /**
+     * Avoid overwriting methods on the immediate destination class.
+     */
+    ext_methodInjectionFailOnExisting           = 0x01,
+    
+    /**
+     * Avoid overriding methods implemented in any superclass of the destination
+     * class.
+     */
+    ext_methodInjectionFailOnSuperclassExisting = 0x02,
 
-	/**
-	 * Avoid overwriting methods implemented in the immediate destination class
-	 * or any superclass. This is equivalent to
-	 * <tt>ext_methodInjectionFailOnExisting | ext_methodInjectionFailOnSuperclassExisting</tt>.
-	 */
-	ext_methodInjectionFailOnAnyExisting        = 0x03,
+    /**
+     * Avoid overwriting methods implemented in the immediate destination class
+     * or any superclass. This is equivalent to
+     * <tt>ext_methodInjectionFailOnExisting | ext_methodInjectionFailOnSuperclassExisting</tt>.
+     */
+    ext_methodInjectionFailOnAnyExisting        = 0x03,
 
-	/**
-	 * Ignore the \c +load class method. This does not affect instance method
-	 * injection.
-	 */
-	ext_methodInjectionIgnoreLoad = 1U << 2,
+    /**
+     * Ignore the \c +load class method. This does not affect instance method
+     * injection.
+     */
+    ext_methodInjectionIgnoreLoad = 1U << 2,
 
-	/**
-	 * Ignore the \c +initialize class method. This does not affect instance method
-	 * injection.
-	 */
-	ext_methodInjectionIgnoreInitialize = 1U << 3
+    /**
+     * Ignore the \c +initialize class method. This does not affect instance method
+     * injection.
+     */
+    ext_methodInjectionIgnoreInitialize = 1U << 3
 } ext_methodInjectionBehavior;
 
 /**
@@ -64,86 +64,86 @@ static const ext_methodInjectionBehavior ext_methodInjectionOverwriteBehaviorMas
  * Describes the memory management policy of a property.
  */
 typedef enum {
-	/**
-	 * The value is assigned.
-	 */
-	ext_propertyMemoryManagementPolicyAssign = 0,
+    /**
+     * The value is assigned.
+     */
+    ext_propertyMemoryManagementPolicyAssign = 0,
 
-	/**
-	 * The value is retained.
-	 */
-	ext_propertyMemoryManagementPolicyRetain,
+    /**
+     * The value is retained.
+     */
+    ext_propertyMemoryManagementPolicyRetain,
 
-	/**
-	 * The value is copied.
-	 */
-	ext_propertyMemoryManagementPolicyCopy
+    /**
+     * The value is copied.
+     */
+    ext_propertyMemoryManagementPolicyCopy
 } ext_propertyMemoryManagementPolicy;
 
 /**
  * Describes the attributes and type information of a property.
  */
 typedef struct {
-	/**
-	 * Whether this property was declared with the \c readonly attribute.
-	 */
-	BOOL readonly;
+    /**
+     * Whether this property was declared with the \c readonly attribute.
+     */
+    BOOL readonly;
 
-	/**
-	 * Whether this property was declared with the \c nonatomic attribute.
-	 */
-	BOOL nonatomic;
+    /**
+     * Whether this property was declared with the \c nonatomic attribute.
+     */
+    BOOL nonatomic;
 
-	/**
-	 * Whether the property is a weak reference.
-	 */
-	BOOL weak;
+    /**
+     * Whether the property is a weak reference.
+     */
+    BOOL weak;
 
-	/**
-	 * Whether the property is eligible for garbage collection.
-	 */
-	BOOL canBeCollected;
+    /**
+     * Whether the property is eligible for garbage collection.
+     */
+    BOOL canBeCollected;
 
-	/**
-	 * Whether this property is defined with \c \@dynamic.
-	 */
-	BOOL dynamic;
+    /**
+     * Whether this property is defined with \c \@dynamic.
+     */
+    BOOL dynamic;
 
-	/**
-	 * The memory management policy for this property. This will always be
-	 * #ext_propertyMemoryManagementPolicyAssign if #readonly is \c YES.
-	 */
-	ext_propertyMemoryManagementPolicy memoryManagementPolicy;
+    /**
+     * The memory management policy for this property. This will always be
+     * #ext_propertyMemoryManagementPolicyAssign if #readonly is \c YES.
+     */
+    ext_propertyMemoryManagementPolicy memoryManagementPolicy;
 
-	/**
-	 * The selector for the getter of this property. This will reflect any
-	 * custom \c getter= attribute provided in the property declaration, or the
-	 * inferred getter name otherwise.
-	 */
-	SEL getter;
+    /**
+     * The selector for the getter of this property. This will reflect any
+     * custom \c getter= attribute provided in the property declaration, or the
+     * inferred getter name otherwise.
+     */
+    SEL getter;
 
-	/**
-	 * The selector for the setter of this property. This will reflect any
-	 * custom \c setter= attribute provided in the property declaration, or the
-	 * inferred setter name otherwise.
-	 *
-	 * @note If #readonly is \c YES, this value will represent what the setter
-	 * \e would be, if the property were writable.
-	 */
-	SEL setter;
+    /**
+     * The selector for the setter of this property. This will reflect any
+     * custom \c setter= attribute provided in the property declaration, or the
+     * inferred setter name otherwise.
+     *
+     * @note If #readonly is \c YES, this value will represent what the setter
+     * \e would be, if the property were writable.
+     */
+    SEL setter;
 
-	/**
-	 * The backing instance variable for this property, or \c NULL if \c
-	 * \c @synthesize was not used, and therefore no instance variable exists. This
-	 * would also be the case if the property is implemented dynamically.
-	 */
-	const char *ivar;
+    /**
+     * The backing instance variable for this property, or \c NULL if \c
+     * \c @synthesize was not used, and therefore no instance variable exists. This
+     * would also be the case if the property is implemented dynamically.
+     */
+    const char *ivar;
 
-	/**
-	 * The type encoding for the value of this property. This is the type as it
-	 * would be returned by the \c \@encode() directive.
-	 */
-	char type[];
+    /**
+     * The type encoding for the value of this property. This is the type as it
+     * would be returned by the \c \@encode() directive.
+     */
+    char type[];
 } ext_propertyAttributes;
 
 /**
@@ -238,7 +238,7 @@ Method ext_getImmediateInstanceMethod (Class aClass, SEL aSelector);
  * or floating-point types.
  */
 #define ext_getIvar(OBJ, IVAR, TYPE) \
-	((TYPE (*)(id, Ivar)object_getIvar)((OBJ), (IVAR)))
+    ((TYPE (*)(id, Ivar)object_getIvar)((OBJ), (IVAR)))
 
 /**
  * Returns the value of the instance variable identified by the string \a NAME
@@ -251,7 +251,7 @@ Method ext_getImmediateInstanceMethod (Class aClass, SEL aSelector);
  * or floating-point types.
  */
 #define ext_getIvarByName(OBJ, NAME, TYPE) \
-	ext_getIvar((OBJ), class_getInstanceVariable(object_getClass((OBJ)), (NAME)), TYPE)
+    ext_getIvar((OBJ), class_getInstanceVariable(object_getClass((OBJ)), (NAME)), TYPE)
 
 /**
  * Returns the accessor methods for \a property, as implemented in \a aClass or

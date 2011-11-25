@@ -12,14 +12,14 @@
 
 static
 void safeCategoryMethodFailed (Class cls, Method method) {
-	const char *methodName = sel_getName(method_getName(method));
-	const char *className = class_getName(cls);
+    const char *methodName = sel_getName(method_getName(method));
+    const char *className = class_getName(cls);
 
-	BOOL isMeta = class_isMetaClass(cls);
-	if (isMeta)
-		fprintf(stderr, "ERROR: Could not add class method +%s to %s (a method by the same name already exists)\n", methodName, className);
-	else
-		fprintf(stderr, "ERROR: Could not add instance method -%s to %s (a method by the same name already exists)\n", methodName, className);
+    BOOL isMeta = class_isMetaClass(cls);
+    if (isMeta)
+        fprintf(stderr, "ERROR: Could not add class method +%s to %s (a method by the same name already exists)\n", methodName, className);
+    else
+        fprintf(stderr, "ERROR: Could not add instance method -%s to %s (a method by the same name already exists)\n", methodName, className);
 }
 
 /**
@@ -32,14 +32,14 @@ void safeCategoryMethodFailed (Class cls, Method method) {
  * loading failed, whether due to a naming conflict or some other error.
  */
 BOOL ext_loadSafeCategory (Class methodContainer, Class targetClass) {
-	if (!methodContainer || !targetClass)
-		return NO;
+    if (!methodContainer || !targetClass)
+        return NO;
 
-	return ext_injectMethodsFromClass(
-		methodContainer,
-		targetClass,
-		ext_methodInjectionFailOnAnyExisting | ext_methodInjectionIgnoreLoad,
-		&safeCategoryMethodFailed
-	);
+    return ext_injectMethodsFromClass(
+        methodContainer,
+        targetClass,
+        ext_methodInjectionFailOnAnyExisting | ext_methodInjectionIgnoreLoad,
+        &safeCategoryMethodFailed
+    );
 }
 

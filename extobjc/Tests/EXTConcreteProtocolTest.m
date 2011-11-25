@@ -14,16 +14,16 @@ static BOOL SubProtocolInitialized = NO;
 /*** MyProtocol ***/
 @concreteprotocol(MyProtocol)
 + (void)initialize {
-	NSAssert(!MyProtocolInitialized, @"+initialize should only be invoked once per concrete protocol");
-	MyProtocolInitialized = YES;
+    NSAssert(!MyProtocolInitialized, @"+initialize should only be invoked once per concrete protocol");
+    MyProtocolInitialized = YES;
 }
 
 + (NSUInteger)meaningfulNumber {
-	return 42;
+    return 42;
 }
 
 - (NSString *)getSomeString {
-  	return @"MyProtocol";
+    return @"MyProtocol";
 }
 
 @end
@@ -31,15 +31,15 @@ static BOOL SubProtocolInitialized = NO;
 /*** SubProtocol ***/
 @concreteprotocol(SubProtocol)
 + (void)initialize {
-	NSAssert(!SubProtocolInitialized, @"+initialize should only be invoked once per concrete protocol");
-	SubProtocolInitialized = YES;
+    NSAssert(!SubProtocolInitialized, @"+initialize should only be invoked once per concrete protocol");
+    SubProtocolInitialized = YES;
 }
 
 - (void)additionalMethod {}
 
 // this should take precedence over the implementation in MyProtocol
 - (NSString *)getSomeString {
-	return @"SubProtocol";
+    return @"SubProtocol";
 }
 @end
 
@@ -50,7 +50,7 @@ static BOOL SubProtocolInitialized = NO;
 
 @implementation TestClass
 + (NSUInteger)meaningfulNumber {
- 	return 0;
+    return 0;
 }
 @end
 
@@ -61,7 +61,7 @@ static BOOL SubProtocolInitialized = NO;
 
 @implementation TestClass2
 - (NSString *)getSomeString {
-  	return @"TestClass2";
+    return @"TestClass2";
 }
 @end
 
@@ -73,7 +73,7 @@ static BOOL SubProtocolInitialized = NO;
 
 @implementation TestClass3
 + (NSUInteger)meaningfulNumber {
- 	return 0;
+    return 0;
 }
 @end
 
@@ -97,41 +97,41 @@ static BOOL SubProtocolInitialized = NO;
 /*** logic test code ***/
 @implementation EXTConcreteProtocolTest
 - (void)tearDown {
-	STAssertTrue(MyProtocolInitialized, @"+initialize should have been invoked on MyProtocol");
-	STAssertTrue(SubProtocolInitialized, @"+initialize should have been invoked on SubProtocol");
+    STAssertTrue(MyProtocolInitialized, @"+initialize should have been invoked on MyProtocol");
+    STAssertTrue(SubProtocolInitialized, @"+initialize should have been invoked on SubProtocol");
 }
 
 - (void)testImplementations {
-  	id<MyProtocol> obj;
-	
-	obj = [[TestClass alloc] init];
-	STAssertNotNil(obj, @"could not allocate concreteprotocol'd class");
-	STAssertEqualObjects([obj getSomeString], @"MyProtocol", @"TestClass should be using protocol implementation of getSomeString");
+    id<MyProtocol> obj;
+    
+    obj = [[TestClass alloc] init];
+    STAssertNotNil(obj, @"could not allocate concreteprotocol'd class");
+    STAssertEqualObjects([obj getSomeString], @"MyProtocol", @"TestClass should be using protocol implementation of getSomeString");
 
-	obj = [[TestClass2 alloc] init];
-	STAssertNotNil(obj, @"could not allocate concreteprotocol'd class");
-	STAssertEqualObjects([obj getSomeString], @"TestClass2", @"TestClass2 should not be using protocol implementation of getSomeString");
+    obj = [[TestClass2 alloc] init];
+    STAssertNotNil(obj, @"could not allocate concreteprotocol'd class");
+    STAssertEqualObjects([obj getSomeString], @"TestClass2", @"TestClass2 should not be using protocol implementation of getSomeString");
 
-	STAssertEquals([TestClass meaningfulNumber], (NSUInteger)0, @"TestClass should not be using protocol implementation of meaningfulNumber");
-	STAssertEquals([TestClass2 meaningfulNumber], (NSUInteger)42, @"TestClass2 should be using protocol implementation of meaningfulNumber");
+    STAssertEquals([TestClass meaningfulNumber], (NSUInteger)0, @"TestClass should not be using protocol implementation of meaningfulNumber");
+    STAssertEquals([TestClass2 meaningfulNumber], (NSUInteger)42, @"TestClass2 should be using protocol implementation of meaningfulNumber");
 }
 
 - (void)testSimpleInheritance {
-	TestClass3 *obj;
+    TestClass3 *obj;
 
-	STAssertEquals([TestClass3 meaningfulNumber], (NSUInteger)0, @"TestClass3 should not be using protocol implementation of meaningfulNumber");
-	
-	obj = [[TestClass3 alloc] init];
-	STAssertNotNil(obj, @"could not allocate concreteprotocol'd class");
-	STAssertEqualObjects([obj getSomeString], @"SubProtocol", @"TestClass3 should be using protocol implementation of getSomeString");
-	STAssertTrue([obj respondsToSelector:@selector(additionalMethod)], @"TestClass3 should have protocol implementation of additionalMethod");
+    STAssertEquals([TestClass3 meaningfulNumber], (NSUInteger)0, @"TestClass3 should not be using protocol implementation of meaningfulNumber");
+    
+    obj = [[TestClass3 alloc] init];
+    STAssertNotNil(obj, @"could not allocate concreteprotocol'd class");
+    STAssertEqualObjects([obj getSomeString], @"SubProtocol", @"TestClass3 should be using protocol implementation of getSomeString");
+    STAssertTrue([obj respondsToSelector:@selector(additionalMethod)], @"TestClass3 should have protocol implementation of additionalMethod");
 
-	STAssertEquals([TestClass4 meaningfulNumber], (NSUInteger)0, @"TestClass4 should not be using protocol implementation of meaningfulNumber");
-	
-	obj = [[TestClass4 alloc] init];
-	STAssertNotNil(obj, @"could not allocate concreteprotocol'd subclass");
-	STAssertEqualObjects([obj getSomeString], @"SubProtocol", @"TestClass4 should be using protocol implementation of getSomeString");
-	STAssertTrue([obj respondsToSelector:@selector(additionalMethod)], @"TestClass4 should have protocol implementation of additionalMethod");
+    STAssertEquals([TestClass4 meaningfulNumber], (NSUInteger)0, @"TestClass4 should not be using protocol implementation of meaningfulNumber");
+    
+    obj = [[TestClass4 alloc] init];
+    STAssertNotNil(obj, @"could not allocate concreteprotocol'd subclass");
+    STAssertEqualObjects([obj getSomeString], @"SubProtocol", @"TestClass4 should be using protocol implementation of getSomeString");
+    STAssertTrue([obj respondsToSelector:@selector(additionalMethod)], @"TestClass4 should have protocol implementation of additionalMethod");
 }
 
 // protocols have to be injected to all classes in the order of the protocol
@@ -141,12 +141,12 @@ static BOOL SubProtocolInitialized = NO;
 // B needs to get its implementation into Y before A gets into X (which would
 // block the injection of B).
 - (void)testClassInheritanceWithProtocolInheritance {
-	TestClass5 *obj = [[TestClass5 alloc] init];
-	STAssertNotNil(obj, @"could not allocate concreteprotocol'd class");
-	STAssertTrue([obj respondsToSelector:@selector(additionalMethod)], @"TestClass5 should have protocol implementation of additionalMethod");
-	STAssertEqualObjects([obj getSomeString], @"SubProtocol", @"TestClass5 should be using SubProtocol implementation of getSomeString");
+    TestClass5 *obj = [[TestClass5 alloc] init];
+    STAssertNotNil(obj, @"could not allocate concreteprotocol'd class");
+    STAssertTrue([obj respondsToSelector:@selector(additionalMethod)], @"TestClass5 should have protocol implementation of additionalMethod");
+    STAssertEqualObjects([obj getSomeString], @"SubProtocol", @"TestClass5 should be using SubProtocol implementation of getSomeString");
 
-	STAssertEquals([TestClass5 meaningfulNumber], (NSUInteger)0, @"TestClass5 should not be using protocol implementation of meaningfulNumber");
+    STAssertEquals([TestClass5 meaningfulNumber], (NSUInteger)0, @"TestClass5 should not be using protocol implementation of meaningfulNumber");
 }
 
 @end

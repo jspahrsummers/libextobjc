@@ -20,7 +20,7 @@
  * however, always guaranteed to be present.
  */
 #define concrete \
-	optional
+    optional
 
 /**
  * Defines a "concrete protocol," which can provide default implementations of
@@ -49,7 +49,7 @@
 @concreteprotocol(MyProtocol)
 
 - (BOOL)isConcrete {
-  	return YES;
+    return YES;
 }
 
 @end
@@ -78,39 +78,39 @@
  * may not even inherit from \c NSObject).
  */
 #define concreteprotocol(NAME) \
-	/*
-	 * create a class used to contain all the methods used in this protocol
-	 */ \
-	interface NAME ## _ProtocolMethodContainer : NSObject < NAME > {} \
-	@end \
-	\
-	@implementation NAME ## _ProtocolMethodContainer \
-	/*
-	 * when this class is loaded into the runtime, add the concrete protocol
-	 * into the list we have of them
-	 */ \
-	+ (void)load { \
-		/*
-		 * passes the actual protocol as the first parameter, then this class as
-		 * the second
-		 */ \
-		if (!ext_addConcreteProtocol(objc_getProtocol(metamacro_stringify(NAME)), self)) \
-			fprintf(stderr, "ERROR: Could not load concrete protocol %s\n", metamacro_stringify(NAME)); \
-	} \
-	\
-	/*
-	 * using the "constructor" function attribute, we can ensure that this
-	 * function is executed only AFTER all the Objective-C runtime setup (i.e.,
-	 * after all +load methods have been executed)
-	 */ \
-	__attribute__((constructor)) \
-	static void ext_ ## NAME ## _inject (void) { \
-		/*
-		 * use this injection point to mark this concrete protocol as ready for
-		 * loading
-		 */ \
-		ext_loadConcreteProtocol(objc_getProtocol(metamacro_stringify(NAME))); \
-	}
+    /*
+     * create a class used to contain all the methods used in this protocol
+     */ \
+    interface NAME ## _ProtocolMethodContainer : NSObject < NAME > {} \
+    @end \
+    \
+    @implementation NAME ## _ProtocolMethodContainer \
+    /*
+     * when this class is loaded into the runtime, add the concrete protocol
+     * into the list we have of them
+     */ \
+    + (void)load { \
+        /*
+         * passes the actual protocol as the first parameter, then this class as
+         * the second
+         */ \
+        if (!ext_addConcreteProtocol(objc_getProtocol(metamacro_stringify(NAME)), self)) \
+            fprintf(stderr, "ERROR: Could not load concrete protocol %s\n", metamacro_stringify(NAME)); \
+    } \
+    \
+    /*
+     * using the "constructor" function attribute, we can ensure that this
+     * function is executed only AFTER all the Objective-C runtime setup (i.e.,
+     * after all +load methods have been executed)
+     */ \
+    __attribute__((constructor)) \
+    static void ext_ ## NAME ## _inject (void) { \
+        /*
+         * use this injection point to mark this concrete protocol as ready for
+         * loading
+         */ \
+        ext_loadConcreteProtocol(objc_getProtocol(metamacro_stringify(NAME))); \
+    }
 
 /*** implementation details follow ***/
 BOOL ext_addConcreteProtocol (Protocol *protocol, Class methodContainer);

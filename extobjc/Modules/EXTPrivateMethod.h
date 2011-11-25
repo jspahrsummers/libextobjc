@@ -39,23 +39,23 @@
  * blocks.
  */
 #define private(CLASS) \
-	protocol ext_ ## CLASS ## _PrivateMethods; \
-	@protocol ext_ ## CLASS ## _PrivateMethodsFakeProtocol <ext_ ## CLASS ## _PrivateMethods> \
-	@end \
-	\
-	@interface NSObject (CLASS ## _PrivateMethodsProtocol) <ext_ ## CLASS ## _PrivateMethodsFakeProtocol> \
-	@end \
-	\
-	extern __unsafe_unretained Class ext_privateMethodsClass_; \
-	extern __unsafe_unretained Protocol *ext_privateMethodsFakeProtocol_; \
-	\
-	__attribute__((constructor)) \
-	static void ext_ ## CLASS ## _preparePrivateMethods (void) { \
-		ext_privateMethodsClass_ = objc_getClass(# CLASS); \
-		ext_privateMethodsFakeProtocol_ = @protocol(ext_ ## CLASS ## _PrivateMethodsFakeProtocol); \
-	} \
-	\
-	@protocol ext_ ## CLASS ## _PrivateMethods
+    protocol ext_ ## CLASS ## _PrivateMethods; \
+    @protocol ext_ ## CLASS ## _PrivateMethodsFakeProtocol <ext_ ## CLASS ## _PrivateMethods> \
+    @end \
+    \
+    @interface NSObject (CLASS ## _PrivateMethodsProtocol) <ext_ ## CLASS ## _PrivateMethodsFakeProtocol> \
+    @end \
+    \
+    extern __unsafe_unretained Class ext_privateMethodsClass_; \
+    extern __unsafe_unretained Protocol *ext_privateMethodsFakeProtocol_; \
+    \
+    __attribute__((constructor)) \
+    static void ext_ ## CLASS ## _preparePrivateMethods (void) { \
+        ext_privateMethodsClass_ = objc_getClass(# CLASS); \
+        ext_privateMethodsFakeProtocol_ = @protocol(ext_ ## CLASS ## _PrivateMethodsFakeProtocol); \
+    } \
+    \
+    @protocol ext_ ## CLASS ## _PrivateMethods
 
 /**
  * Ends a set of private method declarations. This must be used instead of \c
@@ -64,22 +64,22 @@
  * @note This macro should only be used in an implementation file.
  */
 #define endprivate \
-	end \
-	\
-	__attribute__((constructor)) \
-	static void metamacro_concat(ext_injectPrivateMethods_, __LINE__) (void) { \
-		Class targetClass = ext_privateMethodsClass_; \
-		\
-		unsigned listCount = 0; \
-		__unsafe_unretained Protocol **protocolList = protocol_copyProtocolList(ext_privateMethodsFakeProtocol_, &listCount); \
-		\
-		Protocol *privateMethodsProtocol = protocolList[0]; \
-		free(protocolList); \
-		\
-		if (!ext_makeProtocolMethodsPrivate(targetClass, privateMethodsProtocol)) { \
-			fprintf(stderr, "ERROR: Could not add private methods for class %s\n", class_getName(targetClass)); \
-		} \
-	}
+    end \
+    \
+    __attribute__((constructor)) \
+    static void metamacro_concat(ext_injectPrivateMethods_, __LINE__) (void) { \
+        Class targetClass = ext_privateMethodsClass_; \
+        \
+        unsigned listCount = 0; \
+        __unsafe_unretained Protocol **protocolList = protocol_copyProtocolList(ext_privateMethodsFakeProtocol_, &listCount); \
+        \
+        Protocol *privateMethodsProtocol = protocolList[0]; \
+        free(protocolList); \
+        \
+        if (!ext_makeProtocolMethodsPrivate(targetClass, privateMethodsProtocol)) { \
+            fprintf(stderr, "ERROR: Could not add private methods for class %s\n", class_getName(targetClass)); \
+        } \
+    }
 
 /**
  * Required to invoke a private method against \c self. If this keyword is not

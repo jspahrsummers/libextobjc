@@ -16,7 +16,7 @@
  * 
  * @code
 id isIdentical = blockMethod(id self, id obj){
-	return self == obj;
+    return self == obj;
 };
  * @endcode
  *
@@ -24,7 +24,7 @@ id isIdentical = blockMethod(id self, id obj){
  * upon which the block is being invoked.
  */
 #define blockMethod(...) \
-	^(__VA_ARGS__)
+    ^(__VA_ARGS__)
 
 /**
  * The type for a block-based property getter. A block declared as this type may

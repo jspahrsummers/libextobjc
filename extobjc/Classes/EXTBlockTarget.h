@@ -60,9 +60,9 @@ id target = [EXTBlockTarget blockTargetWithSelector:@selector(afterOne) action:^
  * @code
 
 [control
-	addTarget:[EXTBlockTarget blockTargetFor:control selector:@selector(tapped) action:^{ NSLog(@"button tapped!"); }]
-	action:@selector(tapped)
-	forControlEvents:UIControlEventTouchUpInside
+    addTarget:[EXTBlockTarget blockTargetFor:control selector:@selector(tapped) action:^{ NSLog(@"button tapped!"); }]
+    action:@selector(tapped)
+    forControlEvents:UIControlEventTouchUpInside
 ];
 
  * @endcode

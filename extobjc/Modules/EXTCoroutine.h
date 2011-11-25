@@ -22,8 +22,8 @@
  * @code
 
 double (^myCoroutine)(int, double) = coroutine(int n, double x)({
-	yield n / x;
-	yield n * 2 / x;
+    yield n / x;
+    yield n * 2 / x;
 });
 
 double x = myCoroutine(42, 1.5);
@@ -49,11 +49,11 @@ double y = myCoroutine(42, 2.0);
  * any given time.
  */
 #define coroutine(...) \
-	^{ \
-		__block unsigned long ext_coroutine_line_ = 0; \
-		\
-		return [ \
-			^(__VA_ARGS__) coroutine_body
+    ^{ \
+        __block unsigned long ext_coroutine_line_ = 0; \
+        \
+        return [ \
+            ^(__VA_ARGS__) coroutine_body
 
 /**
  * Returns from the coroutine, passing back the given value. If the coroutine's
@@ -65,19 +65,19 @@ double y = myCoroutine(42, 2.0);
  * parentheses.
  */
 #define yield \
-	if ((ext_coroutine_line_ = __LINE__) == 0) \
-		case __LINE__: \
-			; \
-	else \
-		return
+    if ((ext_coroutine_line_ = __LINE__) == 0) \
+        case __LINE__: \
+            ; \
+    else \
+        return
 
 /*** implementation details follow ***/
 #define coroutine_body(STATEMENT) \
-			{ \
-				for (;; ext_coroutine_line_ = 0) \
-					switch (ext_coroutine_line_) \
-						default: \
-							STATEMENT \
-			} \
-		copy]; \
-	}()
+            { \
+                for (;; ext_coroutine_line_ = 0) \
+                    switch (ext_coroutine_line_) \
+                        default: \
+                            STATEMENT \
+            } \
+        copy]; \
+    }()

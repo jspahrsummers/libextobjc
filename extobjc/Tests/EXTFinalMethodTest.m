@@ -23,15 +23,15 @@
 
 @implementation MySuperclass
 - (Class)superclassFinalMethod {
-  	return [MySuperclass class];
+    return [MySuperclass class];
 }
 
 + (Class)superclassFinalClassMethod {
-  	return [MySuperclass class];
+    return [MySuperclass class];
 }
 
 - (Class)normalMethod {
-  	return nil;
+    return nil;
 }
 @end
 
@@ -42,18 +42,18 @@
 @implementation MySubclass
 // this should log an error to the console
 - (Class)superclassFinalMethod {
-	return [MySubclass class];
+    return [MySubclass class];
 }
 
 // this should log an error to the console
 + (Class)superclassFinalClassMethod {
-  	return [MySubclass class];
+    return [MySubclass class];
 }
 
 + (void)subclassFinalClassMethod {}
 
 - (Class)normalMethod {
- 	return [self class];
+    return [self class];
 }
 @end
 
@@ -74,17 +74,17 @@
 }
 
 - (void)testFinalMethods {
-	MySuperclass *superObj = [[MySuperclass alloc] init];
-	STAssertNotNil(superObj, @"could not allocate instance of class containing final methods");
-	STAssertEqualObjects([superObj superclassFinalMethod], [MySuperclass class], @"could not call final instance method on a superclass");
-	STAssertNil([superObj normalMethod], @"expected normal method to work in a class with final methods");
+    MySuperclass *superObj = [[MySuperclass alloc] init];
+    STAssertNotNil(superObj, @"could not allocate instance of class containing final methods");
+    STAssertEqualObjects([superObj superclassFinalMethod], [MySuperclass class], @"could not call final instance method on a superclass");
+    STAssertNil([superObj normalMethod], @"expected normal method to work in a class with final methods");
 
-	STAssertEqualObjects([MySuperclass superclassFinalClassMethod], [MySuperclass class], @"could not call final class method on superclass");
-	STAssertNoThrow([MySubclass subclassFinalClassMethod], @"could not call final class method on a subclass");
+    STAssertEqualObjects([MySuperclass superclassFinalClassMethod], [MySuperclass class], @"could not call final class method on superclass");
+    STAssertNoThrow([MySubclass subclassFinalClassMethod], @"could not call final class method on a subclass");
 
-	MySubclass *subObj = [[MySubclass alloc] init];
-	STAssertNotNil(subObj, @"could not allocate instance of subclass containing final methods");
-	STAssertEqualObjects([subObj normalMethod], [MySubclass class], @"expected normal method to work in a subclass with final methods");
+    MySubclass *subObj = [[MySubclass alloc] init];
+    STAssertNotNil(subObj, @"could not allocate instance of subclass containing final methods");
+    STAssertEqualObjects([subObj normalMethod], [MySubclass class], @"expected normal method to work in a subclass with final methods");
 }
 
 @end

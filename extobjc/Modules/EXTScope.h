@@ -28,8 +28,8 @@
  * a useless construct in such a case anyways.
  */
 #define onExit \
-	try {} @finally {} \
-	__strong ext_cleanupBlock_t metamacro_concat(ext_exitBlock_, __LINE__) __attribute__((cleanup(ext_executeCleanupBlock), unused)) = ^
+    try {} @finally {} \
+    __strong ext_cleanupBlock_t metamacro_concat(ext_exitBlock_, __LINE__) __attribute__((cleanup(ext_executeCleanupBlock), unused)) = ^
 
 /**
  * Given an object that conforms to the \c NSLocking protocol, this will acquire
@@ -38,7 +38,7 @@
  * including from exceptions, \c goto, \c return, \c break, and \c continue.
  */
 #define lockForScope(LOCK) \
-	__strong id<NSLocking> metamacro_concat(ext_scopeLock_, __LINE__) __attribute__((cleanup(ext_releaseScopeLock), unused)) = ext_lockAndReturn(LOCK)
+    __strong id<NSLocking> metamacro_concat(ext_scopeLock_, __LINE__) __attribute__((cleanup(ext_releaseScopeLock), unused)) = ext_lockAndReturn(LOCK)
 
 /**
  * Given an object that conforms to the \c NSLocking protocol and implements an
@@ -58,8 +58,8 @@
  * ifTryLock().
  */
 #define ifTryLock(LOCK) \
-	for (BOOL ext_done_ = NO; !ext_done_; ext_done_ = YES) \
-		for (__strong id ext_scopeLock_ __attribute__((cleanup(ext_releaseScopeLock))) = (LOCK); !ext_done_ && [ext_scopeLock_ tryLock]; ext_done_ = YES)
+    for (BOOL ext_done_ = NO; !ext_done_; ext_done_ = YES) \
+        for (__strong id ext_scopeLock_ __attribute__((cleanup(ext_releaseScopeLock))) = (LOCK); !ext_done_ && [ext_scopeLock_ tryLock]; ext_done_ = YES)
 
 /*** implementation details follow ***/
 typedef void (^ext_cleanupBlock_t)();

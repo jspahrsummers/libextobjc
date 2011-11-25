@@ -26,17 +26,17 @@
 
 // contains the information needed to reference a full concrete protocol
 typedef struct {
-	// the container class used to hold the concrete methods of this protocol
-	Class methodContainer;
+    // the container class used to hold the concrete methods of this protocol
+    Class methodContainer;
 
-	// the actual protocol declaration (@protocol block)
-	__unsafe_unretained Protocol *protocol;
+    // the actual protocol declaration (@protocol block)
+    __unsafe_unretained Protocol *protocol;
 
-	// whether both of the above objects have been fully loaded and prepared in
-	// memory
-	//
-	// this does NOT refer to a concrete protocol having been injected already
-	BOOL loaded;
+    // whether both of the above objects have been fully loaded and prepared in
+    // memory
+    //
+    // this does NOT refer to a concrete protocol having been injected already
+    BOOL loaded;
 } EXTConcreteProtocol;
 
 // the full list of concrete protocols (an array of EXTConcreteProtocol structs)
@@ -70,186 +70,186 @@ static pthread_mutex_t concreteProtocolsLock = PTHREAD_MUTEX_INITIALIZER;
  */
 static
 void ext_injectConcreteProtocols (void) {
-	/*
-	 * don't lock concreteProtocolsLock in this function, as it is called only
-	 * from public functions which already perform the synchronization
-	 */
-	
-	/*
-	 * This will sort concrete protocols in the order they should be loaded. If
-	 * a concrete protocol conforms to another concrete protocol, the former
-	 * will be prioritized above the latter; this way, a descendant protocol can
-	 * redefine the default methods in a "parent."
-	 */
-	qsort_b(concreteProtocols, concreteProtocolCount, sizeof(EXTConcreteProtocol), ^(const void *a, const void *b){
-		// if the pointers are equal, it must be the same protocol
-		if (a == b)
-			return 0;
+    /*
+     * don't lock concreteProtocolsLock in this function, as it is called only
+     * from public functions which already perform the synchronization
+     */
+    
+    /*
+     * This will sort concrete protocols in the order they should be loaded. If
+     * a concrete protocol conforms to another concrete protocol, the former
+     * will be prioritized above the latter; this way, a descendant protocol can
+     * redefine the default methods in a "parent."
+     */
+    qsort_b(concreteProtocols, concreteProtocolCount, sizeof(EXTConcreteProtocol), ^(const void *a, const void *b){
+        // if the pointers are equal, it must be the same protocol
+        if (a == b)
+            return 0;
 
-		const EXTConcreteProtocol *protoA = a;
-		const EXTConcreteProtocol *protoB = b;
+        const EXTConcreteProtocol *protoA = a;
+        const EXTConcreteProtocol *protoB = b;
 
-		// A higher return value here means a higher priority
-		int (^protocolInjectionPriority)(const EXTConcreteProtocol *) = ^(const EXTConcreteProtocol *concreteProtocol){
-			int runningTotal = 0;
+        // A higher return value here means a higher priority
+        int (^protocolInjectionPriority)(const EXTConcreteProtocol *) = ^(const EXTConcreteProtocol *concreteProtocol){
+            int runningTotal = 0;
 
-			for (size_t i = 0;i < concreteProtocolCount;++i) {
-				// the pointer passed into this block is guaranteed to point
-				// into the 'concreteProtocols' array, so we can compare the
-				// pointers directly for identity
-				if (concreteProtocol == concreteProtocols + i)
-					continue;
+            for (size_t i = 0;i < concreteProtocolCount;++i) {
+                // the pointer passed into this block is guaranteed to point
+                // into the 'concreteProtocols' array, so we can compare the
+                // pointers directly for identity
+                if (concreteProtocol == concreteProtocols + i)
+                    continue;
 
-				if (protocol_conformsToProtocol(concreteProtocol->protocol, concreteProtocols[i].protocol))
-					runningTotal++;
-			}
+                if (protocol_conformsToProtocol(concreteProtocol->protocol, concreteProtocols[i].protocol))
+                    runningTotal++;
+            }
 
-			return runningTotal;
-		};
+            return runningTotal;
+        };
 
-		/*
-		 * This will return:
-		 * 0 if the protocols are equal in priority (such that load order does not matter)
-		 * < 0 if A is more important than B
-		 * > 0 if B is more important than A
-		 */
-		return protocolInjectionPriority(protoB) - protocolInjectionPriority(protoA);
-	});
+        /*
+         * This will return:
+         * 0 if the protocols are equal in priority (such that load order does not matter)
+         * < 0 if A is more important than B
+         * > 0 if B is more important than A
+         */
+        return protocolInjectionPriority(protoB) - protocolInjectionPriority(protoA);
+    });
 
-	unsigned classCount = 0;
-	Class *allClasses = ext_copyClassList(&classCount);
+    unsigned classCount = 0;
+    Class *allClasses = ext_copyClassList(&classCount);
 
-	if (!classCount || !allClasses) {
-		fprintf(stderr, "ERROR: No classes registered with the runtime\n");
-		return;
-	}
+    if (!classCount || !allClasses) {
+        fprintf(stderr, "ERROR: No classes registered with the runtime\n");
+        return;
+    }
 
-	/*
-	 * set up an autorelease pool in case any Cocoa classes get used during
-	 * the injection process or +initialize
-	 */
-	@autoreleasepool {
+    /*
+     * set up an autorelease pool in case any Cocoa classes get used during
+     * the injection process or +initialize
+     */
+    @autoreleasepool {
 
-	// loop through the concrete protocols, and apply each one to all the
-	// classes in turn
-	//
-	// ORDER IS IMPORTANT HERE: protocols have to be injected to all classes in
-	// the order in which they appear in concreteProtocols. Consider classes
-	// X and Y that implement protocols A and B, respectively. B needs to get
-	// its implementation into Y before A gets into X (which would block the
-	// injection of B).
-		for (size_t i = 0;i < concreteProtocolCount;++i) {
-			Protocol *protocol = concreteProtocols[i].protocol;
+    // loop through the concrete protocols, and apply each one to all the
+    // classes in turn
+    //
+    // ORDER IS IMPORTANT HERE: protocols have to be injected to all classes in
+    // the order in which they appear in concreteProtocols. Consider classes
+    // X and Y that implement protocols A and B, respectively. B needs to get
+    // its implementation into Y before A gets into X (which would block the
+    // injection of B).
+        for (size_t i = 0;i < concreteProtocolCount;++i) {
+            Protocol *protocol = concreteProtocols[i].protocol;
 
-			// get the class containing the methods of this concrete protocol
-			Class containerClass = concreteProtocols[i].methodContainer;
+            // get the class containing the methods of this concrete protocol
+            Class containerClass = concreteProtocols[i].methodContainer;
 
-			// get the full list of instance methods implemented by the concrete
-			// protocol
-			unsigned imethodCount = 0;
-			Method *imethodList = class_copyMethodList(containerClass, &imethodCount);
+            // get the full list of instance methods implemented by the concrete
+            // protocol
+            unsigned imethodCount = 0;
+            Method *imethodList = class_copyMethodList(containerClass, &imethodCount);
 
-			// get the full list of class methods implemented by the concrete
-			// protocol
-			unsigned cmethodCount = 0;
-			Method *cmethodList = class_copyMethodList(object_getClass(containerClass), &cmethodCount);
+            // get the full list of class methods implemented by the concrete
+            // protocol
+            unsigned cmethodCount = 0;
+            Method *cmethodList = class_copyMethodList(object_getClass(containerClass), &cmethodCount);
 
-			// loop through all classes
-			for (unsigned classIndex = 0;classIndex < classCount;++classIndex) {
-				Class class = allClasses[classIndex];
-				
-				// if this class doesn't conform to the protocol, continue to the
-				// next class immediately
-				if (!class_conformsToProtocol(class, protocol))
-					continue;
+            // loop through all classes
+            for (unsigned classIndex = 0;classIndex < classCount;++classIndex) {
+                Class class = allClasses[classIndex];
+                
+                // if this class doesn't conform to the protocol, continue to the
+                // next class immediately
+                if (!class_conformsToProtocol(class, protocol))
+                    continue;
 
-				// get the metaclass of this class (the object on which class
-				// methods are implemented)
-				Class metaclass = object_getClass(class);
+                // get the metaclass of this class (the object on which class
+                // methods are implemented)
+                Class metaclass = object_getClass(class);
 
-				// inject all instance methods in the concrete protocol
-				for (unsigned methodIndex = 0;methodIndex < imethodCount;++methodIndex) {
-					Method method = imethodList[methodIndex];
-					SEL selector = method_getName(method);
+                // inject all instance methods in the concrete protocol
+                for (unsigned methodIndex = 0;methodIndex < imethodCount;++methodIndex) {
+                    Method method = imethodList[methodIndex];
+                    SEL selector = method_getName(method);
 
-					// first, check to see if such an instance method already exists
-					// (on this class or on a superclass)
-					if (class_getInstanceMethod(class, selector)) {
-						// it does exist, so don't overwrite it
-						continue;
-					}
+                    // first, check to see if such an instance method already exists
+                    // (on this class or on a superclass)
+                    if (class_getInstanceMethod(class, selector)) {
+                        // it does exist, so don't overwrite it
+                        continue;
+                    }
 
-					// add this instance method to the class in question
-					IMP imp = method_getImplementation(method);
-					const char *types = method_getTypeEncoding(method);
-					if (!class_addMethod(class, selector, imp, types)) {
-						fprintf(stderr, "ERROR: Could not implement instance method -%s from concrete protocol %s on class %s\n",
-							sel_getName(selector), protocol_getName(protocol), class_getName(class));
-					}
-				}
+                    // add this instance method to the class in question
+                    IMP imp = method_getImplementation(method);
+                    const char *types = method_getTypeEncoding(method);
+                    if (!class_addMethod(class, selector, imp, types)) {
+                        fprintf(stderr, "ERROR: Could not implement instance method -%s from concrete protocol %s on class %s\n",
+                            sel_getName(selector), protocol_getName(protocol), class_getName(class));
+                    }
+                }
 
-				// inject all class methods in the concrete protocol
-				for (unsigned methodIndex = 0;methodIndex < cmethodCount;++methodIndex) {
-					Method method = cmethodList[methodIndex];
-					SEL selector = method_getName(method);
+                // inject all class methods in the concrete protocol
+                for (unsigned methodIndex = 0;methodIndex < cmethodCount;++methodIndex) {
+                    Method method = cmethodList[methodIndex];
+                    SEL selector = method_getName(method);
 
-					// +initialize is a special case that should never be copied
-					// into a class, as it performs initialization for the concrete
-					// protocol
-					if (selector == @selector(initialize)) {
-						// so just continue looking through the rest of the methods
-						continue;
-					}
+                    // +initialize is a special case that should never be copied
+                    // into a class, as it performs initialization for the concrete
+                    // protocol
+                    if (selector == @selector(initialize)) {
+                        // so just continue looking through the rest of the methods
+                        continue;
+                    }
 
-					// first, check to see if a class method already exists (on this
-					// class or on a superclass)
-					//
-					// since 'class' is considered to be an instance of 'metaclass',
-					// this is actually checking for class methods (despite the
-					// function name)
-					if (class_getInstanceMethod(metaclass, selector)) {
-						// it does exist, so don't overwrite it
-						continue;
-					}
+                    // first, check to see if a class method already exists (on this
+                    // class or on a superclass)
+                    //
+                    // since 'class' is considered to be an instance of 'metaclass',
+                    // this is actually checking for class methods (despite the
+                    // function name)
+                    if (class_getInstanceMethod(metaclass, selector)) {
+                        // it does exist, so don't overwrite it
+                        continue;
+                    }
 
-					// add this class method to the metaclass in question
-					IMP imp = method_getImplementation(method);
-					const char *types = method_getTypeEncoding(method);
-					if (!class_addMethod(metaclass, selector, imp, types)) {
-						fprintf(stderr, "ERROR: Could not implement class method +%s from concrete protocol %s on class %s\n",
-							sel_getName(selector), protocol_getName(protocol), class_getName(class));
-					}
-				}
-			}
+                    // add this class method to the metaclass in question
+                    IMP imp = method_getImplementation(method);
+                    const char *types = method_getTypeEncoding(method);
+                    if (!class_addMethod(metaclass, selector, imp, types)) {
+                        fprintf(stderr, "ERROR: Could not implement class method +%s from concrete protocol %s on class %s\n",
+                            sel_getName(selector), protocol_getName(protocol), class_getName(class));
+                    }
+                }
+            }
 
-			// free the instance method list
-			free(imethodList); imethodList = NULL;
+            // free the instance method list
+            free(imethodList); imethodList = NULL;
 
-			// free the class method list
-			free(cmethodList); cmethodList = NULL;
+            // free the class method list
+            free(cmethodList); cmethodList = NULL;
 
-			// use [containerClass class] and discard the result to call +initialize
-			// on containerClass if it hasn't been called yet
-			//
-			// this is to allow the concrete protocol to perform custom initialization
-			(void)[containerClass class];
-		}
+            // use [containerClass class] and discard the result to call +initialize
+            // on containerClass if it hasn't been called yet
+            //
+            // this is to allow the concrete protocol to perform custom initialization
+            (void)[containerClass class];
+        }
 
-	// drain the temporary autorelease pool
-	}
+    // drain the temporary autorelease pool
+    }
 
-	// free the allocated class list
-	free(allClasses);
+    // free the allocated class list
+    free(allClasses);
 
-	// now that everything's injected, the concrete protocol list can also be
-	// destroyed
-	//
-	// in the future, it may actually be valuable to keep the list around so it
-	// can be queried
-	free(concreteProtocols); concreteProtocols = NULL;
-	concreteProtocolCount = 0;
-	concreteProtocolCapacity = 0;
-	concreteProtocolsLoaded = 0;
+    // now that everything's injected, the concrete protocol list can also be
+    // destroyed
+    //
+    // in the future, it may actually be valuable to keep the list around so it
+    // can be queried
+    free(concreteProtocols); concreteProtocols = NULL;
+    concreteProtocolCount = 0;
+    concreteProtocolCapacity = 0;
+    concreteProtocolsLoaded = 0;
 }
 
 /**
@@ -261,80 +261,80 @@ void ext_injectConcreteProtocols (void) {
  * has been set up.
  */
 BOOL ext_addConcreteProtocol (Protocol *protocol, Class methodContainer) {
-	if (!protocol || !methodContainer)
-		return NO;
-	
-	// lock the mutex to prevent accesses from other threads while we perform
-	// this work
-	if (pthread_mutex_lock(&concreteProtocolsLock) != 0) {
-		fprintf(stderr, "ERROR: Could not synchronize on concrete protocol data\n");
-		return NO;
-	}
-	
-	// if we've hit the hard maximum for number of concrete protocols, we can't
-	// continue
-	if (concreteProtocolCount == SIZE_MAX) {
-		pthread_mutex_unlock(&concreteProtocolsLock);
-		return NO;
-	}
+    if (!protocol || !methodContainer)
+        return NO;
+    
+    // lock the mutex to prevent accesses from other threads while we perform
+    // this work
+    if (pthread_mutex_lock(&concreteProtocolsLock) != 0) {
+        fprintf(stderr, "ERROR: Could not synchronize on concrete protocol data\n");
+        return NO;
+    }
+    
+    // if we've hit the hard maximum for number of concrete protocols, we can't
+    // continue
+    if (concreteProtocolCount == SIZE_MAX) {
+        pthread_mutex_unlock(&concreteProtocolsLock);
+        return NO;
+    }
 
-	// if the array has no more space, we will need to allocate additional
-	// entries
-	if (concreteProtocolCount >= concreteProtocolCapacity) {
-		size_t newCapacity;
-		if (concreteProtocolCapacity == 0)
-			// if there are no entries, make space for just one
-			newCapacity = 1;
-		else {
-			// otherwise, double the current capacity
-			newCapacity = concreteProtocolCapacity << 1;
+    // if the array has no more space, we will need to allocate additional
+    // entries
+    if (concreteProtocolCount >= concreteProtocolCapacity) {
+        size_t newCapacity;
+        if (concreteProtocolCapacity == 0)
+            // if there are no entries, make space for just one
+            newCapacity = 1;
+        else {
+            // otherwise, double the current capacity
+            newCapacity = concreteProtocolCapacity << 1;
 
-			// if the new capacity is less than the current capacity, that's
-			// unsigned integer overflow
-			if (newCapacity < concreteProtocolCapacity) {
-				// set it to the maximum possible instead
-				newCapacity = SIZE_MAX;
+            // if the new capacity is less than the current capacity, that's
+            // unsigned integer overflow
+            if (newCapacity < concreteProtocolCapacity) {
+                // set it to the maximum possible instead
+                newCapacity = SIZE_MAX;
 
-				// if the new capacity is still not greater than the current
-				// (for instance, if it was already SIZE_MAX), we can't continue
-				if (newCapacity <= concreteProtocolCapacity) {
-					pthread_mutex_unlock(&concreteProtocolsLock);
-					return NO;
-				}
-			}
-		}
+                // if the new capacity is still not greater than the current
+                // (for instance, if it was already SIZE_MAX), we can't continue
+                if (newCapacity <= concreteProtocolCapacity) {
+                    pthread_mutex_unlock(&concreteProtocolsLock);
+                    return NO;
+                }
+            }
+        }
 
-		// we have a new capacity, so resize the list of all concrete protocols
-		// to add the new entries
-		void * restrict ptr = realloc(concreteProtocols, sizeof(EXTConcreteProtocol) * newCapacity);
-		if (!ptr) {
-			// the allocation failed, abort
-			pthread_mutex_unlock(&concreteProtocolsLock);
-			return NO;
-		}
+        // we have a new capacity, so resize the list of all concrete protocols
+        // to add the new entries
+        void * restrict ptr = realloc(concreteProtocols, sizeof(EXTConcreteProtocol) * newCapacity);
+        if (!ptr) {
+            // the allocation failed, abort
+            pthread_mutex_unlock(&concreteProtocolsLock);
+            return NO;
+        }
 
-		// update the file statics with the new array's info
-		concreteProtocols = ptr;
-		concreteProtocolCapacity = newCapacity;
-	}
+        // update the file statics with the new array's info
+        concreteProtocols = ptr;
+        concreteProtocolCapacity = newCapacity;
+    }
 
-	// at this point, there absolutely must be at least one empty entry in the
-	// array
-	assert(concreteProtocolCount < concreteProtocolCapacity);
+    // at this point, there absolutely must be at least one empty entry in the
+    // array
+    assert(concreteProtocolCount < concreteProtocolCapacity);
 
-	// construct a new EXTConcreteProtocol structure and add it to the first
-	// empty space in the array, incrementing concreteProtocolCount in the
-	// process
-	concreteProtocols[concreteProtocolCount++] = (EXTConcreteProtocol){
-		.methodContainer = methodContainer,
-		.protocol = protocol,
-		.loaded = NO
-	};
+    // construct a new EXTConcreteProtocol structure and add it to the first
+    // empty space in the array, incrementing concreteProtocolCount in the
+    // process
+    concreteProtocols[concreteProtocolCount++] = (EXTConcreteProtocol){
+        .methodContainer = methodContainer,
+        .protocol = protocol,
+        .loaded = NO
+    };
 
-	pthread_mutex_unlock(&concreteProtocolsLock);
+    pthread_mutex_unlock(&concreteProtocolsLock);
 
-	// success!
-	return YES;
+    // success!
+    return YES;
 }
 
 /**
@@ -344,42 +344,42 @@ BOOL ext_addConcreteProtocol (Protocol *protocol, Class methodContainer) {
  * into conforming classes.
  */
 void ext_loadConcreteProtocol (Protocol *protocol) {
-	if (!protocol)
-		return;
-	
-	// lock the mutex to prevent accesses from other threads while we perform
-	// this work
-	if (pthread_mutex_lock(&concreteProtocolsLock) != 0) {
-		fprintf(stderr, "ERROR: Could not synchronize on concrete protocol data\n");
-		return;
-	}
+    if (!protocol)
+        return;
+    
+    // lock the mutex to prevent accesses from other threads while we perform
+    // this work
+    if (pthread_mutex_lock(&concreteProtocolsLock) != 0) {
+        fprintf(stderr, "ERROR: Could not synchronize on concrete protocol data\n");
+        return;
+    }
 
-	// loop through all the concrete protocols in our list, trying to find the
-	// one associated with 'protocol'
-	for (size_t i = 0;i < concreteProtocolCount;++i) {
-		if (concreteProtocols[i].protocol == protocol) {
-			// found the matching concrete protocol, check to see if it's
-			// already loaded
-			if (!concreteProtocols[i].loaded) {
-				// if it's not, mark it as being loaded now
-				concreteProtocols[i].loaded = YES;
+    // loop through all the concrete protocols in our list, trying to find the
+    // one associated with 'protocol'
+    for (size_t i = 0;i < concreteProtocolCount;++i) {
+        if (concreteProtocols[i].protocol == protocol) {
+            // found the matching concrete protocol, check to see if it's
+            // already loaded
+            if (!concreteProtocols[i].loaded) {
+                // if it's not, mark it as being loaded now
+                concreteProtocols[i].loaded = YES;
 
-				// since this concrete protocol was in our array, and it was not
-				// loaded, the total number of protocols loaded must be less
-				// than the total count at this point in time
-				assert(concreteProtocolsLoaded < concreteProtocolCount);
+                // since this concrete protocol was in our array, and it was not
+                // loaded, the total number of protocols loaded must be less
+                // than the total count at this point in time
+                assert(concreteProtocolsLoaded < concreteProtocolCount);
 
-				// ... and then increment the total number of concrete protocols
-				// loaded – if it now matches the total count of concrete
-				// protocols, begin the injection process
-				if (++concreteProtocolsLoaded == concreteProtocolCount)
-					ext_injectConcreteProtocols();
-			}
+                // ... and then increment the total number of concrete protocols
+                // loaded – if it now matches the total count of concrete
+                // protocols, begin the injection process
+                if (++concreteProtocolsLoaded == concreteProtocolCount)
+                    ext_injectConcreteProtocols();
+            }
 
-			break;
-		}
-	}
+            break;
+        }
+    }
 
-	pthread_mutex_unlock(&concreteProtocolsLock);
+    pthread_mutex_unlock(&concreteProtocolsLock);
 }
 

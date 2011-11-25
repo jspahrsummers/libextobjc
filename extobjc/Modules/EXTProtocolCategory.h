@@ -28,7 +28,7 @@
  * methods may be applied to many distinct classes. Use with care.
  */
 #define pcategoryinterface(PROTOCOL, CATEGORY) \
-	interface NSObject (CATEGORY)
+    interface NSObject (CATEGORY)
 
 /**
  * \@pcategoryimplementation defines the implementation for a category named \a CATEGORY on protocol \a
@@ -56,39 +56,39 @@
  * may not even inherit from \c NSObject).
  */
 #define pcategoryimplementation(PROTOCOL, CATEGORY) \
-	/*
-	 * create a class used to contain all the methods used in this category
-	 */ \
-	interface PROTOCOL ## _ ## CATEGORY ## _MethodContainer : NSObject {} \
-	@end \
-	\
-	@implementation PROTOCOL ## _ ## CATEGORY ## _MethodContainer \
-	/*
-	 * when this class is loaded into the runtime, add the protocol category
-	 * into the list we have of them
-	 */ \
-	+ (void)load { \
-		/*
-		 * passes the actual protocol as the first parameter, then this class as
-		 * the second
-		 */ \
-		if (!ext_addProtocolCategory(objc_getProtocol(metamacro_stringify(PROTOCOL)), self)) \
-			fprintf(stderr, "ERROR: Could not load protocol category %s (%s)\n", metamacro_stringify(PROTOCOL), # CATEGORY); \
-	} \
-	\
-	/*
-	 * using the "constructor" function attribute, we can ensure that this
-	 * function is executed only AFTER all the Objective-C runtime setup (i.e.,
-	 * after all +load methods have been executed)
-	 */ \
-	__attribute__((constructor)) \
-	static void ext_ ## PROTOCOL ## _ ## CATEGORY ## _inject (void) { \
-		/*
-		 * use this injection point to mark this protocol category as ready for
-		 * loading
-		 */ \
-		ext_loadProtocolCategory(objc_getProtocol(metamacro_stringify(PROTOCOL))); \
-	}
+    /*
+     * create a class used to contain all the methods used in this category
+     */ \
+    interface PROTOCOL ## _ ## CATEGORY ## _MethodContainer : NSObject {} \
+    @end \
+    \
+    @implementation PROTOCOL ## _ ## CATEGORY ## _MethodContainer \
+    /*
+     * when this class is loaded into the runtime, add the protocol category
+     * into the list we have of them
+     */ \
+    + (void)load { \
+        /*
+         * passes the actual protocol as the first parameter, then this class as
+         * the second
+         */ \
+        if (!ext_addProtocolCategory(objc_getProtocol(metamacro_stringify(PROTOCOL)), self)) \
+            fprintf(stderr, "ERROR: Could not load protocol category %s (%s)\n", metamacro_stringify(PROTOCOL), # CATEGORY); \
+    } \
+    \
+    /*
+     * using the "constructor" function attribute, we can ensure that this
+     * function is executed only AFTER all the Objective-C runtime setup (i.e.,
+     * after all +load methods have been executed)
+     */ \
+    __attribute__((constructor)) \
+    static void ext_ ## PROTOCOL ## _ ## CATEGORY ## _inject (void) { \
+        /*
+         * use this injection point to mark this protocol category as ready for
+         * loading
+         */ \
+        ext_loadProtocolCategory(objc_getProtocol(metamacro_stringify(PROTOCOL))); \
+    }
 
 /*** implementation details follow ***/
 BOOL ext_addProtocolCategory (Protocol *protocol, Class methodContainer);

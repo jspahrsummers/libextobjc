@@ -11,26 +11,26 @@
 @implementation EXTBlockTargetTest
 
 - (void)testPerformAfterDelay {
-	__block BOOL executed = NO;
+    __block BOOL executed = NO;
 
-	id target = [EXTBlockTarget
-		blockTargetWithSelector:@selector(setExecuted)
-		action:^{ executed = YES; }
-	];
+    id target = [EXTBlockTarget
+        blockTargetWithSelector:@selector(setExecuted)
+        action:^{ executed = YES; }
+    ];
 
-	STAssertNotNil(target, @"could not initialize EXTBlockTarget instance");
-	STAssertFalse(executed, @"block should not have executed yet");
+    STAssertNotNil(target, @"could not initialize EXTBlockTarget instance");
+    STAssertFalse(executed, @"block should not have executed yet");
 
-	[target performSelector:@selector(setExecuted)];
-	STAssertTrue(executed, @"block should have been executed when selector was invoked manually");
+    [target performSelector:@selector(setExecuted)];
+    STAssertTrue(executed, @"block should have been executed when selector was invoked manually");
 
-	executed = NO;
+    executed = NO;
 
-	[target performSelector:@selector(setExecuted) withObject:nil afterDelay:0];
-	STAssertFalse(executed, @"block should not have executed yet");
+    [target performSelector:@selector(setExecuted) withObject:nil afterDelay:0];
+    STAssertFalse(executed, @"block should not have executed yet");
 
-	[[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.1]];
-	STAssertTrue(executed, @"block should have executed after run loop has iterated a few times");
+    [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.1]];
+    STAssertTrue(executed, @"block should have executed after run loop has iterated a few times");
 }
 
 @end

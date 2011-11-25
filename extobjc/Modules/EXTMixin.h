@@ -24,20 +24,20 @@
  * due to the nature of \c objc_msgSendSuper().
  */
 #define EXTMixin(TARGET, CLASS) \
-	/*
-	 * using the "constructor" function attribute, we can ensure that this
-	 * function is executed only AFTER all the Objective-C runtime setup (i.e.,
-	 * after all +load methods have been executed)
-	 */ \
-	__attribute__((constructor)) \
-	static void ext_ ## TARGET ## _ ## CLASS ## _mixin (void) { \
-		/*
-		 * obtain the class to inject into, and the class from which to copy
-		 * methods
-		 */ \
-		Class targetClass = objc_getClass(# TARGET); \
-		Class sourceClass = objc_getClass(# CLASS); \
-		\
-		ext_replaceMethodsFromClass(sourceClass, targetClass); \
-	}
+    /*
+     * using the "constructor" function attribute, we can ensure that this
+     * function is executed only AFTER all the Objective-C runtime setup (i.e.,
+     * after all +load methods have been executed)
+     */ \
+    __attribute__((constructor)) \
+    static void ext_ ## TARGET ## _ ## CLASS ## _mixin (void) { \
+        /*
+         * obtain the class to inject into, and the class from which to copy
+         * methods
+         */ \
+        Class targetClass = objc_getClass(# TARGET); \
+        Class sourceClass = objc_getClass(# CLASS); \
+        \
+        ext_replaceMethodsFromClass(sourceClass, targetClass); \
+    }
 
