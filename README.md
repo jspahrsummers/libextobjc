@@ -8,6 +8,6 @@ This library is public domain, and can be incorporated for free and without attr
 
 # Requirements
 
-* The latest version of [libffi](https://github.com/atgreen/libffi) is needed to compile the whole project.
+* The latest version of [libffi](https://github.com/atgreen/libffi) is needed to compile the whole project. Certain modules may not require libffi, and can therefore be used independently if pulled out of the Xcode project.
     * For iOS, [a compatible version of libffi](https://github.com/jspahrsummers/libffi) is included as a submodule, and is built and linked automatically.
     * For Mac OS X, libffi should be installed with [Homebrew](https://github.com/jspahrsummers/homebrew).
