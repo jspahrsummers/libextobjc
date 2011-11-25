@@ -110,70 +110,74 @@ static ffi_type *ext_FFITypeForEncoding (const char *typeEncoding) {
     }
 }
 
+static void ext_addAdviceToMethod (Class class, Method method, Class containerClass) {
+    SEL selector = method_getName(method);
+
+    ffi_type *returnType = &ffi_type_sint;
+
+    /*
+     * All memory allocations below _intentionally_ leak memory. These
+     * structures need to stick around for as long as the FFI closure will
+     * be used, and, since we're installing a new method on a class, we're
+     * operating under the assumption that it could be used anytime during
+     * the lifetime of the application. There would be no appropriate time
+     * to free this memory.
+     */
+    
+    // argument types for testing
+    unsigned argumentCount = method_getNumberOfArguments(method);
+    ffi_type **argTypes = malloc(sizeof(*argTypes) * argumentCount);
+    if (!argTypes) {
+        fprintf(stderr, "ERROR: Could not allocate space for %u arguments\n", argumentCount);
+        return;
+    }
+
+    const char *typeString = method_getTypeEncoding(method);
+    unsigned typeIndex = 0;
+
+    while (typeString) {
+        // skip over numbers
+        while (isdigit(*typeString))
+            ++typeString;
+
+        if (*typeString == '\0')
+            break;
+
+        // skip over the return type in the signature
+        if (typeIndex > 0) {
+            assert(typeIndex - 1 < argumentCount);
+            argTypes[typeIndex - 1] = ext_FFITypeForEncoding(typeString);
+        }
+
+        typeString = NSGetSizeAndAlignment(typeString, NULL, NULL);
+        ++typeIndex;
+    }
+
+    ffi_cif *methodCIF = malloc(sizeof(*methodCIF));
+    if (!methodCIF) {
+        fprintf(stderr, "ERROR: Could not allocate new FFI CIF\n");
+        return;
+    }
+
+    ffi_prep_cif(methodCIF, FFI_DEFAULT_ABI, argumentCount, returnType, argTypes);
+
+    SEL movedSelector = originalSelectorForSelector(selector);
+    class_addMethod(class, movedSelector, method_getImplementation(method), method_getTypeEncoding(method));
+
+    void *replacementIMP = NULL;
+    ffi_closure *closure = ffi_closure_alloc(sizeof(ffi_closure), &replacementIMP);
+
+    ffi_prep_closure_loc(closure, methodCIF, &methodReplacementWithAdvice, (__bridge void *)containerClass, replacementIMP);
+    method_setImplementation(method, (IMP)replacementIMP);
+}
+
 static void ext_injectAspect (Class containerClass, Class class) {
     unsigned imethodCount = 0;
     Method *imethodList = class_copyMethodList(class, &imethodCount);
 
     for (unsigned i = 0;i < imethodCount;++i) {
-        /*
-         * All memory allocations below _intentionally_ leak memory. These
-         * structures need to stick around for as long as the FFI closure will
-         * be used, and, since we're installing a new method on a class, we're
-         * operating under the assumption that it could be used anytime during
-         * the lifetime of the application. There would be no appropriate time
-         * to free this memory.
-         */
-
         Method method = imethodList[i];
-        SEL selector = method_getName(method);
-
-        ffi_type *returnType = &ffi_type_sint;
-        
-        // argument types for testing
-        unsigned argumentCount = method_getNumberOfArguments(method);
-        ffi_type **argTypes = malloc(sizeof(*argTypes) * argumentCount);
-        if (!argTypes) {
-            fprintf(stderr, "ERROR: Could not allocate space for %u arguments\n", argumentCount);
-            continue;
-        }
-
-        const char *typeString = method_getTypeEncoding(method);
-        unsigned typeIndex = 0;
-
-        while (typeString) {
-            // skip over numbers
-            while (isdigit(*typeString))
-                ++typeString;
-
-            if (*typeString == '\0')
-                break;
-
-            // skip over the return type in the signature
-            if (typeIndex > 0) {
-                assert(typeIndex - 1 < argumentCount);
-                argTypes[typeIndex - 1] = ext_FFITypeForEncoding(typeString);
-            }
-
-            typeString = NSGetSizeAndAlignment(typeString, NULL, NULL);
-            ++typeIndex;
-        }
-
-        ffi_cif *methodCIF = malloc(sizeof(*methodCIF));
-        if (!methodCIF) {
-            fprintf(stderr, "ERROR: Could not allocate new FFI CIF\n");
-            break;
-        }
-
-        ffi_prep_cif(methodCIF, FFI_DEFAULT_ABI, argumentCount, returnType, argTypes);
-
-        SEL movedSelector = originalSelectorForSelector(selector);
-        class_addMethod(class, movedSelector, method_getImplementation(method), method_getTypeEncoding(method));
-
-        void *replacementIMP = NULL;
-        ffi_closure *closure = ffi_closure_alloc(sizeof(ffi_closure), &replacementIMP);
-
-        ffi_prep_closure_loc(closure, methodCIF, &methodReplacementWithAdvice, (__bridge void *)containerClass, replacementIMP);
-        method_setImplementation(method, (IMP)replacementIMP);
+        ext_addAdviceToMethod(class, method, containerClass);
     }
 
     free(imethodList);
