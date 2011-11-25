@@ -129,15 +129,14 @@ void ext_injectConcreteProtocols (void) {
      * the injection process or +initialize
      */
     @autoreleasepool {
-
-    // loop through the concrete protocols, and apply each one to all the
-    // classes in turn
-    //
-    // ORDER IS IMPORTANT HERE: protocols have to be injected to all classes in
-    // the order in which they appear in concreteProtocols. Consider classes
-    // X and Y that implement protocols A and B, respectively. B needs to get
-    // its implementation into Y before A gets into X (which would block the
-    // injection of B).
+        // loop through the concrete protocols, and apply each one to all the
+        // classes in turn
+        //
+        // ORDER IS IMPORTANT HERE: protocols have to be injected to all classes in
+        // the order in which they appear in concreteProtocols. Consider classes
+        // X and Y that implement protocols A and B, respectively. B needs to get
+        // its implementation into Y before A gets into X (which would block the
+        // injection of B).
         for (size_t i = 0;i < concreteProtocolCount;++i) {
             Protocol *protocol = concreteProtocols[i].protocol;
 
@@ -234,8 +233,6 @@ void ext_injectConcreteProtocols (void) {
             // this is to allow the concrete protocol to perform custom initialization
             (void)[containerClass class];
         }
-
-    // drain the temporary autorelease pool
     }
 
     // free the allocated class list
