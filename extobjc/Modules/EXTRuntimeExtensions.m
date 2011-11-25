@@ -9,11 +9,156 @@
 #import "EXTRuntimeExtensions.h"
 #import <objc/message.h>
 #import <ctype.h>
+#import <pthread.h>
 #import <stdio.h>
 #import <stdlib.h>
 #import <string.h>
 
 typedef NSMethodSignature *(*methodSignatureForSelectorIMP)(id, SEL, SEL);
+typedef void (^ext_specialProtocolInjectionBlock)(Class);
+
+// contains the information needed to reference a full special protocol
+typedef struct {
+    // the actual protocol declaration (@protocol block)
+    __unsafe_unretained Protocol *protocol;
+
+    // the injection block associated with this protocol
+    //
+    // this block is RETAINED and must eventually be released by transferring it
+    // back to ARC
+    void *injectionBlock;
+
+    // whether this protocol is ready to be injected to its conforming classes
+    //
+    // this does NOT refer to a special protocol having been injected already
+    BOOL ready;
+} EXTSpecialProtocol;
+
+// the full list of special protocols (an array of EXTSpecialProtocol structs)
+static EXTSpecialProtocol * restrict specialProtocols = NULL;
+
+// the number of special protocols stored in the array
+static size_t specialProtocolCount = 0;
+
+// the total capacity of the array
+// we use a doubling algorithm to amortize the cost of insertion, so this is
+// generally going to be a power-of-two
+static size_t specialProtocolCapacity = 0;
+
+// the number of EXTSpecialProtocols which have been marked as ready for
+// injection (though not necessary injected)
+//
+// in other words, the total count which have 'ready' set to YES
+static size_t specialProtocolsReady = 0;
+
+// a mutex is used to guard against multiple threads changing the above static
+// variables
+static pthread_mutex_t specialProtocolsLock = PTHREAD_MUTEX_INITIALIZER;
+
+/**
+ * This function actually performs the hard work of special protocol injection.
+ * It obtains a full list of all classes registered with the Objective-C
+ * runtime, finds those conforming to special protocols, and then runs the
+ * injection blocks as appropriate.
+ */
+static void ext_injectSpecialProtocols (void) {
+    /*
+     * don't lock specialProtocolsLock in this function, as it is called only
+     * from public functions which already perform the synchronization
+     */
+    
+    /*
+     * This will sort special protocols in the order they should be loaded. If
+     * a special protocol conforms to another special protocol, the former
+     * will be prioritized above the latter.
+     */
+    qsort_b(specialProtocols, specialProtocolCount, sizeof(EXTSpecialProtocol), ^(const void *a, const void *b){
+        // if the pointers are equal, it must be the same protocol
+        if (a == b)
+            return 0;
+
+        const EXTSpecialProtocol *protoA = a;
+        const EXTSpecialProtocol *protoB = b;
+
+        // A higher return value here means a higher priority
+        int (^protocolInjectionPriority)(const EXTSpecialProtocol *) = ^(const EXTSpecialProtocol *specialProtocol){
+            int runningTotal = 0;
+
+            for (size_t i = 0;i < specialProtocolCount;++i) {
+                // the pointer passed into this block is guaranteed to point
+                // into the 'specialProtocols' array, so we can compare the
+                // pointers directly for identity
+                if (specialProtocol == specialProtocols + i)
+                    continue;
+
+                if (protocol_conformsToProtocol(specialProtocol->protocol, specialProtocols[i].protocol))
+                    runningTotal++;
+            }
+
+            return runningTotal;
+        };
+
+        /*
+         * This will return:
+         * 0 if the protocols are equal in priority (such that load order does not matter)
+         * < 0 if A is more important than B
+         * > 0 if B is more important than A
+         */
+        return protocolInjectionPriority(protoB) - protocolInjectionPriority(protoA);
+    });
+
+    unsigned classCount = 0;
+    Class *allClasses = ext_copyClassList(&classCount);
+
+    if (!classCount || !allClasses) {
+        fprintf(stderr, "ERROR: No classes registered with the runtime\n");
+        return;
+    }
+
+    /*
+     * set up an autorelease pool in case any Cocoa classes get used during
+     * the injection process or +initialize
+     */
+    @autoreleasepool {
+        // loop through the special protocols, and apply each one to all the
+        // classes in turn
+        //
+        // ORDER IS IMPORTANT HERE: protocols have to be injected to all classes in
+        // the order in which they appear in specialProtocols. Consider classes
+        // X and Y that implement protocols A and B, respectively. B needs to get
+        // its implementation into Y before A gets into X.
+        for (size_t i = 0;i < specialProtocolCount;++i) {
+            Protocol *protocol = specialProtocols[i].protocol;
+            
+            // transfer ownership of the injection block to ARC and remove it
+            // from the structure
+            ext_specialProtocolInjectionBlock injectionBlock = (__bridge_transfer id)specialProtocols[i].injectionBlock;
+            specialProtocols[i].injectionBlock = NULL;
+
+            // loop through all classes
+            for (unsigned classIndex = 0;classIndex < classCount;++classIndex) {
+                Class class = allClasses[classIndex];
+                
+                // if this class doesn't conform to the protocol, continue to the
+                // next class immediately
+                if (!class_conformsToProtocol(class, protocol))
+                    continue;
+                
+                injectionBlock(class);
+            }
+        }
+    }
+
+    // free the allocated class list
+    free(allClasses);
+
+    // now that everything's injected, the special protocol list can also be
+    // destroyed
+    free(specialProtocols); specialProtocols = NULL;
+    specialProtocolCount = 0;
+    specialProtocolCapacity = 0;
+    specialProtocolsReady = 0;
+}
 
 unsigned ext_injectMethods (
     Class aClass,
@@ -590,6 +735,127 @@ NSMethodSignature *ext_globalMethodSignatureForSelector (SEL aSelector) {
 
     free(classes);
     return signature;
+}
+
+BOOL ext_loadSpecialProtocol (Protocol *protocol, void (^injectionBehavior)(Class destinationClass)) {
+    @autoreleasepool {
+        NSCParameterAssert(protocol != nil);
+        NSCParameterAssert(injectionBehavior != nil);
+        
+        // lock the mutex to prevent accesses from other threads while we perform
+        // this work
+        if (pthread_mutex_lock(&specialProtocolsLock) != 0) {
+            fprintf(stderr, "ERROR: Could not synchronize on special protocol data\n");
+            return NO;
+        }
+        
+        // if we've hit the hard maximum for number of special protocols, we can't
+        // continue
+        if (specialProtocolCount == SIZE_MAX) {
+            pthread_mutex_unlock(&specialProtocolsLock);
+            return NO;
+        }
+
+        // if the array has no more space, we will need to allocate additional
+        // entries
+        if (specialProtocolCount >= specialProtocolCapacity) {
+            size_t newCapacity;
+            if (specialProtocolCapacity == 0)
+                // if there are no entries, make space for just one
+                newCapacity = 1;
+            else {
+                // otherwise, double the current capacity
+                newCapacity = specialProtocolCapacity << 1;
+
+                // if the new capacity is less than the current capacity, that's
+                // unsigned integer overflow
+                if (newCapacity < specialProtocolCapacity) {
+                    // set it to the maximum possible instead
+                    newCapacity = SIZE_MAX;
+
+                    // if the new capacity is still not greater than the current
+                    // (for instance, if it was already SIZE_MAX), we can't continue
+                    if (newCapacity <= specialProtocolCapacity) {
+                        pthread_mutex_unlock(&specialProtocolsLock);
+                        return NO;
+                    }
+                }
+            }
+
+            // we have a new capacity, so resize the list of all special protocols
+            // to add the new entries
+            void * restrict ptr = realloc(specialProtocols, sizeof(*specialProtocols) * newCapacity);
+            if (!ptr) {
+                // the allocation failed, abort
+                pthread_mutex_unlock(&specialProtocolsLock);
+                return NO;
+            }
+
+            specialProtocols = ptr;
+            specialProtocolCapacity = newCapacity;
+        }
+
+        // at this point, there absolutely must be at least one empty entry in the
+        // array
+        assert(specialProtocolCount < specialProtocolCapacity);
+
+        ext_specialProtocolInjectionBlock copiedBlock = [injectionBehavior copy];
+
+        // construct a new EXTSpecialProtocol structure and add it to the first
+        // empty space in the array
+        specialProtocols[specialProtocolCount] = (EXTSpecialProtocol){
+            .protocol = protocol,
+            .injectionBlock = (__bridge_retained void *)copiedBlock,
+            .ready = NO
+        };
+
+        ++specialProtocolCount;
+        pthread_mutex_unlock(&specialProtocolsLock);
+    }
+
+    // success!
+    return YES;
+}
+
+void ext_specialProtocolReadyForInjection (Protocol *protocol) {
+    @autoreleasepool {
+        NSCParameterAssert(protocol != nil);
+        
+        // lock the mutex to prevent accesses from other threads while we perform
+        // this work
+        if (pthread_mutex_lock(&specialProtocolsLock) != 0) {
+            fprintf(stderr, "ERROR: Could not synchronize on special protocol data\n");
+            return;
+        }
+
+        // loop through all the special protocols in our list, trying to find the
+        // one associated with 'protocol'
+        for (size_t i = 0;i < specialProtocolCount;++i) {
+            if (specialProtocols[i].protocol == protocol) {
+                // found the matching special protocol, check to see if it's
+                // already ready
+                if (!specialProtocols[i].ready) {
+                    // if it's not, mark it as being ready now
+                    specialProtocols[i].ready = YES;
+
+                    // since this special protocol was in our array, and it was not
+                    // loaded, the total number of protocols loaded must be less
+                    // than the total count at this point in time
+                    assert(specialProtocolsReady < specialProtocolCount);
+
+                    // ... and then increment the total number of special protocols
+                    // loaded – if it now matches the total count of special
+                    // protocols, begin the injection process
+                    if (++specialProtocolsReady == specialProtocolCount)
+                        ext_injectSpecialProtocols();
+                }
+
+                break;
+            }
+        }
+
+        pthread_mutex_unlock(&specialProtocolsLock);
+    }
 }
 
 void ext_removeMethod (Class aClass, SEL methodName) {

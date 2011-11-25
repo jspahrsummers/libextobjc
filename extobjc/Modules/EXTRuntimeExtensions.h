@@ -300,6 +300,37 @@ unsigned ext_injectMethods (Class aClass, Method *methods, unsigned count, ext_m
 BOOL ext_injectMethodsFromClass (Class srcClass, Class dstClass, ext_methodInjectionBehavior behavior, ext_failedMethodCallback failedToAddCallback);
 
 /**
+ * Loads a "special protocol" into an internal list. A special protocol is any
+ * protocol for which implementing classes need injection behavior (i.e., any
+ * class conforming to the protocol needs to be reflected upon). Returns \c NO
+ * if loading failed.
+ *
+ * Using this facility proceeds as follows:
+ *
+ * @li Each protocol is loaded with #ext_loadSpecialProtocol and a custom block
+ * that describes its injection behavior on each conforming class.
+ * @li Each protocol is marked as being ready for injection with
+ * #ext_specialProtocolReadyForInjection.
+ * @li The entire Objective-C class list is retrieved, and each special
+ * protocol's \a injectionBehavior block is run for all conforming classes.
+ *
+ * It is an error to call this function without later calling
+ * #ext_specialProtocolReadyForInjection as well.
+ *
+ * @note A special protocol X which conforms to another special protocol Y is
+ * always injected \e after Y.
+ */
+BOOL ext_loadSpecialProtocol (Protocol *protocol, void (^injectionBehavior)(Class destinationClass));
+
+/**
+ * Marks a special protocol as being ready for injection. Injection is actually
+ * performed only after all special protocols have been marked in this way.
+ *
+ * @sa ext_loadSpecialProtocol
+ */
+void ext_specialProtocolReadyForInjection (Protocol *protocol);
+
+/**
  * "Removes" any instance method matching \a methodName from \a aClass. This
  * removal can mean one of two things:
  *
