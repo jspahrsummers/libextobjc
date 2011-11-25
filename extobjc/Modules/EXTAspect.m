@@ -14,9 +14,13 @@
 typedef void (^ext_adviceOriginalMethodBlock)(void);
 typedef void (*ext_adviceIMP)(id, SEL, ext_adviceOriginalMethodBlock);
 
-static SEL originalSelectorForSelector (SEL selector) {
+@interface NSObject (AspectContainerInformalProtocol)
++ (NSString *)aspectName;
+@end
+
+static SEL originalSelectorForSelector (Class aspectContainer, SEL selector) {
     NSString *methodName = NSStringFromSelector(selector);
-    NSString *originalMethodName = [methodName stringByAppendingString:@"_unadvised_"];
+    NSString *originalMethodName = [methodName stringByAppendingFormat:@"_ext_from_%@", [aspectContainer aspectName]];
     return NSSelectorFromString(originalMethodName);
 }
 
@@ -44,7 +48,7 @@ static void methodReplacementWithAdvice (ffi_cif *cif, void *result, void **args
     Class selfClass = object_getClass(self);
 
     ext_adviceOriginalMethodBlock originalMethod = ^{
-        SEL originalSelector = originalSelectorForSelector(_cmd);
+        SEL originalSelector = originalSelectorForSelector(aspectContainer, _cmd);
         IMP originalIMP = class_getMethodImplementation(selfClass, originalSelector);
 
         ffi_call(cif, FFI_FN(originalIMP), result, args);
@@ -217,7 +221,7 @@ static void ext_addAdviceToMethod (Class class, Method method, Class containerCl
 
     ffi_prep_cif(methodCIF, FFI_DEFAULT_ABI, argumentCount, returnType, argTypes);
 
-    SEL movedSelector = originalSelectorForSelector(selector);
+    SEL movedSelector = originalSelectorForSelector(containerClass, selector);
     class_addMethod(class, movedSelector, method_getImplementation(method), method_getTypeEncoding(method));
 
     void *replacementIMP = NULL;
@@ -228,22 +232,50 @@ static void ext_addAdviceToMethod (Class class, Method method, Class containerCl
 }
 
 static void ext_injectAspect (Class containerInstanceClass, Class instanceClass) {
+
     // reused for instance and class method injection
     void (^injectFromClassIntoClass)(Class, Class) = ^(Class containerClass, Class class){
         unsigned methodCount = 0;
         Method *methodList = class_copyMethodList(class, &methodCount);
 
-        BOOL hasUniversalAdvice = (class_getInstanceMethod(containerClass, @selector(advise:)) != NULL);
+        unsigned adviceMethodCount = 0;
+        Method *adviceMethodList = class_copyMethodList(containerClass, &adviceMethodCount);
+
+        BOOL hasUniversalAdvice = NO;
+        for (unsigned i = 0;i < adviceMethodCount;++i) {
+            Method adviceMethod = adviceMethodList[i];
+            if (method_getName(adviceMethod) == @selector(advise:)) {
+                hasUniversalAdvice = YES;
+                break;
+            }
+        }
 
         for (unsigned i = 0;i < methodCount;++i) {
             Method method = methodList[i];
             SEL selector = method_getName(method);
-            BOOL hasSpecificAdvice = (class_getInstanceMethod(containerClass, specificAdviceSelectorForSelector(selector)) != NULL);
 
-            if (hasUniversalAdvice || hasSpecificAdvice)
+            const char *name = sel_getName(selector);
+            if (strstr(name, "_ext_")) {
+                // this method was installed by us, skip it
+                continue;
+            }
+
+            if (hasUniversalAdvice) {
                 ext_addAdviceToMethod(class, method, containerClass);
+                continue;
+            }
+
+            SEL specificAdviceSelector = specificAdviceSelectorForSelector(selector);
+            for (unsigned i = 0;i < adviceMethodCount;++i) {
+                Method adviceMethod = adviceMethodList[i];
+                if (method_getName(adviceMethod) == specificAdviceSelector) {
+                    ext_addAdviceToMethod(class, method, containerClass);
+                    break;
+                }
+            }
         }
 
+        free(adviceMethodList);
         free(methodList);
     };
 

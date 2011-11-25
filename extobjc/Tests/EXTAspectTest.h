@@ -13,3 +13,4 @@
 @end
 
 @aspect(TestAspect);
+@aspect(OtherTestAspect);

@@ -61,9 +61,14 @@
  */
 #define aspectimplementation(NAME) \
     interface NAME ## _AspectContainer : NSObject {} \
+    + (NSString *)aspectName; \
     @end \
     \
     @implementation NAME ## _AspectContainer \
+    + (NSString *)aspectName { \
+        return @ # NAME; \
+    } \
+    \
 	/*
 	 * when this class is loaded into the runtime, add the aspect into the list
 	 */ \

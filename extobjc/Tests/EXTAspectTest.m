@@ -8,7 +8,7 @@
 
 #import "EXTAspectTest.h"
 
-@interface AspectTestClass : NSObject <TestAspect>
+@interface AspectTestClass : NSObject <TestAspect, OtherTestAspect>
 - (void)testMethod:(int)value;
 @end
 
@@ -29,12 +29,6 @@
 @end
 
 @aspectimplementation(TestAspect)
-- (void)advise:(void (^)(void))body {
-    NSLog(@"about to call %s on %@", sel_getName(_cmd), self);
-    body();
-    NSLog(@"called %s on %@", sel_getName(_cmd), self);
-}
-
 - (void)adviseTestOtherMethod:(void (^)(void))body {
     NSLog(@"testing other method");
     body();
@@ -43,6 +37,14 @@
 - (void)advise:(void (^)(void))body testMethod:(int)value {
     NSLog(@"testMethod's value: %i", value);
     body();
+}
+@end
+
+@aspectimplementation(OtherTestAspect)
+- (void)advise:(void (^)(void))body {
+    NSLog(@"about to call %s on %@", sel_getName(_cmd), self);
+    body();
+    NSLog(@"called %s on %@", sel_getName(_cmd), self);
 }
 @end
 
