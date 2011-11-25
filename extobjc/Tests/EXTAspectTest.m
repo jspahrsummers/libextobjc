@@ -34,6 +34,16 @@
     body();
     NSLog(@"called %s on %@", sel_getName(_cmd), self);
 }
+
+- (void)adviseTestOtherMethod:(void (^)(void))body {
+    NSLog(@"testing other method");
+    body();
+}
+
+- (void)advise:(void (^)(void))body testMethod:(int)value {
+    NSLog(@"testMethod's value: %i", value);
+    body();
+}
 @end
 
 @implementation EXTAspectTest

@@ -39,7 +39,7 @@
 
 /**
  * Defines the implementation of aspect \a NAME. The aspect can contain any
- * number of methods matching the following type signature:
+ * number of methods following the form:
  *
  * @code
 + (void)advise:(void (^)(void))body;
@@ -51,6 +51,8 @@
  * pointcuts are currently defined:
  *
  * @li \c advise: is invoked for every method that is called on the object.
+ * @li \c advise<Selector>: is invoked for every invocation of \c selector, which must take no arguments, on the object.
+ * @li \c advise:<selector:> is invoked for every invocation of \c selector on the object. The advice method is passed all of the arguments to that invocation, but cannot modify them.
  *
  * In all cases, \c self and \c _cmd are respectively the object and the
  * selector upon which the advice is being applied. Explicitly invoking \c _cmd

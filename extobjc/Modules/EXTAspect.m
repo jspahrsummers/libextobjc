@@ -20,6 +20,22 @@ static SEL originalSelectorForSelector (SEL selector) {
     return NSSelectorFromString(originalMethodName);
 }
 
+static SEL specificAdviceSelectorForSelector (SEL selector) {
+    const char *methodName = sel_getName(selector);
+    size_t methodNameLen = strlen(methodName);
+    NSString *specificMethodName;
+
+    if (methodName[methodNameLen - 1] == ':')
+        specificMethodName = [NSString stringWithFormat:@"advise:%s", methodName];
+    else {
+        char firstLetter = (char)toupper(methodName[0]);
+        ++methodName;
+        specificMethodName = [NSString stringWithFormat:@"advise%c%s:", firstLetter, methodName];
+    }
+
+    return NSSelectorFromString(specificMethodName);
+}
+
 static void methodReplacementWithAdvice (ffi_cif *cif, void *result, void **args, void *userdata) {
     id self = *(__strong id *)args[0];
     SEL _cmd = *(SEL *)args[1];
@@ -34,13 +50,56 @@ static void methodReplacementWithAdvice (ffi_cif *cif, void *result, void **args
         ffi_call(cif, FFI_FN(originalIMP), result, args);
     };
 
-    Method advice = class_getInstanceMethod(aspectContainer, @selector(advise:));
-    if (advice) {
-        ext_adviceIMP adviceIMP = (ext_adviceIMP)method_getImplementation(advice);
-        adviceIMP(self, _cmd, originalMethod);
-    } else {
-        originalMethod();
+    SEL specificAdviceSelector = specificAdviceSelectorForSelector(_cmd);
+    Method specificAdvice = class_getInstanceMethod(aspectContainer, specificAdviceSelector);
+    if (specificAdvice) {
+        ffi_cif adviceCIF;
+
+        // the advice method should have no return value
+        ffi_type *returnType = &ffi_type_void;
+
+        // the advice method has the same arguments as the original method, plus
+        // an initial block pointer
+        unsigned numberOfArguments = cif->nargs + 1;
+
+        ffi_type *argTypes[numberOfArguments];
+
+        // insert the block pointer type between after '_cmd' and before the
+        // argument list
+        memcpy(argTypes, cif->arg_types, sizeof(*argTypes) * 2);
+        argTypes[2] = &ffi_type_pointer;
+
+        if (numberOfArguments > 3)
+            memcpy(argTypes + 3, cif->arg_types + 2, sizeof(*argTypes) * (numberOfArguments - 3));
+
+        ffi_prep_cif(&adviceCIF, FFI_DEFAULT_ABI, numberOfArguments, returnType, argTypes);
+
+        // insert block pointer in the argument list
+        void *innerArgs[numberOfArguments];
+
+        memcpy(innerArgs, args, sizeof(*innerArgs) * 2);
+
+        void *blockPtr = (__bridge void *)originalMethod;
+        innerArgs[2] = &blockPtr;
+
+        if (numberOfArguments > 3)
+            memcpy(innerArgs + 3, args + 2, sizeof(*innerArgs) * (numberOfArguments - 3));
+
+        IMP adviceIMP = method_getImplementation(specificAdvice);
+
+        ffi_call(&adviceCIF, FFI_FN(adviceIMP), NULL, innerArgs);
+
+        return;
     }
+
+    Method universalAdvice = class_getInstanceMethod(aspectContainer, @selector(advise:));
+    if (universalAdvice) {
+        ext_adviceIMP adviceIMP = (ext_adviceIMP)method_getImplementation(universalAdvice);
+        adviceIMP(self, _cmd, originalMethod);
+        return;
+    }
+
+    originalMethod();
 }
 
 static ffi_type *ext_FFITypeForEncoding (const char *typeEncoding) {
@@ -178,8 +237,10 @@ static void ext_injectAspect (Class containerInstanceClass, Class instanceClass)
 
         for (unsigned i = 0;i < methodCount;++i) {
             Method method = methodList[i];
+            SEL selector = method_getName(method);
+            BOOL hasSpecificAdvice = (class_getInstanceMethod(containerClass, specificAdviceSelectorForSelector(selector)) != NULL);
 
-            if (hasUniversalAdvice)
+            if (hasUniversalAdvice || hasSpecificAdvice)
                 ext_addAdviceToMethod(class, method, containerClass);
         }
 
