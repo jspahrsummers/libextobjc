@@ -20,6 +20,12 @@
 - (BOOL)testOtherMethod {
     return YES;
 }
+
++ (double)testClassMethodWithString:(NSString *)str length:(NSUInteger)length {
+    NSParameterAssert([str isEqualToString:@"foobar"]);
+    NSParameterAssert([str length] == length);
+    return 3.14;
+}
 @end
 
 @aspectimplementation(TestAspect)
@@ -39,6 +45,7 @@
     [obj testMethod:42];
 
     STAssertTrue([obj testOtherMethod], @"");
+    STAssertEqualsWithAccuracy([AspectTestClass testClassMethodWithString:@"foobar" length:6], 3.14, 0.01, @"");
 }
 
 @end

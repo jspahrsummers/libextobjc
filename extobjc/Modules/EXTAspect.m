@@ -27,12 +27,6 @@ static void methodReplacementWithAdvice (ffi_cif *cif, void *result, void **args
     Class aspectContainer = (__bridge Class)userdata;
     Class selfClass = object_getClass(self);
 
-    if (class_isMetaClass(selfClass)) {
-        // if we're adding advice to a class method, use class methods on the
-        // aspect container as well
-        aspectContainer = object_getClass(aspectContainer);
-    }
-
     ext_adviceOriginalMethodBlock originalMethod = ^{
         SEL originalSelector = originalSelectorForSelector(_cmd);
         IMP originalIMP = class_getMethodImplementation(selfClass, originalSelector);
@@ -174,16 +168,29 @@ static void ext_addAdviceToMethod (Class class, Method method, Class containerCl
     method_setImplementation(method, (IMP)replacementIMP);
 }
 
-static void ext_injectAspect (Class containerClass, Class class) {
-    unsigned imethodCount = 0;
-    Method *imethodList = class_copyMethodList(class, &imethodCount);
+static void ext_injectAspect (Class containerInstanceClass, Class instanceClass) {
+    // reused for instance and class method injection
+    void (^injectFromClassIntoClass)(Class, Class) = ^(Class containerClass, Class class){
+        unsigned methodCount = 0;
+        Method *methodList = class_copyMethodList(class, &methodCount);
 
-    for (unsigned i = 0;i < imethodCount;++i) {
-        Method method = imethodList[i];
-        ext_addAdviceToMethod(class, method, containerClass);
-    }
+        BOOL hasUniversalAdvice = (class_getInstanceMethod(containerClass, @selector(advise:)) != NULL);
 
-    free(imethodList);
+        for (unsigned i = 0;i < methodCount;++i) {
+            Method method = methodList[i];
+
+            if (hasUniversalAdvice)
+                ext_addAdviceToMethod(class, method, containerClass);
+        }
+
+        free(methodList);
+    };
+
+    // instance methods
+    injectFromClassIntoClass(containerInstanceClass, instanceClass);
+
+    // class methods
+    injectFromClassIntoClass(object_getClass(containerInstanceClass), object_getClass(instanceClass));
 }
 
 BOOL ext_addAspect (Protocol *protocol, Class methodContainer) {
