@@ -16,6 +16,10 @@
 - (void)testMethod:(int)value; {
     NSParameterAssert(value == 42);
 }
+
+- (BOOL)testOtherMethod {
+    return YES;
+}
 @end
 
 @aspectimplementation(TestAspect)
@@ -32,8 +36,9 @@
     AspectTestClass *obj = [[AspectTestClass alloc] init];
     STAssertNotNil(obj, @"");
 
-    NSLog(@"obj: %@", obj);
     [obj testMethod:42];
+
+    STAssertTrue([obj testOtherMethod], @"");
 }
 
 @end

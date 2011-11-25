@@ -49,6 +49,67 @@ static void methodReplacementWithAdvice (ffi_cif *cif, void *result, void **args
     }
 }
 
+static ffi_type *ext_FFITypeForEncoding (const char *typeEncoding) {
+    switch (*typeEncoding) {
+    case 'c':
+        return &ffi_type_schar;
+
+    case 'C':
+        return &ffi_type_uchar;
+
+    case 'i':
+        return &ffi_type_sint;
+
+    case 'I':
+        return &ffi_type_uint;
+
+    case 's':
+        return &ffi_type_sshort;
+
+    case 'S':
+        return &ffi_type_ushort;
+
+    case 'l':
+        return &ffi_type_slong;
+
+    case 'L':
+        return &ffi_type_ulong;
+
+    case 'q':
+        assert(sizeof(long long) == 8);
+        return &ffi_type_sint64;
+
+    case 'Q':
+        assert(sizeof(unsigned long long) == 8);
+        return &ffi_type_uint64;
+
+    case 'f':
+        return &ffi_type_float;
+
+    case 'd':
+        return &ffi_type_double;
+
+    case 'B':
+        // assuming that _Bool is compatible with (or promoted to) int
+        return &ffi_type_sint;
+
+    case 'v':
+        return &ffi_type_void;
+
+    case '*':
+    case '@':
+    case '#':
+    case ':':
+    case '^':
+    case '?':
+        return &ffi_type_pointer;
+
+    default:
+        NSLog(@"Unrecognized type in \"%s\"", typeEncoding);
+        return NULL;
+    }
+}
+
 static void ext_injectAspect (Class containerClass, Class class) {
     unsigned imethodCount = 0;
     Method *imethodList = class_copyMethodList(class, &imethodCount);
@@ -69,16 +130,33 @@ static void ext_injectAspect (Class containerClass, Class class) {
         ffi_type *returnType = &ffi_type_sint;
         
         // argument types for testing
-        unsigned argumentCount = 3;
+        unsigned argumentCount = method_getNumberOfArguments(method);
         ffi_type **argTypes = malloc(sizeof(*argTypes) * argumentCount);
         if (!argTypes) {
             fprintf(stderr, "ERROR: Could not allocate space for %u arguments\n", argumentCount);
             continue;
         }
 
-        argTypes[0] = &ffi_type_pointer;
-        argTypes[1] = &ffi_type_pointer;
-        argTypes[2] = &ffi_type_sint;
+        const char *typeString = method_getTypeEncoding(method);
+        unsigned typeIndex = 0;
+
+        while (typeString) {
+            // skip over numbers
+            while (isdigit(*typeString))
+                ++typeString;
+
+            if (*typeString == '\0')
+                break;
+
+            // skip over the return type in the signature
+            if (typeIndex > 0) {
+                assert(typeIndex - 1 < argumentCount);
+                argTypes[typeIndex - 1] = ext_FFITypeForEncoding(typeString);
+            }
+
+            typeString = NSGetSizeAndAlignment(typeString, NULL, NULL);
+            ++typeIndex;
+        }
 
         ffi_cif *methodCIF = malloc(sizeof(*methodCIF));
         if (!methodCIF) {
