@@ -113,8 +113,6 @@ static ffi_type *ext_FFITypeForEncoding (const char *typeEncoding) {
 static void ext_addAdviceToMethod (Class class, Method method, Class containerClass) {
     SEL selector = method_getName(method);
 
-    ffi_type *returnType = &ffi_type_sint;
-
     /*
      * All memory allocations below _intentionally_ leak memory. These
      * structures need to stick around for as long as the FFI closure will
@@ -132,6 +130,7 @@ static void ext_addAdviceToMethod (Class class, Method method, Class containerCl
         return;
     }
 
+    ffi_type *returnType = NULL;
     const char *typeString = method_getTypeEncoding(method);
     unsigned typeIndex = 0;
 
@@ -143,10 +142,14 @@ static void ext_addAdviceToMethod (Class class, Method method, Class containerCl
         if (*typeString == '\0')
             break;
 
-        // skip over the return type in the signature
-        if (typeIndex > 0) {
+        ffi_type *type = ext_FFITypeForEncoding(typeString);
+
+        // if this is the first type, it's describing the return value
+        if (typeIndex == 0) {
+            returnType = type;
+        } else {
             assert(typeIndex - 1 < argumentCount);
-            argTypes[typeIndex - 1] = ext_FFITypeForEncoding(typeString);
+            argTypes[typeIndex - 1] = type;
         }
 
         typeString = NSGetSizeAndAlignment(typeString, NULL, NULL);
