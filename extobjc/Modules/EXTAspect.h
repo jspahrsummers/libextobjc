@@ -49,18 +49,23 @@
 - (void)advise:(void (^)(void))body;
  * @endcode
  *
- * The name of the first parameter (\c advise: in the example) specifies the
- * pointcut, or how the advice is applied to an instance or class. The following
- * pointcuts are currently defined:
+ * The name of the method (\c advise: in the example) specifies the pointcut, or
+ * how the advice is applied to an instance or class. The following pointcuts
+ * are currently defined:
  *
  * @li \c advise: is invoked for every method that is called on the object.
  * @li \c advise<Selector>: is invoked for every invocation of \c selector, which must take no arguments, on the object.
  * @li \c advise:<selector:> is invoked for every invocation of \c selector on the object. The advice method is passed all of the arguments to that invocation, but cannot modify them.
  *
+ * If a method would satisfy multiple pointcuts above, the one furthest down the
+ * list (the most specific) is chosen; the other matches are not used.
+ *
  * In all cases, \c self and \c _cmd are respectively the object and the
  * selector upon which the advice is being applied. Explicitly invoking \c _cmd
  * against \c self from within an advice method will result in undefined
  * behavior.
+ *
+ * @warning It is undefined behavior to invoke a method against \c super.
  */
 #define aspectimplementation(NAME) \
     interface NAME ## _AspectContainer : NSObject {} \
