@@ -14,6 +14,8 @@
 typedef void (^ext_adviceOriginalMethodBlock)(void);
 typedef void (*ext_adviceIMP)(id, SEL, ext_adviceOriginalMethodBlock);
 
+#define ext_universalAdviceSelector         @selector(advise:)
+
 @interface NSObject (AspectContainerInformalProtocol)
 + (NSString *)aspectName;
 @end
@@ -96,7 +98,7 @@ static void methodReplacementWithAdvice (ffi_cif *cif, void *result, void **args
         return;
     }
 
-    Method universalAdvice = class_getInstanceMethod(aspectContainer, @selector(advise:));
+    Method universalAdvice = class_getInstanceMethod(aspectContainer, ext_universalAdviceSelector);
     if (universalAdvice) {
         ext_adviceIMP adviceIMP = (ext_adviceIMP)method_getImplementation(universalAdvice);
         adviceIMP(self, _cmd, originalMethod);
@@ -244,7 +246,9 @@ static void ext_injectAspect (Class containerInstanceClass, Class instanceClass)
         BOOL hasUniversalAdvice = NO;
         for (unsigned i = 0;i < adviceMethodCount;++i) {
             Method adviceMethod = adviceMethodList[i];
-            if (method_getName(adviceMethod) == @selector(advise:)) {
+            SEL selector = method_getName(adviceMethod);
+
+            if (selector == ext_universalAdviceSelector) {
                 hasUniversalAdvice = YES;
                 break;
             }
