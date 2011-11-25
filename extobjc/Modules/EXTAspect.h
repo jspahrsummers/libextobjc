@@ -54,6 +54,8 @@
  * are currently defined:
  *
  * @li \c advise: is invoked for every method that is called on the object.
+ * @li \c adviseGetters:property: is invoked for every invocation of a property getter on the object, and is passed an \c NSString naming the property which is being retrieved. This will not intercept calls to methods declared without \c \@property.
+ * @li \c adviseSetters:property: is invoked for every invocation of a property setter on the object, and is passed an \c NSString naming the property which is being set. This will not intercept calls to methods declared without \c \@property.
  * @li \c advise<Selector>: is invoked for every invocation of \c selector, which must take no arguments, on the object.
  * @li \c advise:<selector:> is invoked for every invocation of \c selector on the object. The advice method is passed all of the arguments to that invocation, but cannot modify them.
  *

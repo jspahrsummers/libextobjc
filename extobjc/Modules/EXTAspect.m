@@ -13,9 +13,12 @@
 
 typedef void (^ext_adviceOriginalMethodBlock)(void);
 typedef void (*ext_universalAdviceIMP)(id, SEL, ext_adviceOriginalMethodBlock);
+typedef void (*ext_propertyAdviceIMP)(id, SEL, ext_adviceOriginalMethodBlock, NSString *);
 typedef void (*ext_FFIClosureFunction)(ffi_cif *, void *, void **, void *);
 
 #define ext_universalAdviceSelector         @selector(advise:)
+#define ext_gettersAdviceSelector           @selector(adviseGetters:property:)
+#define ext_settersAdviceSelector           @selector(adviseSetters:property:)
 
 @interface NSObject (AspectContainerInformalProtocol)
 + (NSString *)aspectName;
@@ -41,6 +44,61 @@ static SEL specificAdviceSelectorForSelector (SEL selector) {
     }
 
     return NSSelectorFromString(specificMethodName);
+}
+
+static void propertyAdviceMethod (ffi_cif *cif, void *result, void **args, void *userdata) {
+    id self = *(__strong id *)args[0];
+    SEL _cmd = *(SEL *)args[1];
+
+    Class aspectContainer = (__bridge Class)userdata;
+    Class selfClass = object_getClass(self);
+
+    ext_adviceOriginalMethodBlock originalMethod = ^{
+        SEL originalSelector = originalSelectorForSelector(aspectContainer, _cmd);
+        IMP originalIMP = class_getMethodImplementation(selfClass, originalSelector);
+
+        ffi_call(cif, FFI_FN(originalIMP), result, args);
+    };
+    
+    NSString *propertyName = nil;
+
+    // TODO: this allocation and looping is really inefficient for every
+    // invocation
+    unsigned propertyCount = 0;
+    objc_property_t *propertyList = class_copyPropertyList(selfClass, &propertyCount);
+
+    BOOL getter = NO;
+
+    for (unsigned i = 0;i < propertyCount;++i) {
+        ext_propertyAttributes *attributes = ext_copyPropertyAttributes(propertyList[i]);
+        BOOL matches = NO;
+
+        if (attributes->getter == _cmd) {
+            matches = YES;
+            getter = YES;
+        } else if (attributes->setter == _cmd) {
+            matches = YES;
+            getter = NO;
+        }
+
+        free(attributes);
+
+        if (matches) {
+            propertyName = [NSString stringWithUTF8String:property_getName(propertyList[i])];
+            break;
+        }
+    }
+
+    free(propertyList);
+
+    SEL adviceSelector;
+    if (getter)
+        adviceSelector = ext_gettersAdviceSelector;
+    else
+        adviceSelector = ext_settersAdviceSelector;
+
+    ext_propertyAdviceIMP adviceIMP = (ext_propertyAdviceIMP)class_getMethodImplementation(aspectContainer, adviceSelector);
+    adviceIMP(self, _cmd, originalMethod, propertyName);
 }
 
 static void specificAdviceMethod (ffi_cif *cif, void *result, void **args, void *userdata) {
@@ -177,6 +235,12 @@ static ffi_type *ext_FFITypeForEncoding (const char *typeEncoding) {
 static void ext_addAdviceToMethod (ext_FFIClosureFunction adviceFunction, Class class, Method method, Class containerClass) {
     SEL selector = method_getName(method);
 
+    SEL movedSelector = originalSelectorForSelector(containerClass, selector);
+    if (!class_addMethod(class, movedSelector, method_getImplementation(method), method_getTypeEncoding(method))) {
+        // this method probably exists because we already added advice to it
+        return;
+    }
+
     /*
      * All memory allocations below _intentionally_ leak memory. These
      * structures need to stick around for as long as the FFI closure will
@@ -228,9 +292,6 @@ static void ext_addAdviceToMethod (ext_FFIClosureFunction adviceFunction, Class 
 
     ffi_prep_cif(methodCIF, FFI_DEFAULT_ABI, argumentCount, returnType, argTypes);
 
-    SEL movedSelector = originalSelectorForSelector(containerClass, selector);
-    class_addMethod(class, movedSelector, method_getImplementation(method), method_getTypeEncoding(method));
-
     void *replacementIMP = NULL;
     ffi_closure *closure = ffi_closure_alloc(sizeof(ffi_closure), &replacementIMP);
 
@@ -239,25 +300,34 @@ static void ext_addAdviceToMethod (ext_FFIClosureFunction adviceFunction, Class 
 }
 
 static void ext_injectAspect (Class containerInstanceClass, Class instanceClass) {
-
     // reused for instance and class method injection
     void (^injectFromClassIntoClass)(Class, Class) = ^(Class containerClass, Class class){
-        unsigned methodCount = 0;
-        Method *methodList = class_copyMethodList(class, &methodCount);
-
         unsigned adviceMethodCount = 0;
         Method *adviceMethodList = class_copyMethodList(containerClass, &adviceMethodCount);
 
         BOOL hasUniversalAdvice = NO;
+        BOOL hasGettersAdvice = NO;
+        BOOL hasSettersAdvice = NO;
+
         for (unsigned i = 0;i < adviceMethodCount;++i) {
             Method adviceMethod = adviceMethodList[i];
             SEL selector = method_getName(adviceMethod);
 
             if (selector == ext_universalAdviceSelector) {
                 hasUniversalAdvice = YES;
-                break;
+            } else if (selector == ext_gettersAdviceSelector) {
+                hasGettersAdvice = YES;
+            } else if (selector == ext_settersAdviceSelector) {
+                hasSettersAdvice = YES;
             }
         }
+
+        unsigned methodCount = 0;
+        Method *methodList = class_copyMethodList(class, &methodCount);
+
+        /*
+         * below, install methods from most specific to least specific
+         */
 
         for (unsigned i = 0;i < methodCount;++i) {
             Method method = methodList[i];
@@ -266,11 +336,7 @@ static void ext_injectAspect (Class containerInstanceClass, Class instanceClass)
             const char *name = sel_getName(selector);
             if (strstr(name, "_ext_")) {
                 // this method was installed by us, skip it
-                continue;
-            }
-
-            if (hasUniversalAdvice) {
-                ext_addAdviceToMethod(&universalAdviceMethod, class, method, containerClass);
+                methodList[i] = NULL;
                 continue;
             }
 
@@ -279,13 +345,75 @@ static void ext_injectAspect (Class containerInstanceClass, Class instanceClass)
                 Method adviceMethod = adviceMethodList[i];
                 if (method_getName(adviceMethod) == specificAdviceSelector) {
                     ext_addAdviceToMethod(&specificAdviceMethod, class, method, containerClass);
+                    
+                    // hide this method from future searches
+                    methodList[i] = NULL;
                     break;
                 }
             }
         }
 
-        free(adviceMethodList);
+        if (hasGettersAdvice || hasSettersAdvice) {
+            unsigned propertyCount = 0;
+            objc_property_t *propertyList = class_copyPropertyList(class, &propertyCount);
+
+            for (unsigned i = 0;i < propertyCount;++i) {
+                ext_propertyAttributes *attributes = ext_copyPropertyAttributes(propertyList[i]);
+
+                Method getter = NULL;
+                Method setter = NULL;
+
+                for (unsigned i = 0;i < methodCount;++i) {
+                    Method method = methodList[i];
+                    if (!method) {
+                        // this entry may have been cleared to NULL above
+                        continue;
+                    }
+
+                    SEL selector = method_getName(method);
+
+                    if (hasGettersAdvice && selector == attributes->getter) {
+                        getter = method;
+
+                        // hide this method from future searches
+                        methodList[i] = NULL;
+                        break;
+                    } else if (hasSettersAdvice && selector == attributes->setter) {
+                        setter = method;
+                        
+                        // hide this method from future searches
+                        methodList[i] = NULL;
+                        break;
+                    }
+                }
+
+                if (getter)
+                    ext_addAdviceToMethod(&propertyAdviceMethod, class, getter, containerClass);
+
+                if (setter)
+                    ext_addAdviceToMethod(&propertyAdviceMethod, class, setter, containerClass);
+
+                free(attributes);
+            }
+
+            free(propertyList);
+        }
+
+        for (unsigned i = 0;i < methodCount;++i) {
+            Method method = methodList[i];
+            if (!method) {
+                // this entry may have been cleared to NULL above
+                continue;
+            }
+
+            if (hasUniversalAdvice) {
+                ext_addAdviceToMethod(&universalAdviceMethod, class, method, containerClass);
+                continue;
+            }
+        }
+
         free(methodList);
+        free(adviceMethodList);
     };
 
     // instance methods

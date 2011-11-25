@@ -9,10 +9,14 @@
 #import "EXTAspectTest.h"
 
 @interface AspectTestClass : NSObject <TestAspect, OtherTestAspect>
+@property (copy) NSString *name;
+
 - (void)testMethod:(int)value;
 @end
 
 @implementation AspectTestClass
+@synthesize name = m_name;
+
 - (void)testMethod:(int)value; {
     NSParameterAssert(value == 42);
 }
@@ -24,6 +28,8 @@
 + (double)testClassMethodWithString:(NSString *)str length:(NSUInteger)length {
     NSParameterAssert([str isEqualToString:@"foobar"]);
     NSParameterAssert([str length] == length);
+
+    NSLog(@"%s", __func__);
     return 3.14;
 }
 @end
@@ -38,13 +44,17 @@
     NSLog(@"testMethod's value: %i", value);
     body();
 }
+
+- (void)adviseSetters:(void (^)(void))body property:(NSString *)property {
+    NSLog(@"about to change %@ on %@", property, [(id)self name]);
+    body();
+}
 @end
 
 @aspectimplementation(OtherTestAspect)
 - (void)advise:(void (^)(void))body {
-    NSLog(@"about to call %s on %@", sel_getName(_cmd), self);
+    NSLog(@"calling %s on %@", sel_getName(_cmd), self);
     body();
-    NSLog(@"called %s on %@", sel_getName(_cmd), self);
 }
 @end
 
@@ -54,6 +64,7 @@
     AspectTestClass *obj = [[AspectTestClass alloc] init];
     STAssertNotNil(obj, @"");
 
+    obj.name = @"MyObject";
     [obj testMethod:42];
 
     STAssertTrue([obj testOtherMethod], @"");
