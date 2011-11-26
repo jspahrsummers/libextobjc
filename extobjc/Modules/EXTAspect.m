@@ -8,6 +8,7 @@
 
 #import "EXTAspect.h"
 #import "EXTRuntimeExtensions.h"
+#import "EXTScope.h"
 #import "ffi.h"
 #import <objc/runtime.h>
 
@@ -275,6 +276,7 @@ static void ext_addAdviceToMethod (ext_FFIClosureFunction adviceFunction, Class 
     ffi_cif *methodCIF = malloc(sizeof(*methodCIF));
     if (!methodCIF) {
         fprintf(stderr, "ERROR: Could not allocate new FFI CIF\n");
+        free(argTypes);
         return;
     }
 
@@ -288,79 +290,94 @@ static void ext_addAdviceToMethod (ext_FFIClosureFunction adviceFunction, Class 
 }
 
 static void ext_injectAspect (Class containerClass, Class class) {
-    unsigned adviceMethodCount = 0;
-    Method *adviceMethodList = class_copyMethodList(containerClass, &adviceMethodCount);
-
     BOOL hasAnyAdvice = NO;
     BOOL hasUniversalAdvice = NO;
     BOOL hasGettersAdvice = NO;
     BOOL hasSettersAdvice = NO;
 
-    for (unsigned i = 0;i < adviceMethodCount;++i) {
-        Method adviceMethod = adviceMethodList[i];
-        SEL selector = method_getName(adviceMethod);
-
-        const char *name = sel_getName(selector);
-        if (strncmp(name, "advise", 6) != 0) {
-            continue;
-        }
-
-        hasAnyAdvice = YES;
-
-        if (selector == ext_universalAdviceSelector) {
-            hasUniversalAdvice = YES;
-        } else if (selector == ext_gettersAdviceSelector) {
-            hasGettersAdvice = YES;
-        } else if (selector == ext_settersAdviceSelector) {
-            hasSettersAdvice = YES;
-        }
-    }
-
-    if (!hasAnyAdvice) {
-        free(adviceMethodList);
-        return;
-    }
-
     unsigned methodCount = 0;
     Method *methodList = class_copyMethodList(class, &methodCount);
 
-    /*
-     * below, install methods from most specific to least specific
-     */
+    @onExit {
+        free(methodList);
+    };
 
-    for (unsigned i = 0;i < methodCount;++i) {
-        Method method = methodList[i];
-        SEL selector = method_getName(method);
+    {
+        unsigned adviceMethodCount = 0;
+        Method *adviceMethodList = class_copyMethodList(containerClass, &adviceMethodCount);
 
-        const char *name = sel_getName(selector);
-        if (strstr(name, "_ext_")) {
-            // this method was installed by us, skip it
-            methodList[i] = NULL;
-            continue;
-        }
+        @onExit {
+            free(adviceMethodList);
+        };
 
-        SEL specificAdviceSelector = specificAdviceSelectorForSelector(selector);
         for (unsigned i = 0;i < adviceMethodCount;++i) {
             Method adviceMethod = adviceMethodList[i];
-            if (method_getName(adviceMethod) == specificAdviceSelector) {
-                ext_addAdviceToMethod(&specificAdviceMethod, class, method, containerClass);
-                
-                // hide this method from future searches
+            SEL selector = method_getName(adviceMethod);
+
+            const char *name = sel_getName(selector);
+            if (strncmp(name, "advise", 6) != 0) {
+                continue;
+            }
+
+            hasAnyAdvice = YES;
+
+            if (selector == ext_universalAdviceSelector) {
+                hasUniversalAdvice = YES;
+            } else if (selector == ext_gettersAdviceSelector) {
+                hasGettersAdvice = YES;
+            } else if (selector == ext_settersAdviceSelector) {
+                hasSettersAdvice = YES;
+            }
+        }
+
+        if (!hasAnyAdvice)
+            return;
+
+        /*
+         * below, install methods from most specific to least specific
+         */
+
+        for (unsigned i = 0;i < methodCount;++i) {
+            Method method = methodList[i];
+            SEL selector = method_getName(method);
+
+            const char *name = sel_getName(selector);
+            if (strstr(name, "_ext_")) {
+                // this method was installed by us, skip it
                 methodList[i] = NULL;
-                break;
+                continue;
+            }
+
+            SEL specificAdviceSelector = specificAdviceSelectorForSelector(selector);
+
+            for (unsigned i = 0;i < adviceMethodCount;++i) {
+                Method adviceMethod = adviceMethodList[i];
+
+                if (method_getName(adviceMethod) == specificAdviceSelector) {
+                    ext_addAdviceToMethod(&specificAdviceMethod, class, method, containerClass);
+                    
+                    // hide this method from future searches
+                    methodList[i] = NULL;
+                    break;
+                }
             }
         }
     }
-
-    free(adviceMethodList);
-    adviceMethodList = NULL;
 
     if (hasGettersAdvice || hasSettersAdvice) {
         unsigned propertyCount = 0;
         objc_property_t *propertyList = class_copyPropertyList(class, &propertyCount);
 
+        @onExit {
+            free(propertyList);
+        };
+
         for (unsigned i = 0;i < propertyCount;++i) {
             ext_propertyAttributes *attributes = ext_copyPropertyAttributes(propertyList[i]);
+
+            @onExit {
+                free(attributes);
+            };
 
             Method getter = NULL;
             Method setter = NULL;
@@ -402,11 +419,7 @@ static void ext_injectAspect (Class containerClass, Class class) {
                     ext_addAdviceToMethod(&setterAdviceMethod, class, setter, containerClass);
                 }
             }
-
-            free(attributes);
         }
-
-        free(propertyList);
     }
 
     if (hasUniversalAdvice) {
@@ -426,8 +439,6 @@ static void ext_injectAspect (Class containerClass, Class class) {
             ext_addAdviceToMethod(&universalAdviceMethod, class, method, containerClass);
         }
     }
-
-    free(methodList);
 }
 
 BOOL ext_addAspect (Protocol *protocol, Class methodContainer) {
