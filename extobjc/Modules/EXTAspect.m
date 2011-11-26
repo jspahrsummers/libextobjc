@@ -308,6 +308,7 @@ static void ext_injectAspect (Class containerInstanceClass, Class instanceClass)
         unsigned adviceMethodCount = 0;
         Method *adviceMethodList = class_copyMethodList(containerClass, &adviceMethodCount);
 
+        BOOL hasAnyAdvice = NO;
         BOOL hasUniversalAdvice = NO;
         BOOL hasGettersAdvice = NO;
         BOOL hasSettersAdvice = NO;
@@ -316,6 +317,13 @@ static void ext_injectAspect (Class containerInstanceClass, Class instanceClass)
             Method adviceMethod = adviceMethodList[i];
             SEL selector = method_getName(adviceMethod);
 
+            const char *name = sel_getName(selector);
+            if (strncmp(name, "advise", 6) != 0) {
+                continue;
+            }
+
+            hasAnyAdvice = YES;
+
             if (selector == ext_universalAdviceSelector) {
                 hasUniversalAdvice = YES;
             } else if (selector == ext_gettersAdviceSelector) {
@@ -323,6 +331,11 @@ static void ext_injectAspect (Class containerInstanceClass, Class instanceClass)
             } else if (selector == ext_settersAdviceSelector) {
                 hasSettersAdvice = YES;
             }
+        }
+
+        if (!hasAnyAdvice) {
+            free(adviceMethodList);
+            return;
         }
 
         unsigned methodCount = 0;
@@ -355,6 +368,9 @@ static void ext_injectAspect (Class containerInstanceClass, Class instanceClass)
                 }
             }
         }
+
+        free(adviceMethodList);
+        adviceMethodList = NULL;
 
         if (hasGettersAdvice || hasSettersAdvice) {
             unsigned propertyCount = 0;
@@ -409,6 +425,12 @@ static void ext_injectAspect (Class containerInstanceClass, Class instanceClass)
                 continue;
             }
 
+            const char *name = sel_getName(method_getName(method));
+            if (name[0] != '_' && !isalpha(name[0])) {
+                // this is probably something we shouldn't touch
+                continue;
+            }
+
             if (hasUniversalAdvice) {
                 ext_addAdviceToMethod(&universalAdviceMethod, class, method, containerClass);
                 continue;
@@ -416,7 +438,6 @@ static void ext_injectAspect (Class containerInstanceClass, Class instanceClass)
         }
 
         free(methodList);
-        free(adviceMethodList);
     };
 
     // instance methods
