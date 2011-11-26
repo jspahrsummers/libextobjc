@@ -27,7 +27,9 @@ typedef void (*ext_FFIClosureFunction)(ffi_cif *, void *, void **, void *);
 static SEL originalSelectorForSelector (Class aspectContainer, SEL selector) {
     NSString *methodName = NSStringFromSelector(selector);
     NSString *originalMethodName = [methodName stringByAppendingFormat:@"_ext_from_%@", [aspectContainer aspectName]];
-    return NSSelectorFromString(originalMethodName);
+
+    SEL newSelector = NSSelectorFromString(originalMethodName);
+    return newSelector;
 }
 
 static SEL specificAdviceSelectorForSelector (SEL selector) {
@@ -43,11 +45,12 @@ static SEL specificAdviceSelectorForSelector (SEL selector) {
         specificMethodName = [NSString stringWithFormat:@"advise%c%s:", firstLetter, methodName];
     }
 
-    return NSSelectorFromString(specificMethodName);
+    SEL newSelector = NSSelectorFromString(specificMethodName);
+    return newSelector;
 }
 
 static void propertyAdviceMethod (ffi_cif *cif, void *result, void **args, void *userdata) {
-    id self = *(__strong id *)args[0];
+    __unsafe_unretained id self = *(__unsafe_unretained id *)args[0];
     SEL _cmd = *(SEL *)args[1];
 
     Class aspectContainer = (__bridge Class)userdata;
@@ -102,7 +105,7 @@ static void propertyAdviceMethod (ffi_cif *cif, void *result, void **args, void 
 }
 
 static void specificAdviceMethod (ffi_cif *cif, void *result, void **args, void *userdata) {
-    id self = *(__strong id *)args[0];
+    __unsafe_unretained id self = *(__unsafe_unretained id *)args[0];
     SEL _cmd = *(SEL *)args[1];
 
     Class aspectContainer = (__bridge Class)userdata;
@@ -154,7 +157,7 @@ static void specificAdviceMethod (ffi_cif *cif, void *result, void **args, void 
 }
 
 static void universalAdviceMethod (ffi_cif *cif, void *result, void **args, void *userdata) {
-    id self = *(__strong id *)args[0];
+    __unsafe_unretained id self = *(__unsafe_unretained id *)args[0];
     SEL _cmd = *(SEL *)args[1];
 
     Class aspectContainer = (__bridge Class)userdata;
