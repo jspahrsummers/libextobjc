@@ -49,7 +49,7 @@ static SEL specificAdviceSelectorForSelector (SEL selector) {
     return newSelector;
 }
 
-static void propertyAdviceMethod (ffi_cif *cif, void *result, void **args, void *userdata) {
+static void getterAdviceMethod (ffi_cif *cif, void *result, void **args, void *userdata) {
     __unsafe_unretained id self = *(__unsafe_unretained id *)args[0];
     SEL _cmd = *(SEL *)args[1];
 
@@ -63,44 +63,29 @@ static void propertyAdviceMethod (ffi_cif *cif, void *result, void **args, void 
         ffi_call(cif, FFI_FN(originalIMP), result, args);
     };
     
-    NSString *propertyName = nil;
+    NSString *propertyName = objc_getAssociatedObject(selfClass, _cmd);
 
-    // TODO: this allocation and looping is really inefficient for every
-    // invocation
-    unsigned propertyCount = 0;
-    objc_property_t *propertyList = class_copyPropertyList(selfClass, &propertyCount);
+    ext_propertyAdviceIMP adviceIMP = (ext_propertyAdviceIMP)class_getMethodImplementation(aspectContainer, ext_gettersAdviceSelector);
+    adviceIMP(self, _cmd, originalMethod, propertyName);
+}
 
-    BOOL getter = NO;
+static void setterAdviceMethod (ffi_cif *cif, void *result, void **args, void *userdata) {
+    __unsafe_unretained id self = *(__unsafe_unretained id *)args[0];
+    SEL _cmd = *(SEL *)args[1];
 
-    for (unsigned i = 0;i < propertyCount;++i) {
-        ext_propertyAttributes *attributes = ext_copyPropertyAttributes(propertyList[i]);
-        BOOL matches = NO;
+    Class aspectContainer = (__bridge Class)userdata;
+    Class selfClass = object_getClass(self);
 
-        if (attributes->getter == _cmd) {
-            matches = YES;
-            getter = YES;
-        } else if (attributes->setter == _cmd) {
-            matches = YES;
-            getter = NO;
-        }
+    ext_adviceOriginalMethodBlock originalMethod = ^{
+        SEL originalSelector = originalSelectorForSelector(aspectContainer, _cmd);
+        IMP originalIMP = class_getMethodImplementation(selfClass, originalSelector);
 
-        free(attributes);
+        ffi_call(cif, FFI_FN(originalIMP), result, args);
+    };
+    
+    NSString *propertyName = objc_getAssociatedObject(selfClass, _cmd);
 
-        if (matches) {
-            propertyName = [NSString stringWithUTF8String:property_getName(propertyList[i])];
-            break;
-        }
-    }
-
-    free(propertyList);
-
-    SEL adviceSelector;
-    if (getter)
-        adviceSelector = ext_gettersAdviceSelector;
-    else
-        adviceSelector = ext_settersAdviceSelector;
-
-    ext_propertyAdviceIMP adviceIMP = (ext_propertyAdviceIMP)class_getMethodImplementation(aspectContainer, adviceSelector);
+    ext_propertyAdviceIMP adviceIMP = (ext_propertyAdviceIMP)class_getMethodImplementation(aspectContainer, ext_settersAdviceSelector);
     adviceIMP(self, _cmd, originalMethod, propertyName);
 }
 
@@ -406,11 +391,19 @@ static void ext_injectAspect (Class containerInstanceClass, Class instanceClass)
                     }
                 }
 
-                if (getter)
-                    ext_addAdviceToMethod(&propertyAdviceMethod, class, getter, containerClass);
+                if (getter || setter) {
+                    NSString *propertyName = [NSString stringWithUTF8String:property_getName(propertyList[i])];
 
-                if (setter)
-                    ext_addAdviceToMethod(&propertyAdviceMethod, class, setter, containerClass);
+                    if (getter) {
+                        objc_setAssociatedObject(class, attributes->getter, propertyName, OBJC_ASSOCIATION_COPY_NONATOMIC);
+                        ext_addAdviceToMethod(&getterAdviceMethod, class, getter, containerClass);
+                    }
+
+                    if (setter) {
+                        objc_setAssociatedObject(class, attributes->setter, propertyName, OBJC_ASSOCIATION_COPY_NONATOMIC);
+                        ext_addAdviceToMethod(&setterAdviceMethod, class, setter, containerClass);
+                    }
+                }
 
                 free(attributes);
             }
