@@ -28,7 +28,7 @@
 - (void)withdraw:(NSDecimalNumber *)amount;
 @end
 
-@interface BankAccount (TransactionExtensions) <Transaction>
+@interface BankAccount (TransactionExtensions) <Logger>
 @end
 
  * @endcode
