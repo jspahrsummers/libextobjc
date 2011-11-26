@@ -6,21 +6,6 @@
 	objectVersion = 46;
 	objects = {
 
-/* Begin PBXAggregateTarget section */
-		D0A8B20C128A4324004AACE0 /* libextobjc */ = {
-			isa = PBXAggregateTarget;
-			buildConfigurationList = D0A8B215128A4376004AACE0 /* Build configuration list for PBXAggregateTarget "libextobjc" */;
-			buildPhases = (
-			);
-			dependencies = (
-				D0CFB61C128A8F0B006DC377 /* PBXTargetDependency */,
-				D0CFB61E128A8F0C006DC377 /* PBXTargetDependency */,
-			);
-			name = libextobjc;
-			productName = libextobjc;
-		};
-/* End PBXAggregateTarget section */
-
 /* Begin PBXBuildFile section */
 		D002DAF11365694C005348A5 /* EXTNil.h in Headers */ = {isa = PBXBuildFile; fileRef = D002DAEF1365694C005348A5 /* EXTNil.h */; };
 		D002DAF21365694C005348A5 /* EXTNil.h in Headers */ = {isa = PBXBuildFile; fileRef = D002DAEF1365694C005348A5 /* EXTNil.h */; };
@@ -141,20 +126,6 @@
 			proxyType = 1;
 			remoteGlobalIDString = D0A8B028128A4261004AACE0;
 			remoteInfo = "libextobjc (iOS)";
-		};
-		D0CFB61B128A8F0B006DC377 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 0867D690FE84028FC02AAC07 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = D0A8B2DB128A495D004AACE0;
-			remoteInfo = "OS X Tests";
-		};
-		D0CFB61D128A8F0C006DC377 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 0867D690FE84028FC02AAC07 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = D0CFB60E128A8EEE006DC377;
-			remoteInfo = "iOS Tests";
 		};
 		D0E4D562147F44F7002C3C9F /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -688,7 +659,6 @@
 			);
 			projectRoot = "";
 			targets = (
-				D0A8B20C128A4324004AACE0 /* libextobjc */,
 				D2AAC07D0554694100DB518D /* libextobjc (OS X) */,
 				D0A8B028128A4261004AACE0 /* libextobjc (iOS) */,
 				D0A8B2DB128A495D004AACE0 /* OS X Tests */,
@@ -853,16 +823,6 @@
 			target = D0A8B028128A4261004AACE0 /* libextobjc (iOS) */;
 			targetProxy = D0CFB619128A8F05006DC377 /* PBXContainerItemProxy */;
 		};
-		D0CFB61C128A8F0B006DC377 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = D0A8B2DB128A495D004AACE0 /* OS X Tests */;
-			targetProxy = D0CFB61B128A8F0B006DC377 /* PBXContainerItemProxy */;
-		};
-		D0CFB61E128A8F0C006DC377 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = D0CFB60E128A8EEE006DC377 /* iOS Tests */;
-			targetProxy = D0CFB61D128A8F0C006DC377 /* PBXContainerItemProxy */;
-		};
 		D0E4D565147F44FE002C3C9F /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = ffi;
@@ -954,26 +914,6 @@
 				GCC_PREFIX_HEADER = extobjc_Prefix.pch;
 				HEADER_SEARCH_PATHS = "../libffi-ios/ios/**";
 				PRODUCT_NAME = extobjc_iOS;
-			};
-			name = Release;
-		};
-		D0A8B20D128A4324004AACE0 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				COPY_PHASE_STRIP = NO;
-				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				PRODUCT_NAME = libextobjc;
-			};
-			name = Debug;
-		};
-		D0A8B20E128A4324004AACE0 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				COPY_PHASE_STRIP = YES;
-				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				PRODUCT_NAME = libextobjc;
-				ZERO_LINK = NO;
 			};
 			name = Release;
 		};
@@ -1117,15 +1057,6 @@
 			buildConfigurations = (
 				D0A8B02A128A4261004AACE0 /* Debug */,
 				D0A8B02B128A4261004AACE0 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		D0A8B215128A4376004AACE0 /* Build configuration list for PBXAggregateTarget "libextobjc" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				D0A8B20D128A4324004AACE0 /* Debug */,
-				D0A8B20E128A4324004AACE0 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
