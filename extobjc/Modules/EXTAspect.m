@@ -287,131 +287,84 @@ static void ext_addAdviceToMethod (ext_FFIClosureFunction adviceFunction, Class 
     method_setImplementation(method, (IMP)replacementIMP);
 }
 
-static void ext_injectAspect (Class containerInstanceClass, Class instanceClass) {
-    // reused for instance and class method injection
-    void (^injectFromClassIntoClass)(Class, Class) = ^(Class containerClass, Class class){
-        unsigned adviceMethodCount = 0;
-        Method *adviceMethodList = class_copyMethodList(containerClass, &adviceMethodCount);
+static void ext_injectAspect (Class containerClass, Class class) {
+    unsigned adviceMethodCount = 0;
+    Method *adviceMethodList = class_copyMethodList(containerClass, &adviceMethodCount);
 
-        BOOL hasAnyAdvice = NO;
-        BOOL hasUniversalAdvice = NO;
-        BOOL hasGettersAdvice = NO;
-        BOOL hasSettersAdvice = NO;
+    BOOL hasAnyAdvice = NO;
+    BOOL hasUniversalAdvice = NO;
+    BOOL hasGettersAdvice = NO;
+    BOOL hasSettersAdvice = NO;
 
+    for (unsigned i = 0;i < adviceMethodCount;++i) {
+        Method adviceMethod = adviceMethodList[i];
+        SEL selector = method_getName(adviceMethod);
+
+        const char *name = sel_getName(selector);
+        if (strncmp(name, "advise", 6) != 0) {
+            continue;
+        }
+
+        hasAnyAdvice = YES;
+
+        if (selector == ext_universalAdviceSelector) {
+            hasUniversalAdvice = YES;
+        } else if (selector == ext_gettersAdviceSelector) {
+            hasGettersAdvice = YES;
+        } else if (selector == ext_settersAdviceSelector) {
+            hasSettersAdvice = YES;
+        }
+    }
+
+    if (!hasAnyAdvice) {
+        free(adviceMethodList);
+        return;
+    }
+
+    unsigned methodCount = 0;
+    Method *methodList = class_copyMethodList(class, &methodCount);
+
+    /*
+     * below, install methods from most specific to least specific
+     */
+
+    for (unsigned i = 0;i < methodCount;++i) {
+        Method method = methodList[i];
+        SEL selector = method_getName(method);
+
+        const char *name = sel_getName(selector);
+        if (strstr(name, "_ext_")) {
+            // this method was installed by us, skip it
+            methodList[i] = NULL;
+            continue;
+        }
+
+        SEL specificAdviceSelector = specificAdviceSelectorForSelector(selector);
         for (unsigned i = 0;i < adviceMethodCount;++i) {
             Method adviceMethod = adviceMethodList[i];
-            SEL selector = method_getName(adviceMethod);
-
-            const char *name = sel_getName(selector);
-            if (strncmp(name, "advise", 6) != 0) {
-                continue;
-            }
-
-            hasAnyAdvice = YES;
-
-            if (selector == ext_universalAdviceSelector) {
-                hasUniversalAdvice = YES;
-            } else if (selector == ext_gettersAdviceSelector) {
-                hasGettersAdvice = YES;
-            } else if (selector == ext_settersAdviceSelector) {
-                hasSettersAdvice = YES;
-            }
-        }
-
-        if (!hasAnyAdvice) {
-            free(adviceMethodList);
-            return;
-        }
-
-        unsigned methodCount = 0;
-        Method *methodList = class_copyMethodList(class, &methodCount);
-
-        /*
-         * below, install methods from most specific to least specific
-         */
-
-        for (unsigned i = 0;i < methodCount;++i) {
-            Method method = methodList[i];
-            SEL selector = method_getName(method);
-
-            const char *name = sel_getName(selector);
-            if (strstr(name, "_ext_")) {
-                // this method was installed by us, skip it
+            if (method_getName(adviceMethod) == specificAdviceSelector) {
+                ext_addAdviceToMethod(&specificAdviceMethod, class, method, containerClass);
+                
+                // hide this method from future searches
                 methodList[i] = NULL;
-                continue;
-            }
-
-            SEL specificAdviceSelector = specificAdviceSelectorForSelector(selector);
-            for (unsigned i = 0;i < adviceMethodCount;++i) {
-                Method adviceMethod = adviceMethodList[i];
-                if (method_getName(adviceMethod) == specificAdviceSelector) {
-                    ext_addAdviceToMethod(&specificAdviceMethod, class, method, containerClass);
-                    
-                    // hide this method from future searches
-                    methodList[i] = NULL;
-                    break;
-                }
+                break;
             }
         }
+    }
 
-        free(adviceMethodList);
-        adviceMethodList = NULL;
+    free(adviceMethodList);
+    adviceMethodList = NULL;
 
-        if (hasGettersAdvice || hasSettersAdvice) {
-            unsigned propertyCount = 0;
-            objc_property_t *propertyList = class_copyPropertyList(class, &propertyCount);
+    if (hasGettersAdvice || hasSettersAdvice) {
+        unsigned propertyCount = 0;
+        objc_property_t *propertyList = class_copyPropertyList(class, &propertyCount);
 
-            for (unsigned i = 0;i < propertyCount;++i) {
-                ext_propertyAttributes *attributes = ext_copyPropertyAttributes(propertyList[i]);
+        for (unsigned i = 0;i < propertyCount;++i) {
+            ext_propertyAttributes *attributes = ext_copyPropertyAttributes(propertyList[i]);
 
-                Method getter = NULL;
-                Method setter = NULL;
+            Method getter = NULL;
+            Method setter = NULL;
 
-                for (unsigned i = 0;i < methodCount;++i) {
-                    Method method = methodList[i];
-                    if (!method) {
-                        // this entry may have been cleared to NULL above
-                        continue;
-                    }
-
-                    SEL selector = method_getName(method);
-
-                    if (hasGettersAdvice && selector == attributes->getter) {
-                        getter = method;
-
-                        // hide this method from future searches
-                        methodList[i] = NULL;
-                        break;
-                    } else if (hasSettersAdvice && selector == attributes->setter) {
-                        setter = method;
-                        
-                        // hide this method from future searches
-                        methodList[i] = NULL;
-                        break;
-                    }
-                }
-
-                if (getter || setter) {
-                    NSString *propertyName = [NSString stringWithUTF8String:property_getName(propertyList[i])];
-
-                    if (getter) {
-                        objc_setAssociatedObject(class, attributes->getter, propertyName, OBJC_ASSOCIATION_COPY_NONATOMIC);
-                        ext_addAdviceToMethod(&getterAdviceMethod, class, getter, containerClass);
-                    }
-
-                    if (setter) {
-                        objc_setAssociatedObject(class, attributes->setter, propertyName, OBJC_ASSOCIATION_COPY_NONATOMIC);
-                        ext_addAdviceToMethod(&setterAdviceMethod, class, setter, containerClass);
-                    }
-                }
-
-                free(attributes);
-            }
-
-            free(propertyList);
-        }
-
-        if (hasUniversalAdvice) {
             for (unsigned i = 0;i < methodCount;++i) {
                 Method method = methodList[i];
                 if (!method) {
@@ -419,29 +372,71 @@ static void ext_injectAspect (Class containerInstanceClass, Class instanceClass)
                     continue;
                 }
 
-                const char *name = sel_getName(method_getName(method));
-                if (name[0] != '_' && !isalpha(name[0])) {
-                    // this is probably something we shouldn't touch
-                    continue;
+                SEL selector = method_getName(method);
+
+                if (hasGettersAdvice && selector == attributes->getter) {
+                    getter = method;
+
+                    // hide this method from future searches
+                    methodList[i] = NULL;
+                    break;
+                } else if (hasSettersAdvice && selector == attributes->setter) {
+                    setter = method;
+                    
+                    // hide this method from future searches
+                    methodList[i] = NULL;
+                    break;
+                }
+            }
+
+            if (getter || setter) {
+                NSString *propertyName = [NSString stringWithUTF8String:property_getName(propertyList[i])];
+
+                if (getter) {
+                    objc_setAssociatedObject(class, attributes->getter, propertyName, OBJC_ASSOCIATION_COPY_NONATOMIC);
+                    ext_addAdviceToMethod(&getterAdviceMethod, class, getter, containerClass);
                 }
 
-                ext_addAdviceToMethod(&universalAdviceMethod, class, method, containerClass);
+                if (setter) {
+                    objc_setAssociatedObject(class, attributes->setter, propertyName, OBJC_ASSOCIATION_COPY_NONATOMIC);
+                    ext_addAdviceToMethod(&setterAdviceMethod, class, setter, containerClass);
+                }
             }
+
+            free(attributes);
         }
 
-        free(methodList);
-    };
+        free(propertyList);
+    }
 
-    // instance methods
-    injectFromClassIntoClass(containerInstanceClass, instanceClass);
+    if (hasUniversalAdvice) {
+        for (unsigned i = 0;i < methodCount;++i) {
+            Method method = methodList[i];
+            if (!method) {
+                // this entry may have been cleared to NULL above
+                continue;
+            }
 
-    // class methods
-    injectFromClassIntoClass(object_getClass(containerInstanceClass), object_getClass(instanceClass));
+            const char *name = sel_getName(method_getName(method));
+            if (name[0] != '_' && !isalpha(name[0])) {
+                // this is probably something we shouldn't touch
+                continue;
+            }
+
+            ext_addAdviceToMethod(&universalAdviceMethod, class, method, containerClass);
+        }
+    }
+
+    free(methodList);
 }
 
 BOOL ext_addAspect (Protocol *protocol, Class methodContainer) {
     return ext_loadSpecialProtocol(protocol, ^(Class destinationClass){
+        // instance methods
         ext_injectAspect(methodContainer, destinationClass);
+
+        // class methods
+        ext_injectAspect(object_getClass(methodContainer), object_getClass(destinationClass));
     });
 }
 
