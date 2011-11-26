@@ -126,7 +126,11 @@ static void specificAdviceMethod (ffi_cif *cif, void *result, void **args, void 
             memcpy(argTypes + 3, cif->arg_types + 2, sizeof(*argTypes) * (numberOfArguments - 3));
     }
 
-    ffi_prep_cif(&adviceCIF, FFI_DEFAULT_ABI, numberOfArguments, returnType, argTypes);
+    if (ffi_prep_cif(&adviceCIF, FFI_DEFAULT_ABI, numberOfArguments, returnType, argTypes) != FFI_OK) {
+        fprintf(stderr, "ERROR: Could not prepare FFI CIF to call advice method\n");
+        originalMethod();
+        return;
+    }
 
     void *innerArgs[numberOfArguments];
 
@@ -292,12 +296,34 @@ static void ext_addAdviceToMethod (ext_FFIClosureFunction adviceFunction, Class 
         return;
     }
 
-    ffi_prep_cif(methodCIF, FFI_DEFAULT_ABI, argumentCount, returnType, argTypes);
+    if (ffi_prep_cif(methodCIF, FFI_DEFAULT_ABI, argumentCount, returnType, argTypes) != FFI_OK) {
+        fprintf(stderr, "ERROR: Could not prepare FFI CIF to call injected method\n");
+
+        free(methodCIF);
+        free(argTypes);
+        return;
+    }
 
     void *replacementIMP = NULL;
     ffi_closure *closure = ffi_closure_alloc(sizeof(ffi_closure), &replacementIMP);
 
-    ffi_prep_closure_loc(closure, methodCIF, adviceFunction, (__bridge void *)containerClass, replacementIMP);
+    if (!closure) {
+        fprintf(stderr, "ERROR: Could not allocate FFI closure for injected method\n");
+
+        free(methodCIF);
+        free(argTypes);
+        return;
+    }
+
+    if (ffi_prep_closure_loc(closure, methodCIF, adviceFunction, (__bridge void *)containerClass, replacementIMP) != FFI_OK) {
+        fprintf(stderr, "ERROR: Could not prepare FFI closure for injected method\n");
+
+        ffi_closure_free(closure);
+        free(methodCIF);
+        free(argTypes);
+        return;
+    }
+
     method_setImplementation(method, (IMP)replacementIMP);
 }
 
