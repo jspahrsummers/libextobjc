@@ -115,26 +115,34 @@ static void specificAdviceMethod (ffi_cif *cif, void *result, void **args, void 
 
     ffi_type *argTypes[numberOfArguments];
 
-    // insert the block pointer type between after '_cmd' and before the
-    // argument list
-    memcpy(argTypes, cif->arg_types, sizeof(*argTypes) * 2);
-    argTypes[2] = &ffi_type_pointer;
+    {
+        memcpy(argTypes, cif->arg_types, sizeof(*argTypes) * 2);
+        
+        // insert the block pointer type between after '_cmd' and before the
+        // argument list
+        argTypes[2] = &ffi_type_pointer;
 
-    if (numberOfArguments > 3)
-        memcpy(argTypes + 3, cif->arg_types + 2, sizeof(*argTypes) * (numberOfArguments - 3));
+        if (numberOfArguments > 3)
+            memcpy(argTypes + 3, cif->arg_types + 2, sizeof(*argTypes) * (numberOfArguments - 3));
+    }
 
     ffi_prep_cif(&adviceCIF, FFI_DEFAULT_ABI, numberOfArguments, returnType, argTypes);
 
-    // insert block pointer in the argument list
     void *innerArgs[numberOfArguments];
 
-    memcpy(innerArgs, args, sizeof(*innerArgs) * 2);
-
+    // declared outside of the below scope because it has to remain in scope
+    // while the IMP is being called
     void *blockPtr = (__bridge void *)originalMethod;
-    innerArgs[2] = &blockPtr;
 
-    if (numberOfArguments > 3)
-        memcpy(innerArgs + 3, args + 2, sizeof(*innerArgs) * (numberOfArguments - 3));
+    {
+        memcpy(innerArgs, args, sizeof(*innerArgs) * 2);
+
+        // insert block pointer in the argument list
+        innerArgs[2] = &blockPtr;
+
+        if (numberOfArguments > 3)
+            memcpy(innerArgs + 3, args + 2, sizeof(*innerArgs) * (numberOfArguments - 3));
+    }
 
     SEL specificAdviceSelector = specificAdviceSelectorForSelector(_cmd);
     IMP adviceIMP = class_getMethodImplementation(aspectContainer, specificAdviceSelector);
@@ -248,29 +256,33 @@ static void ext_addAdviceToMethod (ext_FFIClosureFunction adviceFunction, Class 
     }
 
     ffi_type *returnType = NULL;
-    const char *typeString = method_getTypeEncoding(method);
-    unsigned typeIndex = 0;
 
-    while (typeString) {
-        // skip over numbers
-        while (isdigit(*typeString))
-            ++typeString;
+    // parse out return and argument types
+    {
+        const char *typeString = method_getTypeEncoding(method);
+        unsigned typeIndex = 0;
 
-        if (*typeString == '\0')
-            break;
+        while (typeString) {
+            // skip over numbers
+            while (isdigit(*typeString))
+                ++typeString;
 
-        ffi_type *type = ext_FFITypeForEncoding(typeString);
+            if (*typeString == '\0')
+                break;
 
-        // if this is the first type, it's describing the return value
-        if (typeIndex == 0) {
-            returnType = type;
-        } else {
-            assert(typeIndex - 1 < argumentCount);
-            argTypes[typeIndex - 1] = type;
+            ffi_type *type = ext_FFITypeForEncoding(typeString);
+
+            // if this is the first type, it's describing the return value
+            if (typeIndex == 0) {
+                returnType = type;
+            } else {
+                assert(typeIndex - 1 < argumentCount);
+                argTypes[typeIndex - 1] = type;
+            }
+
+            typeString = NSGetSizeAndAlignment(typeString, NULL, NULL);
+            ++typeIndex;
         }
-
-        typeString = NSGetSizeAndAlignment(typeString, NULL, NULL);
-        ++typeIndex;
     }
 
     ffi_cif *methodCIF = malloc(sizeof(*methodCIF));
