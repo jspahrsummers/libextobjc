@@ -418,22 +418,21 @@ static void ext_injectAspect (Class containerInstanceClass, Class instanceClass)
             free(propertyList);
         }
 
-        for (unsigned i = 0;i < methodCount;++i) {
-            Method method = methodList[i];
-            if (!method) {
-                // this entry may have been cleared to NULL above
-                continue;
-            }
+        if (hasUniversalAdvice) {
+            for (unsigned i = 0;i < methodCount;++i) {
+                Method method = methodList[i];
+                if (!method) {
+                    // this entry may have been cleared to NULL above
+                    continue;
+                }
 
-            const char *name = sel_getName(method_getName(method));
-            if (name[0] != '_' && !isalpha(name[0])) {
-                // this is probably something we shouldn't touch
-                continue;
-            }
+                const char *name = sel_getName(method_getName(method));
+                if (name[0] != '_' && !isalpha(name[0])) {
+                    // this is probably something we shouldn't touch
+                    continue;
+                }
 
-            if (hasUniversalAdvice) {
                 ext_addAdviceToMethod(&universalAdviceMethod, class, method, containerClass);
-                continue;
             }
         }
 
