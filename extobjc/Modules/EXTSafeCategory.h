@@ -86,8 +86,10 @@ BOOL ext_loadSafeCategory (Class methodContainer, Class targetClass);
 #if defined(DEBUG) && !defined(NDEBUG)
     // abort if a safe category fails to load
     #define ext_safeCategoryFailed(CLASS, CATEGORY) \
-        fprintf(stderr, "ERROR: Failed to fully load safe category %s (%s)\n", metamacro_stringify(CLASS), metamacro_stringify(CATEGORY)) \
-        abort()
+        do { \
+            fprintf(stderr, "ERROR: Failed to fully load safe category %s (%s)\n", metamacro_stringify(CLASS), metamacro_stringify(CATEGORY)); \
+            abort(); \
+        } while (0)
 #else
     // otherwise, just print an error message
     #define ext_safeCategoryFailed(CLASS, CATEGORY) \
