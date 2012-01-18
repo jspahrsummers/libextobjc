@@ -443,11 +443,6 @@ ext_propertyAttributes *ext_copyPropertyAttributes (objc_property_t property) {
         return NULL;
     }
 
-    if (*next != '\0') {
-        // skip past any junk before the first flag
-        next = strchr(next, ',');
-    }
-
     // allocate enough space for the structure and the type string (plus a NUL)
     ext_propertyAttributes *attributes = calloc(1, sizeof(ext_propertyAttributes) + typeLength + 1);
     if (!attributes) {
@@ -459,7 +454,35 @@ ext_propertyAttributes *ext_copyPropertyAttributes (objc_property_t property) {
     strncpy(attributes->type, typeString, typeLength);
     attributes->type[typeLength] = '\0';
 
-    while (*next == ',') {
+    // if this is an object type, and immediately followed by a quoted string...
+    if (*typeString == *(@encode(id)) && *next == '"') {
+        // we should be able to extract a class name
+        const char *className = next + 1;
+        next = strchr(className, '"');
+
+        if (!next) {
+            fprintf(stderr, "ERROR: Could not read class name in attribute string \"%s\" for property %s\n", attrString, property_getName(property));
+            return NULL;
+        }
+
+        if (className != next) {
+            size_t classNameLength = next - className;
+            char trimmedName[classNameLength];
+
+            strncpy(trimmedName, className, classNameLength);
+            trimmedName[classNameLength] = '\0';
+
+            // attempt to look up the class in the runtime
+            attributes->objectClass = objc_getClass(trimmedName);
+        }
+    }
+
+    if (*next != '\0') {
+        // skip past any junk before the first flag
+        next = strchr(next, ',');
+    }
+
+    while (next && *next == ',') {
         char flag = next[1];
         next += 2;
 
@@ -558,7 +581,7 @@ ext_propertyAttributes *ext_copyPropertyAttributes (objc_property_t property) {
         }
     }
 
-    if (*next != '\0') {
+    if (next && *next != '\0') {
         fprintf(stderr, "Warning: Unparsed data \"%s\" in attribute string \"%s\" for property %s\n", next, attrString, property_getName(property));
     }
 
