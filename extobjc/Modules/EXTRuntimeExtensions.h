@@ -140,6 +140,16 @@ typedef struct {
     const char *ivar;
 
     /**
+     * If this property is defined as being an instance of a specific class,
+     * this will be the class object representing it.
+     *
+     * This will be \c nil if the property was defined as type \c id, if the
+     * property is not of an object type, or if the class could not be found at
+     * runtime.
+     */
+    Class objectClass;
+
+    /**
      * The type encoding for the value of this property. This is the type as it
      * would be returned by the \c \@encode() directive.
      */
