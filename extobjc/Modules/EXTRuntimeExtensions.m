@@ -340,7 +340,7 @@ Class *ext_copyClassList (unsigned *count) {
 
             if (!keep) {
                 if (--classCount > i) {
-                    memmove(allClasses + i, allClasses + i + 1, (classCount - i - 1) * sizeof(*allClasses));
+                    memmove(allClasses + i, allClasses + i + 1, (classCount - i) * sizeof(*allClasses));
                 }
 
                 continue;
