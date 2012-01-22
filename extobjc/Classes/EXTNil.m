@@ -11,17 +11,11 @@
 
 static id singleton = nil;
 
-@interface EXTNil () {
-    BOOL m_initialized;
-}
-
-@end
-
 @implementation EXTNil
 + (void)initialize {
     if (self == [EXTNil class]) {
         if (!singleton)
-            singleton = [[self alloc] init];
+            singleton = [self alloc];
     }
 }
 
@@ -30,24 +24,7 @@ static id singleton = nil;
 }
 
 - (id)init {
-    // this captures the case of -init being sent to a nil object (like for
-    // a Nil class)
-    if (!m_initialized) {
-        self = [super init];
-
-        m_initialized = YES;
-    }
-
     return self;
-}
-
-#pragma mark NSCoding
-
-- (id)initWithCoder:(NSCoder *)coder {
-    return [EXTNil null];
-}
-
-- (void)encodeWithCoder:(NSCoder *)coder {
 }
 
 #pragma mark NSCopying
@@ -60,6 +37,10 @@ static id singleton = nil;
 
 - (void)forwardInvocation:(NSInvocation *)anInvocation {
     NSUInteger returnLength = [[anInvocation methodSignature] methodReturnLength];
+    if (!returnLength) {
+        // nothing to do
+        return;
+    }
 
     // set return value to all zero bits
     char buffer[returnLength];
@@ -68,12 +49,13 @@ static id singleton = nil;
     [anInvocation setReturnValue:buffer];
 }
 
-- (NSMethodSignature *)methodSignatureForSelector:(SEL)aSelector {
-    NSMethodSignature *signature = [super methodSignatureForSelector:aSelector];
-    if (signature)
-        return signature;
+- (NSMethodSignature *)methodSignatureForSelector:(SEL)selector {
+    return ext_globalMethodSignatureForSelector(selector);
+}
 
-    return ext_globalMethodSignatureForSelector(aSelector);
+- (BOOL)respondsToSelector:(SEL)selector {
+    // behave like nil
+    return NO;
 }
 
 #pragma mark NSObject protocol
@@ -87,10 +69,21 @@ static id singleton = nil;
 }
 
 - (BOOL)isEqual:(id)obj {
-    if (obj == self)
-        return YES;
-    else
-        return NO;
+    return !obj || obj == self || [obj isEqual:[NSNull null]];
+}
+
+- (BOOL)isKindOfClass:(Class)class {
+    return [class isEqual:[EXTNil class]] || [class isEqual:[NSNull class]];
+}
+
+- (BOOL)isMemberOfClass:(Class)class {
+    return [class isEqual:[EXTNil class]] || [class isEqual:[NSNull class]];
+}
+
+- (BOOL)isProxy {
+    // not really a proxy -- we just inherit from NSProxy because it makes
+    // method signature lookup simpler
+    return NO;
 }
 
 @end
