@@ -31,4 +31,12 @@
     STAssertEqualObjects([[arr objectAtIndex:0] target], nil, @"EXTNil object properties should be preserved in a collection");
 }
 
+- (void)testKeyValueCoding {
+    id obj = [EXTNil null];
+    [obj setValue:@"foo" forKey:@"bar"];
+
+    NSDictionary *values = [obj dictionaryWithValuesForKeys:[NSArray arrayWithObject:@"bar"]];
+    STAssertNil(values, @"");
+}
+
 @end
