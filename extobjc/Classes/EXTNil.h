@@ -15,11 +15,15 @@
  * This eliminates the need for \c NSNull class or equality checks with
  * collections that need to contain null values.
  *
+ * This class will pretend to be \c NSNull when queried for its class or
+ * compared for equality, to keep compatibility with code that expects or uses
+ * \c NSNull.
+ *
  * @note Because this class does still behave like an object in some ways, it
  * will respond to certain \c NSObject protocol methods where an actually \c nil
  * object would not.
  */
-@interface EXTNil : NSObject <NSCoding, NSCopying> {
+@interface EXTNil : NSProxy {
     
 }
 
@@ -28,6 +32,6 @@
  * NSNull -- \c nil as a method name is unusable because it is a language
  * keyword.
  */
-+ (EXTNil *)null;
++ (id)null;
 
 @end
