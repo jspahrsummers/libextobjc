@@ -11,7 +11,7 @@
 @interface RuntimeTestClass : NSObject {
 }
 @property (nonatomic, assign, getter = isNormalBool, readonly) BOOL normalBool;
-@property (nonatomic, copy, getter = whoopsWhatArray, setter = setThatArray:) NSArray *array;
+@property (nonatomic, strong, getter = whoopsWhatArray, setter = setThatArray:) NSArray *array;
 @property (copy) NSString *normalString;
 @property (unsafe_unretained) id untypedObject;
 
@@ -62,9 +62,11 @@
     ext_propertyAttributes *attributes = ext_copyPropertyAttributes(property);
     STAssertTrue(attributes != NULL, @"could not get property attributes");
 
+    STAssertEquals(attributes->readonly, NO, @"");
     STAssertEquals(attributes->nonatomic, YES, @"");
     STAssertEquals(attributes->weak, NO, @"");
     STAssertEquals(attributes->canBeCollected, NO, @"");
+    STAssertEquals(attributes->memoryManagementPolicy, ext_propertyMemoryManagementPolicyRetain, @"");
 
     STAssertEquals(attributes->getter, @selector(whoopsWhatArray), @"");
     STAssertEquals(attributes->setter, @selector(setThatArray:), @"");
