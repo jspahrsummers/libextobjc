@@ -31,7 +31,7 @@
 
 @implementation EXTBlockMethodTest
 - (void)testAddingMethod {
-    id block = blockMethod(id self, int val){
+    id block = ^(id self, int val){
         STAssertTrue([self isKindOfClass:[BlockTestClass class]], @"expected self to be an instance of BlockTestClass or one of its subclasses");
         return val * 2;
     };
@@ -87,7 +87,7 @@
 
     __block BOOL testDescriptionCalled = NO;
 
-    id block = blockMethod(id self){
+    id block = ^(id self){
         if ([self isMemberOfClass:[BlockTestClass class]]) {
             testDescriptionCalled = YES;
             return @"block";

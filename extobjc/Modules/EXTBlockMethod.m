@@ -13,8 +13,6 @@
 #import <stdio.h>
 #import <string.h>
 
-#define DEBUG_LOGGING 1
-
 /*
  * The following block-related definitions are taken from:
  * http://clang.llvm.org/docs/Block-ABI-Apple.txt
@@ -83,7 +81,6 @@ BOOL ext_addBlockMethod (Class aClass, SEL name, id block, const char *types) {
     }
     
     objc_setAssociatedObject(aClass, name, block, OBJC_ASSOCIATION_COPY);
-
     return YES;
 }
 
@@ -179,11 +176,11 @@ void ext_synthesizeBlockProperty (const char * restrict type, ext_propertyMemory
             if (atomic) { \
                 __block VARTYPE volatile backingVar = 0; \
                 \
-                id localGetter = blockMethod(id self){ \
+                id localGetter = ^(id self){ \
                     return (RETTYPE)backingVar; \
                 }; \
                 \
-                id localSetter = blockMethod(id self, RETTYPE newRealValue){ \
+                id localSetter = ^(id self, RETTYPE newRealValue){ \
                     VARTYPE newValue = (VARTYPE)newRealValue; \
                     SET_ATOMIC_VAR(VARTYPE, CASTYPE); \
                 }; \
@@ -193,11 +190,11 @@ void ext_synthesizeBlockProperty (const char * restrict type, ext_propertyMemory
             } else { \
                 __block RETTYPE backingVar = 0; \
                 \
-                id localGetter = blockMethod(id self){ \
+                id localGetter = ^(id self){ \
                     return backingVar; \
                 }; \
                 \
-                id localSetter = blockMethod(id self, RETTYPE newRealValue){ \
+                id localSetter = ^(id self, RETTYPE newRealValue){ \
                     backingVar = newRealValue; \
                 }; \
                 \
@@ -211,7 +208,7 @@ void ext_synthesizeBlockProperty (const char * restrict type, ext_propertyMemory
             if (atomic) { \
                 __block VARTYPE volatile backingVar = 0; \
                 \
-                id localGetter = blockMethod(id self){ \
+                id localGetter = ^(id self){ \
                     union { \
                         VARTYPE backing; \
                         RETTYPE real; \
@@ -221,7 +218,7 @@ void ext_synthesizeBlockProperty (const char * restrict type, ext_propertyMemory
                     return u.real; \
                 }; \
                 \
-                id localSetter = blockMethod(id self, RETTYPE newRealValue){ \
+                id localSetter = ^(id self, RETTYPE newRealValue){ \
                     union { \
                         VARTYPE backing; \
                         RETTYPE real; \
@@ -239,11 +236,11 @@ void ext_synthesizeBlockProperty (const char * restrict type, ext_propertyMemory
             } else { \
                 __block RETTYPE backingVar = 0; \
                 \
-                id localGetter = blockMethod(id self){ \
+                id localGetter = ^(id self){ \
                     return backingVar; \
                 }; \
                 \
-                id localSetter = blockMethod(id self, RETTYPE newRealValue){ \
+                id localSetter = ^(id self, RETTYPE newRealValue){ \
                     backingVar = newRealValue; \
                 }; \
                 \
@@ -257,7 +254,7 @@ void ext_synthesizeBlockProperty (const char * restrict type, ext_propertyMemory
             __block POLICY volatile id backingVar = nil; \
             __block OSSpinLock spinLock = 0; \
             \
-            id localGetter = blockMethod(id self){ \
+            id localGetter = ^(id self){ \
                 OSSpinLockLock(&spinLock); \
                 id value = backingVar; \
                 OSSpinLockUnlock(&spinLock); \
@@ -265,7 +262,7 @@ void ext_synthesizeBlockProperty (const char * restrict type, ext_propertyMemory
                 return value; \
             }; \
             \
-            id localSetter = blockMethod(id self, id newValue){ \
+            id localSetter = ^(id self, id newValue){ \
                 if (memoryManagementPolicy == ext_propertyMemoryManagementPolicyCopy) { \
                     newValue = [newValue copy]; \
                 } \
