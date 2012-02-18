@@ -18,7 +18,7 @@
 @end
 
 @implementation RuntimeTestClass
-@synthesize normalBool = m_normalBool;
+@synthesize normalBool = _normalBool;
 @synthesize array = m_array;
 @synthesize normalString;
 
@@ -35,8 +35,24 @@
     STAssertTrue(attributes != NULL, @"could not get property attributes");
 
     STAssertEquals(attributes->readonly, YES, @"");
-    STAssertEquals(attributes->getter, @selector(isNormalBool), @"");
     STAssertEquals(attributes->nonatomic, YES, @"");
+    STAssertEquals(attributes->weak, NO, @"");
+    STAssertEquals(attributes->canBeCollected, NO, @"");
+    STAssertEquals(attributes->memoryManagementPolicy, ext_propertyMemoryManagementPolicyAssign, @"");
+
+    STAssertEquals(attributes->getter, @selector(isNormalBool), @"");
+    STAssertEquals(attributes->setter, @selector(setNormalBool:), @"");
+
+    STAssertTrue(strcmp(attributes->ivar, "_normalBool") == 0, @"expected property ivar name to be '_normalBool'");
+    STAssertTrue(strlen(attributes->type) > 0, @"property type is missing from attributes");
+
+    NSUInteger size = 0;
+    NSGetSizeAndAlignment(attributes->type, &size, NULL);
+    STAssertTrue(size > 0, @"invalid property type %s, has no size", attributes->type);
+
+    STAssertNil(attributes->objectClass, @"");
+
+    free(attributes);
 }
 
 - (void)testPropertyAttributesForArray {
