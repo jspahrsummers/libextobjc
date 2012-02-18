@@ -10,6 +10,7 @@
 
 @interface RuntimeTestClass : NSObject {
 }
+
 @property (nonatomic, assign, getter = isNormalBool, readonly) BOOL normalBool;
 @property (nonatomic, strong, getter = whoopsWhatArray, setter = setThatArray:) NSArray *array;
 @property (copy) NSString *normalString;
@@ -38,6 +39,7 @@
     STAssertEquals(attributes->nonatomic, YES, @"");
     STAssertEquals(attributes->weak, NO, @"");
     STAssertEquals(attributes->canBeCollected, NO, @"");
+    STAssertEquals(attributes->dynamic, NO, @"");
     STAssertEquals(attributes->memoryManagementPolicy, ext_propertyMemoryManagementPolicyAssign, @"");
 
     STAssertEquals(attributes->getter, @selector(isNormalBool), @"");
@@ -66,6 +68,7 @@
     STAssertEquals(attributes->nonatomic, YES, @"");
     STAssertEquals(attributes->weak, NO, @"");
     STAssertEquals(attributes->canBeCollected, NO, @"");
+    STAssertEquals(attributes->dynamic, NO, @"");
     STAssertEquals(attributes->memoryManagementPolicy, ext_propertyMemoryManagementPolicyRetain, @"");
 
     STAssertEquals(attributes->getter, @selector(whoopsWhatArray), @"");
@@ -94,6 +97,7 @@
     STAssertEquals(attributes->nonatomic, NO, @"");
     STAssertEquals(attributes->weak, NO, @"");
     STAssertEquals(attributes->canBeCollected, NO, @"");
+    STAssertEquals(attributes->dynamic, NO, @"");
     STAssertEquals(attributes->memoryManagementPolicy, ext_propertyMemoryManagementPolicyCopy, @"");
 
     STAssertEquals(attributes->getter, @selector(normalString), @"");
@@ -122,6 +126,7 @@
     STAssertEquals(attributes->nonatomic, NO, @"");
     STAssertEquals(attributes->weak, NO, @"");
     STAssertEquals(attributes->canBeCollected, NO, @"");
+    STAssertEquals(attributes->dynamic, YES, @"");
     STAssertEquals(attributes->memoryManagementPolicy, ext_propertyMemoryManagementPolicyAssign, @"");
 
     STAssertEquals(attributes->getter, @selector(untypedObject), @"");
