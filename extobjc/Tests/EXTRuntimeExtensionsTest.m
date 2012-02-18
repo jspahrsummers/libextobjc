@@ -15,6 +15,7 @@
 @property (nonatomic, strong, getter = whoopsWhatArray, setter = setThatArray:) NSArray *array;
 @property (copy) NSString *normalString;
 @property (unsafe_unretained) id untypedObject;
+@property (nonatomic, weak) NSObject *weakObject;
 
 @end
 
@@ -22,6 +23,13 @@
 @synthesize normalBool = _normalBool;
 @synthesize array = m_array;
 @synthesize normalString;
+
+- (NSObject *)weakObject {
+    return nil;
+}
+
+- (void)setWeakObject:(NSObject *)weakObject {
+}
 
 @dynamic untypedObject;
 @end
@@ -144,4 +152,34 @@
 
     free(attributes);
 }
+
+- (void)testPropertyAttributesForWeakObject {
+    objc_property_t property = class_getProperty([RuntimeTestClass class], "weakObject");
+    NSLog(@"property attributes: %s", property_getAttributes(property));
+
+    ext_propertyAttributes *attributes = ext_copyPropertyAttributes(property);
+    STAssertTrue(attributes != NULL, @"could not get property attributes");
+
+    STAssertEquals(attributes->readonly, NO, @"");
+    STAssertEquals(attributes->nonatomic, YES, @"");
+    STAssertEquals(attributes->weak, YES, @"");
+    STAssertEquals(attributes->canBeCollected, NO, @"");
+    STAssertEquals(attributes->dynamic, NO, @"");
+    STAssertEquals(attributes->memoryManagementPolicy, ext_propertyMemoryManagementPolicyAssign, @"");
+
+    STAssertEquals(attributes->getter, @selector(weakObject), @"");
+    STAssertEquals(attributes->setter, @selector(setWeakObject:), @"");
+
+    STAssertTrue(attributes->ivar == NULL, @"weakObject property should not have a backing ivar");
+    STAssertTrue(strlen(attributes->type) > 0, @"property type is missing from attributes");
+
+    NSUInteger size = 0;
+    NSGetSizeAndAlignment(attributes->type, &size, NULL);
+    STAssertTrue(size > 0, @"invalid property type %s, has no size", attributes->type);
+
+    STAssertEqualObjects(attributes->objectClass, [NSObject class], @"");
+
+    free(attributes);
+}
+
 @end
