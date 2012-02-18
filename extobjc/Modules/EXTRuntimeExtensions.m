@@ -831,6 +831,9 @@ BOOL ext_loadSpecialProtocol (Protocol *protocol, void (^injectionBehavior)(Clas
         // empty space in the array
         specialProtocols[specialProtocolCount] = (EXTSpecialProtocol){
             .protocol = protocol,
+
+            // the static analyzer will complain about a leak here, but this
+            // block is definitely released in ext_injectSpecialProtocols()
             .injectionBlock = (__bridge_retained void *)copiedBlock,
             .ready = NO
         };
