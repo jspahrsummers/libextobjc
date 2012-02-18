@@ -10,14 +10,15 @@
 
 @interface RuntimeTestClass : NSObject {
 }
-
-@property (nonatomic, copy, getter = whoopsWhatArray, setter = setThatArray:, readonly) NSArray *array;
+@property (nonatomic, assign, getter = isNormalBool, readonly) BOOL normalBool;
+@property (nonatomic, copy, getter = whoopsWhatArray, setter = setThatArray:) NSArray *array;
 @property (copy) NSString *normalString;
 @property (unsafe_unretained) id untypedObject;
 
 @end
 
 @implementation RuntimeTestClass
+@synthesize normalBool = m_normalBool;
 @synthesize array = m_array;
 @synthesize normalString;
 
@@ -25,6 +26,19 @@
 @end
 
 @implementation EXTRuntimeExtensionsTest
+
+- (void)testPropertyAttributesForBOOL {
+    objc_property_t property = class_getProperty([RuntimeTestClass class], "normalBool");
+    NSLog(@"property attributes: %s", property_getAttributes(property));
+
+    ext_propertyAttributes *attributes = ext_copyPropertyAttributes(property);
+    STAssertTrue(attributes != NULL, @"could not get property attributes");
+
+    STAssertEquals(attributes->readonly, YES, @"");
+    STAssertEquals(attributes->getter, @selector(isNormalBool), @"");
+    STAssertEquals(attributes->nonatomic, YES, @"");
+}
+
 - (void)testPropertyAttributesForArray {
     objc_property_t property = class_getProperty([RuntimeTestClass class], "array");
     NSLog(@"property attributes: %s", property_getAttributes(property));
@@ -32,7 +46,6 @@
     ext_propertyAttributes *attributes = ext_copyPropertyAttributes(property);
     STAssertTrue(attributes != NULL, @"could not get property attributes");
 
-    STAssertEquals(attributes->readonly, YES, @"");
     STAssertEquals(attributes->nonatomic, YES, @"");
     STAssertEquals(attributes->weak, NO, @"");
     STAssertEquals(attributes->canBeCollected, NO, @"");
