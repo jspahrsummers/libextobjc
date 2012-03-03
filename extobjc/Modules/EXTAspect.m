@@ -6,6 +6,9 @@
 //  Released into the public domain.
 //
 
+// see EXTAspect.h
+#if HAVE_LIBFFI
+
 #import "EXTAspect.h"
 #import "EXTRuntimeExtensions.h"
 #import "EXTScope.h"
@@ -492,3 +495,5 @@ BOOL ext_addAspect (Protocol *protocol, Class methodContainer) {
 void ext_loadAspect (Protocol *protocol) {
     ext_specialProtocolReadyForInjection(protocol);
 }
+
+#endif
