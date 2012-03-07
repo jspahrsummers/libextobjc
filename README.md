@@ -6,11 +6,11 @@ libextobjc is meant to be very modular – most of its classes and modules can b
 
 libextobjc currently includes the following features:
 
- * Safe categories, using the EXTSafeCategory module, for adding methods to a class without overwriting anything already there (identifying conflicts for you).
- * Concrete protocols, using the EXTConcreteProtocol module, for providing default implementations of the methods in a protocol.
- * Scope-based resource cleanup, using the EXTScope module, for automatically cleaning up manually-allocated memory, file handles, locks, etc., at the end of a scope.
- * The EXTNil class, which is like `NSNull`, but behaves much more closely to actual `nil` (i.e., doesn't crash when sent unrecognized messages).
- * The EXTBlockTarget class, which extends target-action with block actions.
+ * **Safe categories**, using the EXTSafeCategory module, for adding methods to a class without overwriting anything already there (identifying conflicts for you).
+ * **Concrete protocols**, using the EXTConcreteProtocol module, for providing default implementations of the methods in a protocol.
+ * **Scope-based resource cleanup**, using the EXTScope module, for automatically cleaning up manually-allocated memory, file handles, locks, etc., at the end of a scope.
+ * **EXTNil, which is like `NSNull`, but behaves much more closely to actual `nil`** (i.e., doesn't crash when sent unrecognized messages).
+ * **EXTBlockTarget, which extends the target-action mechanism with support for blocks**.
  * Aspect-oriented programming, using the EXTAspect module. This feature [requires libffi](#Requirements), and so is not enabled by default.
  * Block-based coroutines, using the EXTCoroutine module.
  * Final methods – methods which cannot be overridden – using the EXTFinalMethod module.
