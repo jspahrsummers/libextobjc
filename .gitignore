@@ -1,0 +1,10 @@
+*.lo
+*.o
+*.la
+config*
+.deps
+.libs
+Makefile
+libtool
+stamp-h1
+tests/test
