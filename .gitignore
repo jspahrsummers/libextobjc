@@ -8,3 +8,4 @@ Makefile
 libtool
 stamp-h1
 tests/test
+autom4te.cache
