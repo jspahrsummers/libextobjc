@@ -12,12 +12,3 @@ void ext_executeCleanupBlock (__strong ext_cleanupBlock_t *block) {
     (*block)();
 }
 
-id<NSLocking> ext_lockAndReturn (id<NSLocking> lock) {
-    [lock lock];
-    return lock;
-}
-
-void ext_releaseScopeLock (__strong id<NSLocking> *lockPtr) {
-    [*lockPtr unlock];
-}
-

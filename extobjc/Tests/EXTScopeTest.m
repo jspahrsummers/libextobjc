@@ -156,26 +156,4 @@
     STAssertEqualObjects(str, @"foobar", @"'bar' should've been appended to 'foo' at the end of a called method that threw an exception");
 }
 
-- (void)testScopeLock {
-    NSLock *aLock = [[NSLock alloc] init];
-    STAssertNotNil(aLock, @"could not allocate test NSLock object");
-
-    {
-        lockForScope(aLock);
-    }
-
-    STAssertTrue([aLock tryLock], @"lockForScope() did not automatically unlock");
-    STAssertNoThrow([aLock unlock], @"");
-
-    BOOL didLock = NO;
-
-    ifTryLock(aLock) {
-        didLock = YES;
-    }
-
-    STAssertTrue(didLock, @"ifTryLock() failed when lock was not held");
-    STAssertTrue([aLock tryLock], @"ifTryLock() did not automatically unlock");
-    STAssertNoThrow([aLock unlock], @"");
-}
-
 @end
