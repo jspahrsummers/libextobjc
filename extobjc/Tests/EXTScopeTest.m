@@ -156,4 +156,30 @@
     STAssertEqualObjects(str, @"foobar", @"'bar' should've been appended to 'foo' at the end of a called method that threw an exception");
 }
 
+- (void)testWeakifyStrongify {
+    NSString *foo = @"foo";
+    NSString *bar = @"bar";
+
+    void *fooPtr = &foo;
+    void *barPtr = &bar;
+
+    @weakify(foo, bar);
+
+    BOOL (^matchesFooOrBar)(NSString *) = ^ BOOL (NSString *str){
+        @strongify(bar, foo);
+
+        STAssertEqualObjects(foo, @"foo", @"");
+        STAssertEqualObjects(bar, @"bar", @"");
+
+        STAssertTrue(fooPtr != &foo, @"Address of 'foo' within block should be different from its address outside the block");
+        STAssertTrue(barPtr != &bar, @"Address of 'bar' within block should be different from its address outside the block");
+
+        return [foo isEqual:str] || [bar isEqual:str];
+    };
+
+    STAssertTrue(matchesFooOrBar(@"foo"), @"");
+    STAssertTrue(matchesFooOrBar(@"bar"), @"");
+    STAssertFalse(matchesFooOrBar(@"buzz"), @"");
+}
+
 @end
