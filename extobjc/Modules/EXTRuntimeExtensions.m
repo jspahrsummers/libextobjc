@@ -401,6 +401,9 @@ Class *ext_copyClassListConformingToProtocol (Protocol *protocol, unsigned *coun
         unsigned classCount = 0;
         allClasses = ext_copyClassList(&classCount);
 
+        if (!allClasses)
+            return NULL;
+
         // we're going to reuse allClasses for the return value, so returnIndex will
         // keep track of the indices we replace with new values
         unsigned returnIndex = 0;
