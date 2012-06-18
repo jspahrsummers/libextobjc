@@ -84,5 +84,4 @@ void ext_executeCleanupBlock (__strong ext_cleanupBlock_t *block);
     __weak __typeof__(VAR) metamacro_concat(VAR, _weak_) = (VAR);
 
 #define ext_strongify_(INDEX, VAR) \
-    __strong __typeof__(VAR) metamacro_concat(VAR, _strong_) = metamacro_concat(VAR, _weak_), \
-                             VAR = metamacro_concat(VAR, _strong_);
+    __strong __typeof__(VAR) VAR = metamacro_concat(VAR, _weak_);
