@@ -31,8 +31,58 @@
     try {} @finally {} \
     __strong ext_cleanupBlock_t metamacro_concat(ext_exitBlock_, __LINE__) __attribute__((cleanup(ext_executeCleanupBlock), unused)) = ^
 
+/**
+ * Creates \c __weak shadow variables for each of the variables provided as
+ * arguments, which can later be made strong again with #strongify.
+ *
+ * This is typically used to weakly reference variables in a block, but then
+ * ensure that the variables stay alive during the actual execution of the block
+ * (if they were live upon entry).
+ *
+ * See #strongify for an example of usage.
+ */
+#define weakify(...) \
+    try {} @finally {} \
+    metamacro_foreach(ext_weakify_, __VA_ARGS__)
+
+/**
+ * Strongly references each of the variables provided as arguments, which must
+ * have previously been passed to #weakify.
+ *
+ * The strong references created will shadow the original variable names, such
+ * that the original names can be used without issue (and a significantly
+ * reduced risk of retain cycles) in the current scope.
+ *
+ * @code
+
+    id foo = [[NSObject alloc] init];
+    id bar = [[NSObject alloc] init];
+
+    @weakify(foo, bar);
+
+    // this block will not keep 'foo' or 'bar' alive
+    BOOL (^matchesFooOrBar)(id) = ^ BOOL (id obj){
+        // but now, upon entry, 'foo' and 'bar' will stay alive until the block has
+        // finished executing
+        @strongify(foo, bar);
+
+        return [foo isEqual:obj] || [bar isEqual:obj];
+    };
+
+ * @endcode
+ */
+#define strongify(...) \
+    try {} @finally {} \
+    metamacro_foreach(ext_strongify_, __VA_ARGS__)
+
 /*** implementation details follow ***/
 typedef void (^ext_cleanupBlock_t)();
 
 void ext_executeCleanupBlock (__strong ext_cleanupBlock_t *block);
 
+#define ext_weakify_(INDEX, VAR) \
+    __weak __typeof__(VAR) metamacro_concat(VAR, _weak_) = (VAR);
+
+#define ext_strongify_(INDEX, VAR) \
+    __strong __typeof__(VAR) metamacro_concat(VAR, _strong_) = metamacro_concat(VAR, _weak_), \
+                             VAR = metamacro_concat(VAR, _strong_);
