@@ -15,6 +15,22 @@
 #define tuple(...) \
     ((metamacro_concat(EXTTuple, metamacro_argcount(__VA_ARGS__))){ __VA_ARGS__ })
 
+#define multivar(...) \
+    do { \
+        metamacro_foreach(multivar_, __VA_ARGS__) \
+        metamacro_concat(EXTTuple, metamacro_argcount(__VA_ARGS__)) t_, *tptr_ = &t_; \
+        \
+        void (^unpackToVariables)(void) = ^{ \
+            metamacro_foreach(unpack_, __VA_ARGS__) \
+        }; \
+        \
+        t_
+
+#define unpack(TUPLE) \
+        TUPLE; \
+        unpackToVariables(); \
+    } while (0)
+
 /*** implementation details follow ***/
 #define EXTTuple_(...) \
     struct { \
@@ -23,6 +39,12 @@
 
 #define EXTTupleIndex_(INDEX, ...) \
         __unsafe_unretained id v ## INDEX;
+
+#define multivar_(INDEX, VAR) \
+    __typeof__(VAR) *VAR ## _ptr_ = &VAR;
+
+#define unpack_(INDEX, VAR) \
+    *VAR ## _ptr_ = tptr_->v ## INDEX;
 
 typedef EXTTuple_(0) EXTTuple1;
 typedef EXTTuple_(0, 1) EXTTuple2;
