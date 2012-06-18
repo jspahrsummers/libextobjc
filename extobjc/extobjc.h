@@ -21,6 +21,7 @@
 #import "EXTSafeCategory.h"
 #import "EXTScope.h"
 #import "EXTSwizzle.h"
+#import "EXTTuple.h"
 #import "NSInvocation+EXT.h"
 #import "NSMethodSignature+EXT.h"
 
