@@ -11,6 +11,7 @@
 #include "contracts_test.h"
 #include "enum_test.h"
 #include "exception_test.h"
+#include "metamacros_test.h"
 #include "memory_test.h"
 #include "refcounted_test.h"
 #include "scope_test.h"
@@ -28,6 +29,7 @@ int main (void) {
     TEST_MODULE(contracts);
     TEST_MODULE(enum);
     TEST_MODULE(memory);
+    TEST_MODULE(metamacros);
     TEST_MODULE(refcounted);
     TEST_MODULE(scope);
     TEST_MODULE(vector);

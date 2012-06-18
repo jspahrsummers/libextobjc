@@ -45,9 +45,18 @@
 #define metamacro_concat(A, B) \
         metamacro_concat_(A, B)
 
+/**
+ * Returns the number of arguments (up to nine) provided to the macro.
+ *
+ * Inspired by P99: http://p99.gforge.inria.fr
+ */
+#define metamacro_argcount(...) \
+        metamacro_index9_(__VA_ARGS__, 9, 8, 7, 6, 5, 4, 3, 2, 1)
+
 // IMPLEMENTATION DETAILS FOLLOW!
 // Do not write code that depends on anything below this line.
 #define metamacro_stringify_(VALUE) # VALUE
 #define metamacro_concat_(A, B) A ## B
+#define metamacro_index9_(_0, _1, _2, _3, _4, _5, _6, _7, _8, _9, ...) _9
 
 #endif
