@@ -53,10 +53,30 @@
 #define metamacro_argcount(...) \
         metamacro_index9_(__VA_ARGS__, 9, 8, 7, 6, 5, 4, 3, 2, 1)
 
+/**
+ * For each consecutive variable argument (up to nine), MACRO is passed the
+ * zero-based index of the current argument and the argument itself.
+ *
+ * Inspired by P99: http://p99.gforge.inria.fr
+ */
+#define metamacro_foreach(MACRO, ...) \
+        metamacro_concat(metamacro_for, metamacro_argcount(__VA_ARGS__))(MACRO, __VA_ARGS__)
+
 // IMPLEMENTATION DETAILS FOLLOW!
 // Do not write code that depends on anything below this line.
 #define metamacro_stringify_(VALUE) # VALUE
 #define metamacro_concat_(A, B) A ## B
 #define metamacro_index9_(_0, _1, _2, _3, _4, _5, _6, _7, _8, _9, ...) _9
+
+#define metamacro_for1(MACRO, _0)                                                                                                   MACRO(0, _0)
+#define metamacro_for2(MACRO, _0, _1)                                   metamacro_for1(MACRO, _0)                                   MACRO(1, _1)
+#define metamacro_for3(MACRO, _0, _1, _2)                               metamacro_for2(MACRO, _0, _1)                               MACRO(2, _2)
+#define metamacro_for4(MACRO, _0, _1, _2, _3)                           metamacro_for3(MACRO, _0, _1, _2)                           MACRO(3, _3)
+#define metamacro_for5(MACRO, _0, _1, _2, _3, _4)                       metamacro_for4(MACRO, _0, _1, _2, _3)                       MACRO(4, _4)
+#define metamacro_for6(MACRO, _0, _1, _2, _3, _4, _5)                   metamacro_for5(MACRO, _0, _1, _2, _3, _4)                   MACRO(5, _5)
+#define metamacro_for7(MACRO, _0, _1, _2, _3, _4, _5, _6)               metamacro_for6(MACRO, _0, _1, _2, _3, _4, _5)               MACRO(6, _6)
+#define metamacro_for8(MACRO, _0, _1, _2, _3, _4, _5, _6, _7)           metamacro_for7(MACRO, _0, _1, _2, _3, _4, _5, _6)           MACRO(7, _7)
+#define metamacro_for9(MACRO, _0, _1, _2, _3, _4, _5, _6, _7, _8)       metamacro_for8(MACRO, _0, _1, _2, _3, _4, _5, _6, _7)       MACRO(8, _8)
+#define metamacro_for10(MACRO, _0, _1, _2, _3, _4, _5, _6, _7, _8, _9)  metamacro_for9(MACRO, _0, _1, _2, _3, _4, _5, _6, _7, _8)   MACRO(9, _9)
 
 #endif
