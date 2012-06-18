@@ -21,4 +21,14 @@
     STAssertEqualObjects(t.v1, @5, @"");
 }
 
+- (void)testMultipleAssignment {
+    NSString *str;
+    NSNumber *num;
+
+    multivar(str, num) = unpack([self tupleMethod]);
+
+    STAssertEqualObjects(str, @"foobar", @"");
+    STAssertEqualObjects(num, @5, @"");
+}
+
 @end
