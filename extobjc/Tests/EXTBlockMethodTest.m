@@ -87,7 +87,7 @@
 
     __block BOOL testDescriptionCalled = NO;
 
-    id block = ^(id self){
+    id block = ^ id (id self){
         if ([self isMemberOfClass:[BlockTestClass class]]) {
             testDescriptionCalled = YES;
             return @"block";
