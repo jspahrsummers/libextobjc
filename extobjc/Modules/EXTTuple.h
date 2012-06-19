@@ -16,7 +16,7 @@
     ((metamacro_concat(EXTTuple, metamacro_argcount(__VA_ARGS__))){ __VA_ARGS__ })
 
 #define multivar(...) \
-    do { \
+    ({ \
         metamacro_foreach(multivar_, __VA_ARGS__) \
         metamacro_concat(EXTTuple, metamacro_argcount(__VA_ARGS__)) t_, *tptr_ = &t_; \
         \
@@ -29,7 +29,9 @@
 #define unpack(TUPLE) \
         TUPLE; \
         unpackToVariables(); \
-    } while (0)
+        \
+        t_.v0;\
+    })
 
 /*** implementation details follow ***/
 #define EXTTuple_(...) \
