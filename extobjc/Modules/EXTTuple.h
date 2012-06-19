@@ -15,6 +15,49 @@
 #define tuple(...) \
     ((metamacro_concat(EXTTuple, metamacro_argcount(__VA_ARGS__))){ __VA_ARGS__ })
 
+/**
+ * Collects variables to be used for multiple assignment with #unpack. This
+ * macro _must_ be followed by = and a call to #unpack.
+ *
+ * The result of the multiple assignment (i.e., if used as part of a larger
+ * expression) will be the first tuple value.
+ *
+ * @code
+
+    NSString *str;
+    NSNumber *num;
+
+    // this could also be the return value of a method or something similar
+    EXTTuple2 t = tuple(@"foo", @5);
+
+    multivar(str, num) = unpack(t);
+
+ * @endcode
+ */
+#define multivar(...) \
+    ({ \
+        metamacro_foreach(multivar_, __VA_ARGS__) \
+        metamacro_concat(EXTTuple, metamacro_argcount(__VA_ARGS__)) t_, *tptr_ = &t_; \
+        \
+        void (^unpackToVariables)(void) = ^{ \
+            metamacro_foreach(unpack_, __VA_ARGS__) \
+        }; \
+        \
+        t_
+
+/**
+ * Unpacks the given EXTTuple into the variables previously listed with
+ * #multivar.
+ *
+ * See #multivar for an example.
+ */
+#define unpack(TUPLE) \
+        TUPLE; \
+        unpackToVariables(); \
+        \
+        t_.v0;\
+    })
+
 /*** implementation details follow ***/
 #define EXTTuple_(...) \
     struct { \
@@ -23,6 +66,12 @@
 
 #define EXTTupleIndex_(INDEX, ...) \
         __unsafe_unretained id v ## INDEX;
+
+#define multivar_(INDEX, VAR) \
+    __typeof__(VAR) *VAR ## _ptr_ = &VAR;
+
+#define unpack_(INDEX, VAR) \
+    *VAR ## _ptr_ = tptr_->v ## INDEX;
 
 typedef EXTTuple_(0) EXTTuple1;
 typedef EXTTuple_(0, 1) EXTTuple2;

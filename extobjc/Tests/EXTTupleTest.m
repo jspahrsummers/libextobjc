@@ -21,4 +21,35 @@
     STAssertEqualObjects(t.v1, @5, @"");
 }
 
+- (void)testMultipleAssignment {
+    NSString *str;
+    NSNumber *num;
+
+    multivar(str, num) = unpack([self tupleMethod]);
+
+    STAssertEqualObjects(str, @"foobar", @"");
+    STAssertEqualObjects(num, @5, @"");
+}
+
+- (void)testMultipleAssignmentRvalue {
+    NSString *str;
+    NSNumber *num;
+
+    NSString *sameStr = multivar(str, num) = unpack([self tupleMethod]);
+
+    STAssertEqualObjects(str, @"foobar", @"");
+    STAssertEqualObjects(sameStr, str, @"");
+    STAssertEqualObjects(num, @5, @"");
+}
+
+- (void)testUnpackingInlineTuple {
+    NSString *str;
+    NSNumber *num;
+
+    multivar(str, num) = unpack(tuple(@"foo", @3));
+
+    STAssertEqualObjects(str, @"foo", @"");
+    STAssertEqualObjects(num, @3, @"");
+}
+
 @end
