@@ -8,6 +8,11 @@
 
 #import "EXTKeyPathCodingTest.h"
 
+// used to test refactoring also updating @keypath() uses
+@interface MyClass : NSObject
+@property (nonatomic, assign) NSUInteger someUniqueProperty;
+@end
+
 @implementation EXTKeyPathCodingTest
 
 - (void)testSingleKey {
@@ -31,4 +36,15 @@
     STAssertEqualObjects(path, @"class.description", @"");
 }
 
+- (void)testMyClassKeyPath {
+    MyClass *obj = [[MyClass alloc] init];
+
+    NSString *path = @keypath(obj.someUniqueProperty);
+    STAssertEqualObjects(path, @"someUniqueProperty", @"");
+}
+
+@end
+
+@implementation MyClass
+@synthesize someUniqueProperty;
 @end
