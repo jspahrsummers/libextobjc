@@ -12,6 +12,7 @@
 #import "EXTConcreteProtocol.h"
 #import "EXTDispatchObject.h"
 #import "EXTFinalMethod.h"
+#import "EXTKeyPathCoding.h"
 #import "EXTMaybe.h"
 #import "EXTMixin.h"
 #import "EXTMultiObject.h"
