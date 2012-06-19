@@ -55,6 +55,8 @@
 		D07F83B3135D50E9008B9D6D /* EXTBlockTargetTest.m in Sources */ = {isa = PBXBuildFile; fileRef = D07F83B1135D50E9008B9D6D /* EXTBlockTargetTest.m */; };
 		D088C7BA1591217800C70CE2 /* EXTKeyPathCoding.h in Headers */ = {isa = PBXBuildFile; fileRef = D088C7B91591217800C70CE2 /* EXTKeyPathCoding.h */; };
 		D088C7BB1591217800C70CE2 /* EXTKeyPathCoding.h in Headers */ = {isa = PBXBuildFile; fileRef = D088C7B91591217800C70CE2 /* EXTKeyPathCoding.h */; };
+		D088C7BE159121A300C70CE2 /* EXTKeyPathCodingTest.m in Sources */ = {isa = PBXBuildFile; fileRef = D088C7BD159121A300C70CE2 /* EXTKeyPathCodingTest.m */; };
+		D088C7BF159121A300C70CE2 /* EXTKeyPathCodingTest.m in Sources */ = {isa = PBXBuildFile; fileRef = D088C7BD159121A300C70CE2 /* EXTKeyPathCodingTest.m */; };
 		D0A8B04F128A42F4004AACE0 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0867D69BFE84028FC02AAC07 /* Foundation.framework */; };
 		D0A8B188128A4303004AACE0 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D0A8B187128A4303004AACE0 /* Foundation.framework */; };
 		D0A8B2F8128A49E9004AACE0 /* EXTSwizzle.h in Headers */ = {isa = PBXBuildFile; fileRef = D0A8B2F7128A49E9004AACE0 /* EXTSwizzle.h */; };
@@ -188,6 +190,8 @@
 		D07F83B0135D50E9008B9D6D /* EXTBlockTargetTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXTBlockTargetTest.h; sourceTree = "<group>"; };
 		D07F83B1135D50E9008B9D6D /* EXTBlockTargetTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXTBlockTargetTest.m; sourceTree = "<group>"; };
 		D088C7B91591217800C70CE2 /* EXTKeyPathCoding.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXTKeyPathCoding.h; sourceTree = "<group>"; };
+		D088C7BC159121A300C70CE2 /* EXTKeyPathCodingTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXTKeyPathCodingTest.h; sourceTree = "<group>"; };
+		D088C7BD159121A300C70CE2 /* EXTKeyPathCodingTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXTKeyPathCodingTest.m; sourceTree = "<group>"; };
 		D0919C4D146F99B900D680C9 /* Common.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Common.xcconfig; sourceTree = "<group>"; };
 		D0919C4F146F99B900D680C9 /* Debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Debug.xcconfig; sourceTree = "<group>"; };
 		D0919C50146F99B900D680C9 /* Profile.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Profile.xcconfig; sourceTree = "<group>"; };
@@ -448,6 +452,8 @@
 				D03EC9A2138A25F100559080 /* EXTCoroutineTest.m */,
 				D0337665131E54960039ACFD /* EXTFinalMethodTest.h */,
 				D0337666131E54960039ACFD /* EXTFinalMethodTest.m */,
+				D088C7BC159121A300C70CE2 /* EXTKeyPathCodingTest.h */,
+				D088C7BD159121A300C70CE2 /* EXTKeyPathCodingTest.m */,
 				D0737D9214CB9438005BF183 /* EXTMaybeTest.h */,
 				D0737D9314CB9438005BF183 /* EXTMaybeTest.m */,
 				D002DAF613656CDF005348A5 /* EXTNilTest.h */,
@@ -798,6 +804,7 @@
 				D035A5BB148022B9006C1001 /* EXTAspectTest.m in Sources */,
 				D0737D9414CB9438005BF183 /* EXTMaybeTest.m in Sources */,
 				D0CD1BE7158F2A2A0039C845 /* EXTTupleTest.m in Sources */,
+				D088C7BE159121A300C70CE2 /* EXTKeyPathCodingTest.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -820,6 +827,7 @@
 				D035A5BC148022B9006C1001 /* EXTAspectTest.m in Sources */,
 				D0737D9514CB9438005BF183 /* EXTMaybeTest.m in Sources */,
 				D0CD1BE8158F2A2A0039C845 /* EXTTupleTest.m in Sources */,
+				D088C7BF159121A300C70CE2 /* EXTKeyPathCodingTest.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
