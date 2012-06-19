@@ -41,6 +41,14 @@
         execute_after_done_ = metamacro_exprify(__VA_ARGS__))
 
 /**
+ * If COND is true, the following one or more expressions (which may have a void
+ * type) are evaluated and the given block entered like a regular 'if'
+ * statement. Can also be used immediately after an 'else' for else-if behavior.
+ */
+#define if_then(COND, ...) \
+    if ((COND) && metamacro_exprify(__VA_ARGS__))
+
+/**
  * Allows you to define or initialize a variable for use with a given block of
  * code. 'break' will exit the with statement.
  *

@@ -216,7 +216,7 @@ bool exception_is_a (const exception *ex, const struct exception_type_info *type
  */
 #define catch(TYPE, VAR) \
                     /* if the exception type matches, mark it as caught */  \
-                    else metamacro_if_then (                                \
+                    else if_then (                                          \
                         exception_is_a(&exception_current_data_->           \
                         exception_obj, TYPE), exception_uncaught_ = false,  \
                         exception_block_pop_(), exception_unhandled_ = 2)   \
