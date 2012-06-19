@@ -11,6 +11,7 @@ libextobjc currently includes the following features:
  * **Scope-based resource cleanup**, using the EXTScope module, for automatically cleaning up manually-allocated memory, file handles, locks, etc., at the end of a scope.
  * **EXTNil, which is like `NSNull`, but behaves much more closely to actual `nil`** (i.e., doesn't crash when sent unrecognized messages).
  * **EXTBlockTarget, which extends the target-action mechanism with support for blocks**.
+ * Tuples, for multiple return values and assignment, using the EXTTuple module.
  * Aspect-oriented programming, using the EXTAspect module. This feature [requires libffi](#Requirements), and so is not enabled by default.
  * Block-based coroutines, using the EXTCoroutine module.
  * Final methods – methods which cannot be overridden – using the EXTFinalMethod module.
@@ -23,7 +24,7 @@ libextobjc currently includes the following features:
  * Convenience functions to install blocks as methods, using the EXTBlockMethod module.
  * Lots of extensions and additional functionality built on top of `<objc/runtime.h>`, including extremely customizable method injection, reflection upon object properties, and various functions to extend class hierarchy checks and method lookups.
 
-Some of these are just proofs of concept, and not necessarily recommended for production code. Others are quite valuable, and make Objective-C safer and/or more flexible. Check out the headers for more information.
+Some of these are just proofs of concept, and not necessarily recommended for production code. Others (mainly those bolded in the list above) are quite valuable, and make Objective-C safer and/or more flexible. Check out the headers for more information.
 
 # License
 
