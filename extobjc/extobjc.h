@@ -6,6 +6,7 @@
  *  Released into the public domain.
  */
 
+#import "EXTADT.h"
 #import "EXTAspect.h"
 #import "EXTBlockMethod.h"
 #import "EXTBlockTarget.h"
