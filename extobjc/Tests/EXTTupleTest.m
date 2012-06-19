@@ -31,4 +31,14 @@
     STAssertEqualObjects(num, @5, @"");
 }
 
+- (void)testUnpackingInlineTuple {
+    NSString *str;
+    NSNumber *num;
+
+    multivar(str, num) = unpack(tuple(@"foo", @3));
+
+    STAssertEqualObjects(str, @"foo", @"");
+    STAssertEqualObjects(num, @3, @"");
+}
+
 @end
