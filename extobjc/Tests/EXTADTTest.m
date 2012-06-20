@@ -18,19 +18,23 @@ ADT(Color,
 
 @implementation EXTADTTest
 
-- (void)testConstruction {
-    Color c1 = Red();
-    STAssertTrue(c1.tag == Red, @"");
+- (void)testRed {
+    ColorT c = Color.Red();
+    STAssertTrue(c.tag == Red, @"");
+}
 
-    Color c2 = Other(1.0, 0.5, 0.25);
-    STAssertTrue(c2.tag == Other, @"");
-    STAssertEqualsWithAccuracy(c2.r, 1.0, 0.0001, @"");
-    STAssertEqualsWithAccuracy(c2.g, 0.5, 0.0001, @"");
-    STAssertEqualsWithAccuracy(c2.b, 0.25, 0.0001, @"");
+- (void)testGray {
+    ColorT c = Color.Gray(0.75);
+    STAssertTrue(c.tag == Gray, @"");
+    STAssertEqualsWithAccuracy(c.alpha, 0.75, 0.0001, @"");
+}
 
-    Color c3 = Gray(0.75);
-    STAssertTrue(c3.tag == Gray, @"");
-    STAssertEqualsWithAccuracy(c3.alpha, 0.75, 0.0001, @"");
+- (void)testOther {
+    ColorT c = Color.Other(1.0, 0.5, 0.25);
+    STAssertTrue(c.tag == Other, @"");
+    STAssertEqualsWithAccuracy(c.r, 1.0, 0.0001, @"");
+    STAssertEqualsWithAccuracy(c.g, 0.5, 0.0001, @"");
+    STAssertEqualsWithAccuracy(c.b, 0.25, 0.0001, @"");
 }
 
 @end

@@ -12,20 +12,43 @@
     metamacro_foreach(ADT_predef_, __VA_ARGS__) \
     \
     typedef struct ADT_CURRENT_T { \
-        void *tag; \
+        enum { \
+            metamacro_foreach(ADT_enum_, __VA_ARGS__) \
+        } tag; \
         \
         union { \
             metamacro_foreach(ADT_payload_, __VA_ARGS__) \
         }; \
-    } NAME; \
+    } NAME ## T; \
     \
-    metamacro_foreach(ADT_, __VA_ARGS__)
+    metamacro_foreach(ADT_, __VA_ARGS__) \
+    \
+    const struct { \
+        metamacro_foreach(ADT_fptrs_, __VA_ARGS__) \
+    } NAME = { \
+        metamacro_foreach(ADT_fptrinit_, __VA_ARGS__) \
+    };
 
-#define ADT_predef_(INDEX, CONS) \
-    ADT_predef_ ## CONS
+#define ADT_predef_(INDEX, CONSCALL) \
+    ADT_predef_ ## CONSCALL
+
+#define ADT_enum_(INDEX, CONSCALL) \
+    ADT_enum_ ## CONSCALL
+
+#define ADT_payload_(INDEX, CONSCALL) \
+    ADT_payload_ ## CONSCALL
+
+#define ADT_(INDEX, CONSCALL) \
+    ADT_ ## CONSCALL
+
+#define ADT_fptrs_(INDEX, CONSCALL) \
+    ADT_fptrs_ ## CONSCALL
+
+#define ADT_fptrinit_(INDEX, CONSCALL) \
+    ADT_fptrinit_ ## CONSCALL
 
 #define ADT_predef_constructor(...) \
-    ADT_predef_constructor_(__VA_ARGS__, unsigned char metamacro_concat(metamacro_first(__VA_ARGS__), _unused_))
+    ADT_predef_constructor_(__VA_ARGS__, unsigned char metamacro_concat(metamacro_first(__VA_ARGS__, 0), _unused_))
 
 #define ADT_predef_constructor_(CONS, ...) \
     metamacro_foreach_cxt(ADT_predef_typedef_, CONS, __VA_ARGS__)
@@ -33,11 +56,11 @@
 #define ADT_predef_typedef_(INDEX, CONS, PARAM) \
     typedef metamacro_concat(PARAM, metamacro_concat(_junk_, __LINE__)), ADT_CURRENT_CONS_ALIAS_T(CONS, INDEX);
 
-#define ADT_payload_(INDEX, CONS) \
-    ADT_payload_ ## CONS
+#define ADT_enum_constructor(...) \
+    metamacro_first(__VA_ARGS__, 0),
 
 #define ADT_payload_constructor(...) \
-    ADT_payload_constructor_(__VA_ARGS__, unsigned char metamacro_concat(metamacro_first(__VA_ARGS__), _unused_))
+    ADT_payload_constructor_(__VA_ARGS__, unsigned char metamacro_concat(metamacro_first(__VA_ARGS__, 0), _unused_))
 
 #define ADT_payload_constructor_(CONS, ...) \
     struct { \
@@ -54,12 +77,9 @@
 #define ADT_payload_alias_(INDEX, CONS, PARAM) \
     ADT_CURRENT_CONS_ALIAS_T(CONS, INDEX) v ## INDEX;
 
-#define ADT_(INDEX, CONS) \
-    ADT_ ## CONS
-
 #define ADT_constructor(...) \
     static inline struct ADT_CURRENT_T \
-    metamacro_first(__VA_ARGS__, 0) (metamacro_foreach_cxt(ADT_prototype_, metamacro_first(__VA_ARGS__, 0), __VA_ARGS__)) \
+    metamacro_concat(metamacro_first(__VA_ARGS__, 0), _init_) (metamacro_foreach_cxt(ADT_prototype_, metamacro_first(__VA_ARGS__, 0), __VA_ARGS__)) \
     { \
         metamacro_foreach_cxt(ADT_initialize_, metamacro_first(__VA_ARGS__, 0), __VA_ARGS__) \
         return s; \
@@ -85,7 +105,7 @@
 #define ADT_initialize0(CONS) \
     struct ADT_CURRENT_T s; \
     \
-    s.tag = (__typeof__(s.tag))&CONS; \
+    s.tag = CONS; \
     struct ADT_CURRENT_CONS_ALIASES_T(CONS) *entry __attribute__((unused)) = &s.CONS;
 
 #define ADT_initialize1(CONS) entry->v0 = v0;
@@ -97,6 +117,12 @@
 #define ADT_initialize7(CONS) entry->v6 = v6;
 #define ADT_initialize8(CONS) entry->v7 = v7;
 #define ADT_initialize9(CONS) entry->v8 = v8;
+
+#define ADT_fptrs_constructor(...) \
+    struct ADT_CURRENT_T (*metamacro_first(__VA_ARGS__, 0)) (metamacro_foreach_cxt(ADT_prototype_, metamacro_first(__VA_ARGS__, 0), __VA_ARGS__));
+
+#define ADT_fptrinit_constructor(...) \
+    .metamacro_first(__VA_ARGS__, 0) = &metamacro_concat(metamacro_first(__VA_ARGS__, 0), _init_),
 
 #define ADT_CURRENT_T \
     metamacro_concat(_ADT_, __LINE__)
