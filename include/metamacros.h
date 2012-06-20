@@ -64,7 +64,7 @@
         metamacro_concat(metamacro_foreach_cxt, metamacro_argcount(__VA_ARGS__))(MACRO, SEP, CONTEXT, __VA_ARGS__)
 
 /**
- * Returns the first argument given.
+ * Returns the first argument given. At least one argument must be provided.
  *
  * This is useful when implementing a variadic macro, where you may have only
  * one variadic argument, but no way to retrieve it (for example, because \c ...
@@ -73,11 +73,12 @@
  * @code
 
 #define varmacro(...) \
-    metamacro_first(__VA_ARGS__, 0)
+    metamacro_head(__VA_ARGS__)
 
  * @endcode
  */
-#define metamacro_first(FIRST, ...) FIRST
+#define metamacro_head(...) \
+        metamacro_head_(__VA_ARGS__, 0)
 
 /**
  * Decrements VAL, which must be a number between one and twenty, inclusive.
@@ -103,6 +104,7 @@
 #define metamacro_concat_(A, B) A ## B
 #define metamacro_index20_(_0, _1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12, _13, _14, _15, _16, _17, _18, _19, _20, ...) _20
 #define metamacro_foreach_iter(INDEX, MACRO, ARG) MACRO(INDEX, ARG)
+#define metamacro_head_(FIRST, ...) FIRST
 
 // foreach_cxt expansions
 #define metamacro_foreach_cxt0(MACRO, SEP, CONTEXT)
