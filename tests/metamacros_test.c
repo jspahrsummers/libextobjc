@@ -52,6 +52,12 @@ void metamacros_test (void) {
     assert(metamacro_head(1, 5) == 1);
     assert(0 == strcmp(metamacro_head("foo", "bar"), "foo"));
 
+    assert(metamacro_tail(5, 1) == 1);
+    assert(metamacro_tail(1, 5) == 5);
+    assert(metamacro_head(metamacro_tail(1, 5, 1)) == 5);
+    assert(metamacro_tail(metamacro_tail(1, 5, 3)) == 3);
+    assert(0 == strcmp(metamacro_tail("bar", "foo", "foo")));
+
     assert(metamacro_inc(5) == 6);
     assert(metamacro_inc(0) == 1);
     assert(metamacro_inc(19) == 20);

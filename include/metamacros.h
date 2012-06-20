@@ -81,6 +81,13 @@
         metamacro_head_(__VA_ARGS__, 0)
 
 /**
+ * Returns every argument except the first. At least two arguments must be
+ * provided.
+ */
+#define metamacro_tail(...) \
+        metamacro_tail_(__VA_ARGS__)
+
+/**
  * Decrements VAL, which must be a number between one and twenty, inclusive.
  *
  * This is primarily useful when dealing with indexes and counts in
@@ -105,6 +112,7 @@
 #define metamacro_index20_(_0, _1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12, _13, _14, _15, _16, _17, _18, _19, _20, ...) _20
 #define metamacro_foreach_iter(INDEX, MACRO, ARG) MACRO(INDEX, ARG)
 #define metamacro_head_(FIRST, ...) FIRST
+#define metamacro_tail_(FIRST, ...) __VA_ARGS__
 
 // foreach_cxt expansions
 #define metamacro_foreach_cxt0(MACRO, SEP, CONTEXT)
