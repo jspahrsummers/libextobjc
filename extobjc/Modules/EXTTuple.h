@@ -36,11 +36,11 @@
  */
 #define multivar(...) \
     ({ \
-        metamacro_foreach(multivar_, __VA_ARGS__) \
+        metamacro_foreach(multivar_,, __VA_ARGS__) \
         metamacro_concat(EXTTuple, metamacro_argcount(__VA_ARGS__)) t_, *tptr_ = &t_; \
         \
         void (^unpackToVariables)(void) = ^{ \
-            metamacro_foreach(unpack_, __VA_ARGS__) \
+            metamacro_foreach(unpack_,, __VA_ARGS__) \
         }; \
         \
         t_
@@ -59,12 +59,12 @@
     })
 
 /*** implementation details follow ***/
-#define EXTTuple_(...) \
-    struct { \
-        metamacro_foreach(EXTTupleIndex_, __VA_ARGS__) \
-    }
+#define EXTTuple(INDEX, COUNT) \
+    typedef struct { \
+        metamacro_for_cxt(COUNT, EXTTupleIndex_,,) \
+    } metamacro_concat(EXTTuple, COUNT);
 
-#define EXTTupleIndex_(INDEX, ...) \
+#define EXTTupleIndex_(INDEX, CONTEXT) \
         __unsafe_unretained id v ## INDEX;
 
 #define multivar_(INDEX, VAR) \
@@ -73,12 +73,5 @@
 #define unpack_(INDEX, VAR) \
     *VAR ## _ptr_ = tptr_->v ## INDEX;
 
-typedef EXTTuple_(0) EXTTuple1;
-typedef EXTTuple_(0, 1) EXTTuple2;
-typedef EXTTuple_(0, 1, 2) EXTTuple3;
-typedef EXTTuple_(0, 1, 2, 3) EXTTuple4;
-typedef EXTTuple_(0, 1, 2, 3, 4) EXTTuple5;
-typedef EXTTuple_(0, 1, 2, 3, 4, 5) EXTTuple6;
-typedef EXTTuple_(0, 1, 2, 3, 4, 5, 6) EXTTuple7;
-typedef EXTTuple_(0, 1, 2, 3, 4, 5, 6, 7) EXTTuple8;
-typedef EXTTuple_(0, 1, 2, 3, 4, 5, 6, 7, 8) EXTTuple9;
+// creates type definitions for EXTTuple1 through EXTTuple20
+metamacro_foreach(EXTTuple,, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20);
