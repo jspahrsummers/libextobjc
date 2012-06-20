@@ -922,6 +922,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				TEST_AFTER_BUILD = YES;
+				WARNING_CFLAGS = "-fmacro-backtrace-limit=0";
 			};
 			name = Debug;
 		};
@@ -938,6 +939,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				TEST_AFTER_BUILD = YES;
+				WARNING_CFLAGS = "-fmacro-backtrace-limit=0";
 			};
 			name = Release;
 		};
