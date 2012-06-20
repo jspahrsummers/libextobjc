@@ -64,6 +64,16 @@
         metamacro_concat(metamacro_foreach_cxt, metamacro_argcount(__VA_ARGS__))(MACRO, SEP, CONTEXT, __VA_ARGS__)
 
 /**
+ * In consecutive order, appends each variadic argument (up to twenty) onto
+ * BASE. The resulting concatenations are then separated by SEP.
+ *
+ * This is primarily useful to manipulate a list of macro invocations into instead
+ * invoking a different, possibly related macro.
+ */
+#define metamacro_foreach_concat(BASE, SEP, ...) \
+        metamacro_foreach_cxt(metamacro_foreach_concat_iter, SEP, BASE, __VA_ARGS__)
+
+/**
  * Returns the first argument given. At least one argument must be provided.
  *
  * This is useful when implementing a variadic macro, where you may have only
@@ -113,6 +123,12 @@
 #define metamacro_foreach_iter(INDEX, MACRO, ARG) MACRO(INDEX, ARG)
 #define metamacro_head_(FIRST, ...) FIRST
 #define metamacro_tail_(FIRST, ...) __VA_ARGS__
+#define metamacro_consume_(...)
+#define metamacro_expand_(...) __VA_ARGS__
+
+// implemented from scratch so that metamacro_concat() doesn't end up nesting
+#define metamacro_foreach_concat_iter(INDEX, BASE, ARG) metamacro_foreach_concat_iter_(BASE, ARG)
+#define metamacro_foreach_concat_iter_(BASE, ARG) BASE ## ARG
 
 // foreach_cxt expansions
 #define metamacro_foreach_cxt0(MACRO, SEP, CONTEXT)
