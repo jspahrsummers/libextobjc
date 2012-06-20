@@ -169,9 +169,12 @@ metamacro_if_eq(0, 1)(true)(false)
 #define metamacro_foreach_iter(INDEX, MACRO, ARG) MACRO(INDEX, ARG)
 #define metamacro_head_(FIRST, ...) FIRST
 #define metamacro_tail_(FIRST, ...) __VA_ARGS__
-#define metamacro_foreach_concat_iter(INDEX, BASE, ARG) metamacro_concat(BASE, ARG)
 #define metamacro_consume_(...)
 #define metamacro_expand_(...) __VA_ARGS__
+
+// implemented from scratch so that metamacro_concat() doesn't end up nesting
+#define metamacro_foreach_concat_iter(INDEX, BASE, ARG) metamacro_foreach_concat_iter_(BASE, ARG)
+#define metamacro_foreach_concat_iter_(BASE, ARG) BASE ## ARG
 
 // foreach_cxt expansions
 #define metamacro_foreach_cxt0(MACRO, SEP, CONTEXT)
