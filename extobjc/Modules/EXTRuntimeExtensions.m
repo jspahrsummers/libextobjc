@@ -459,9 +459,9 @@ ext_propertyAttributes *ext_copyPropertyAttributes (objc_property_t property) {
     attributes->type[typeLength] = '\0';
 
     // if this is an object type, and immediately followed by a quoted string...
-    if (*typeString == *(@encode(id)) && *next == '"') {
+    if (typeString[0] == *(@encode(id)) && typeString[1] == '"') {
         // we should be able to extract a class name
-        const char *className = next + 1;
+        const char *className = typeString + 2;
         next = strchr(className, '"');
 
         if (!next) {
