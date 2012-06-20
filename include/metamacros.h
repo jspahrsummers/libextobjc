@@ -38,12 +38,12 @@
         metamacro_concat_(A, B)
 
 /**
- * Returns the number of arguments (up to nine) provided to the macro.
+ * Returns the number of arguments (up to twenty) provided to the macro.
  *
  * Inspired by P99: http://p99.gforge.inria.fr
  */
 #define metamacro_argcount(...) \
-        metamacro_index9_(__VA_ARGS__, 9, 8, 7, 6, 5, 4, 3, 2, 1)
+        metamacro_index20_(__VA_ARGS__, 20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1)
 
 /**
  * For each consecutive variable argument (up to nine), MACRO is passed the
@@ -81,7 +81,7 @@
 // Do not write code that depends on anything below this line.
 #define metamacro_stringify_(VALUE) # VALUE
 #define metamacro_concat_(A, B) A ## B
-#define metamacro_index9_(_0, _1, _2, _3, _4, _5, _6, _7, _8, _9, ...) _9
+#define metamacro_index20_(_0, _1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12, _13, _14, _15, _16, _17, _18, _19, _20, ...) _20
 
 #define metamacro_foreach1(MACRO, _0)                                                                                                       MACRO(0, _0)
 #define metamacro_foreach2(MACRO, _0, _1)                                   metamacro_foreach1(MACRO, _0)                                   MACRO(1, _1)
