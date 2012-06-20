@@ -26,14 +26,6 @@
     ((__VA_ARGS__), true)
 
 /**
- * If COND is true, the following one or more expressions (which may have a void
- * type) are evaluated and the given block entered like a regular 'if'
- * statement. Can also be used immediately after an 'else' for else-if behavior.
- */
-#define metamacro_if_then(COND, ...) \
-    if ((COND) && metamacro_exprify(__VA_ARGS__))
-
-/**
  * Returns a string representation of VALUE after full macro expansion.
  */
 #define metamacro_stringify(VALUE) \
