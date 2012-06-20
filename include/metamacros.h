@@ -38,7 +38,8 @@
         metamacro_concat_(A, B)
 
 /**
- * Returns the number of arguments (up to twenty) provided to the macro.
+ * Returns the number of arguments (up to twenty) provided to the macro. At
+ * least one argument must be provided.
  *
  * Inspired by P99: http://p99.gforge.inria.fr
  */
