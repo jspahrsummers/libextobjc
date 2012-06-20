@@ -13,6 +13,9 @@
 #define test_stringify(INDEX, VALUE) \
     # INDEX metamacro_stringify(VALUE)
 
+#define test_stringify_cxt(INDEX, CONTEXT, VALUE) \
+    # INDEX CONTEXT metamacro_stringify(VALUE)
+
 void metamacros_test (void) {
     assert(metamacro_argcount(x) == 1);
     assert(metamacro_argcount(x, x) == 2);
@@ -44,6 +47,10 @@ void metamacros_test (void) {
     assert(0 == strcmp(metamacro_foreach(test_stringify, 0, 1, 2, 3, 4, 5, 6), "00112233445566"));
     assert(0 == strcmp(metamacro_foreach(test_stringify, 0, 1, 2, 3, 4, 5, 6, 7), "0011223344556677"));
     assert(0 == strcmp(metamacro_foreach(test_stringify, 0, 1, 2, 3, 4, 5, 6, 7, 8), "001122334455667788"));
+
+    assert(0 == strcmp(metamacro_foreach_cxt(test_stringify_cxt, ".", "foo", 0), "0foo0"));
+    assert(0 == strcmp(metamacro_foreach_cxt(test_stringify_cxt, ".", "foo", 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19),
+        "0foo0.1foo1.2foo2.3foo3.4foo4.5foo5.6foo6.7foo7.8foo8.9foo9.10foo10.11foo11.12foo12.13foo13.14foo14.15foo15.16foo16.17foo17.18foo18.19foo19"));
 
     assert(metamacro_first(5, 1) == 5);
     assert(metamacro_first(1, 5) == 1);
