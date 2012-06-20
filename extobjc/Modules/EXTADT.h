@@ -9,6 +9,81 @@
 #import "metamacros.h"
 #import "EXTRuntimeExtensions.h"
 
+/**
+ * Creates an algebraic data type with the given name and one or more data
+ * constructors. Each constructor should be specified using the \c constructor()
+ * macro, the first argument of which is the constructor name. Zero or more
+ * parameters, which should look just like variable declarations (e.g., "int x")
+ * may follow the constructor name.
+ *
+ * Among many other things, this can be used to create type-safe enumerations
+ * which can be printed as strings (and optionally associated with data).
+ *
+ * This macro will create:
+ *
+ *  - A structure type NameT, where "Name" is the first argument to this macro.
+ *  Instances of the structure will each contain a member "tag", which is filled
+ *  in with the enum value of the constructor used to create the value.
+ *  - A function NSStringFromNameT(), which will convert an ADT value into
+ *  a human-readable string.
+ *  - And, for each constructor Cons:
+ *      - An enum value Cons, which can be used to refer to that data constructor.
+ *      - A function Name.Cons(...), which accepts the parameters of the
+ *      constructor and returns a new NameT structure.
+ *      - Members (properties) for each of the constructor's named parameters,
+ *      which can be used to get and set the data associated with that
+ *      constructor.
+ *
+ * @code
+
+// this invocation:
+ADT(Color,
+    constructor(Red),
+    constructor(Green),
+    constructor(Blue),
+    constructor(Gray, double alpha),
+    constructor(Other, double r, double g, double b)
+);
+
+// produces (effectively) these definitions:
+typedef struct {
+    enum { Red, Green, Blue, Gray, Other } tag;
+
+    union {
+        struct {
+            double alpha;
+        }
+
+        struct {
+            double r;
+            double g;
+            double b;
+        }
+    }
+} ColorT;
+
+NSString *NSStringFromColorT (ColorT c);
+
+ColorT Color.Red ();
+ColorT Color.Green ();
+ColorT Color.Blue ();
+ColorT Color.Gray (double alpha);
+ColorT Color.Other (double r, double g, double b);
+
+ * @endcode
+ *
+ * @note Each constructor parameter must have a name that is unique among all of
+ * the ADT's constructors, so that dot-syntax (e.g., "color.r") works without
+ * needing to prefix the name of the data constructor (e.g., "color.Other.r").
+ *
+ * @warning Accessing members that do not correspond to the structure's tag
+ * (e.g., parameter data from other constructors) is considered undefined
+ * behavior.
+ *
+ * @bug Currently, only up to nine data constructors are supported, and each
+ * constructor may only have up to eight parameters. This is a limitation
+ * imposed primarily by #metamacro_foreach.
+ */
 #define ADT(NAME, ...) \
     /* create typedefs for all of the parameters types used with any constructor */ \
     metamacro_foreach(ADT_typedef_, __VA_ARGS__) \
