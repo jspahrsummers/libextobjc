@@ -61,6 +61,8 @@
 		D088C7F21591373D00C70CE2 /* EXTADT.h in Headers */ = {isa = PBXBuildFile; fileRef = D088C7F01591373D00C70CE2 /* EXTADT.h */; };
 		D088C7F51591377000C70CE2 /* EXTADTTest.m in Sources */ = {isa = PBXBuildFile; fileRef = D088C7F41591377000C70CE2 /* EXTADTTest.m */; };
 		D088C7F61591377000C70CE2 /* EXTADTTest.m in Sources */ = {isa = PBXBuildFile; fileRef = D088C7F41591377000C70CE2 /* EXTADTTest.m */; };
+		D088C80015916AD200C70CE2 /* EXTADT.m in Sources */ = {isa = PBXBuildFile; fileRef = D088C7FF15916AD200C70CE2 /* EXTADT.m */; };
+		D088C80115916AD200C70CE2 /* EXTADT.m in Sources */ = {isa = PBXBuildFile; fileRef = D088C7FF15916AD200C70CE2 /* EXTADT.m */; };
 		D0A8B04F128A42F4004AACE0 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0867D69BFE84028FC02AAC07 /* Foundation.framework */; };
 		D0A8B188128A4303004AACE0 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D0A8B187128A4303004AACE0 /* Foundation.framework */; };
 		D0A8B2F8128A49E9004AACE0 /* EXTSwizzle.h in Headers */ = {isa = PBXBuildFile; fileRef = D0A8B2F7128A49E9004AACE0 /* EXTSwizzle.h */; };
@@ -199,6 +201,7 @@
 		D088C7F01591373D00C70CE2 /* EXTADT.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXTADT.h; sourceTree = "<group>"; };
 		D088C7F31591377000C70CE2 /* EXTADTTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXTADTTest.h; sourceTree = "<group>"; };
 		D088C7F41591377000C70CE2 /* EXTADTTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXTADTTest.m; sourceTree = "<group>"; };
+		D088C7FF15916AD200C70CE2 /* EXTADT.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXTADT.m; sourceTree = "<group>"; };
 		D0919C4D146F99B900D680C9 /* Common.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Common.xcconfig; sourceTree = "<group>"; };
 		D0919C4F146F99B900D680C9 /* Debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Debug.xcconfig; sourceTree = "<group>"; };
 		D0919C50146F99B900D680C9 /* Profile.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Profile.xcconfig; sourceTree = "<group>"; };
@@ -491,6 +494,7 @@
 			isa = PBXGroup;
 			children = (
 				D088C7F01591373D00C70CE2 /* EXTADT.h */,
+				D088C7FF15916AD200C70CE2 /* EXTADT.m */,
 				D0E4D579147F477C002C3C9F /* EXTAspect.h */,
 				D0E4D57A147F477C002C3C9F /* EXTAspect.m */,
 				D0ACF8AF132B506300900962 /* EXTBlockMethod.h */,
@@ -794,6 +798,7 @@
 				D0B9B0B013727A6600EC1224 /* EXTScope.m in Sources */,
 				D0E4D57E147F477C002C3C9F /* EXTAspect.m in Sources */,
 				D0737D9114CB922E005BF183 /* EXTMaybe.m in Sources */,
+				D088C80115916AD200C70CE2 /* EXTADT.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -865,6 +870,7 @@
 				D0B9B0AF13727A6600EC1224 /* EXTScope.m in Sources */,
 				D0E4D57D147F477C002C3C9F /* EXTAspect.m in Sources */,
 				D0737D9014CB922E005BF183 /* EXTMaybe.m in Sources */,
+				D088C80015916AD200C70CE2 /* EXTADT.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

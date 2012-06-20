@@ -3,7 +3,7 @@
 //  extobjc
 //
 //  Created by Justin Spahr-Summers on 19.06.12.
-//
+//  Released into the public domain.
 //
 
 #import "metamacros.h"
@@ -27,7 +27,23 @@
         metamacro_foreach(ADT_fptrs_, __VA_ARGS__) \
     } NAME = { \
         metamacro_foreach(ADT_fptrinit_, __VA_ARGS__) \
-    };
+    }; \
+    \
+    static inline NSString *NSStringFrom ## NAME ## T (NAME ## T s) { \
+        NSMutableString *str = [[NSMutableString alloc] init]; \
+        BOOL addedBraces = NO; \
+        \
+        switch (s.tag) { \
+            metamacro_foreach(ADT_tostring_, __VA_ARGS__) \
+            default: \
+                return nil; \
+        } \
+        \
+        if (addedBraces) \
+            [str appendString:@" }"]; \
+        \
+        return str; \
+    }
 
 #define ADT_predef_(INDEX, CONSCALL) \
     ADT_predef_ ## CONSCALL
@@ -46,6 +62,9 @@
 
 #define ADT_fptrinit_(INDEX, CONSCALL) \
     ADT_fptrinit_ ## CONSCALL
+
+#define ADT_tostring_(INDEX, CONSCALL) \
+    ADT_tostring_ ## CONSCALL
 
 #define ADT_predef_constructor(...) \
     ADT_predef_constructor_(__VA_ARGS__, unsigned char metamacro_concat(metamacro_first(__VA_ARGS__, 0), _unused_))
@@ -124,6 +143,30 @@
 #define ADT_fptrinit_constructor(...) \
     .metamacro_first(__VA_ARGS__, 0) = &metamacro_concat(metamacro_first(__VA_ARGS__, 0), _init_),
 
+#define ADT_tostring_constructor(...) \
+        case metamacro_first(__VA_ARGS__, 0): { \
+            metamacro_foreach_cxt(ADT_tostring_case_, metamacro_first(__VA_ARGS__, 0), __VA_ARGS__) \
+            break; \
+        }
+
+#define ADT_tostring_case_(INDEX, CONS, PARAM) \
+    metamacro_concat(ADT_tostring_case, INDEX)(CONS, PARAM)
+
+#define ADT_tostring_case0(CONS, PARAM) [str appendString:@ # CONS];
+
+#define ADT_tostring_case1(CONS, PARAM) \
+    [str appendFormat:@" { %@", ADT_CURRENT_PARAMETER_DESCRIPTION(CONS, PARAM, s, 0)]; \
+    addedBraces = YES;
+
+#define ADT_tostring_case2(CONS, PARAM) [str appendFormat: @", %@", ADT_CURRENT_PARAMETER_DESCRIPTION(CONS, PARAM, s, 1)];
+#define ADT_tostring_case3(CONS, PARAM) [str appendFormat: @", %@", ADT_CURRENT_PARAMETER_DESCRIPTION(CONS, PARAM, s, 2)];
+#define ADT_tostring_case4(CONS, PARAM) [str appendFormat: @", %@", ADT_CURRENT_PARAMETER_DESCRIPTION(CONS, PARAM, s, 3)];
+#define ADT_tostring_case5(CONS, PARAM) [str appendFormat: @", %@", ADT_CURRENT_PARAMETER_DESCRIPTION(CONS, PARAM, s, 4)];
+#define ADT_tostring_case6(CONS, PARAM) [str appendFormat: @", %@", ADT_CURRENT_PARAMETER_DESCRIPTION(CONS, PARAM, s, 5)];
+#define ADT_tostring_case7(CONS, PARAM) [str appendFormat: @", %@", ADT_CURRENT_PARAMETER_DESCRIPTION(CONS, PARAM, s, 6)];
+#define ADT_tostring_case8(CONS, PARAM) [str appendFormat: @", %@", ADT_CURRENT_PARAMETER_DESCRIPTION(CONS, PARAM, s, 7)];
+#define ADT_tostring_case9(CONS, PARAM) [str appendFormat: @", %@", ADT_CURRENT_PARAMETER_DESCRIPTION(CONS, PARAM, s, 8)];
+
 #define ADT_CURRENT_T \
     metamacro_concat(_ADT_, __LINE__)
 
@@ -132,3 +175,11 @@
 
 #define ADT_CURRENT_CONS_ALIAS_T(CONS, INDEX) \
     metamacro_concat(ADT_CURRENT_CONS_ALIASES_T(CONS), INDEX)
+
+#define ADT_CURRENT_PARAMETER_DESCRIPTION(CONS, PARAM, ADT, INDEX) \
+    [NSString stringWithFormat:@"%@ = %@", \
+        [@ # PARAM substringFromIndex:[@ # PARAM rangeOfCharacterFromSet:[NSCharacterSet whitespaceCharacterSet] options:NSBackwardsSearch].location + 1], \
+        EXTADT_NSStringFromBytes(&(ADT).CONS.v ## INDEX, @encode(ADT_CURRENT_CONS_ALIAS_T(CONS, INDEX))) \
+    ]
+
+NSString *EXTADT_NSStringFromBytes (const void *bytes, const char *encoding);
