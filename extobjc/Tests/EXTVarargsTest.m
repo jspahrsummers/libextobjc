@@ -22,7 +22,14 @@ static NSString *varargs_test_func_no_constants (const char *types, ...) {
 }
 
 #define varargs_test_func_no_constants(...) \
-        varargs_test_func_no_constants(pack_varargs(__VA_ARGS__))
+        varargs_test_func_no_constants(pack_args(0, __VA_ARGS__))
+
+static id block_test (const char *types, ...) {
+    return [unpack_args(types) lastObject];
+}
+
+#define block_test(...) \
+        block_test(pack_varargs(__VA_ARGS__))
 
 @implementation EXTVarargsTest
 
@@ -54,6 +61,14 @@ static NSString *varargs_test_func_no_constants (const char *types, ...) {
 - (void)testFunctionWithoutConstantArguments {
     NSString *str = varargs_test_func_no_constants((char)'b', 3.14, (BOOL)YES, (_Bool)false, "foo", @"bar");
     STAssertEqualObjects(str, @"b,3.14,1,0,foo,bar", @"");
+}
+
+- (void)testBlockArgument {
+    id block = block_test(^{ return 5; });
+    STAssertFalse([block isKindOfClass:[NSValue class]], @"");
+
+    int (^typedBlock)(void) = block;
+    STAssertEquals(typedBlock(), 5, @"");
 }
 
 - (void)testEmptyMethodInvocation {
