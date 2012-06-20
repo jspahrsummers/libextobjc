@@ -75,6 +75,16 @@
         metamacro_foreach_cxt(metamacro_foreach_concat_iter, SEP, BASE, __VA_ARGS__)
 
 /**
+ * Iterates COUNT times, each time invoking MACRO with the current index
+ * (starting at zero) and CONTEXT. The results of adjoining invocations of MACRO
+ * are then separated by SEP.
+ *
+ * COUNT must be an integer between zero and twenty, inclusive.
+ */
+#define metamacro_for_cxt(COUNT, MACRO, SEP, CONTEXT) \
+        metamacro_concat(metamacro_for_cxt, COUNT)(MACRO, SEP, CONTEXT)
+
+/**
  * Returns the first argument given. At least one argument must be provided.
  *
  * This is useful when implementing a variadic macro, where you may have only
@@ -229,6 +239,105 @@
     metamacro_foreach_cxt19(MACRO, SEP, CONTEXT, _0, _1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12, _13, _14, _15, _16, _17, _18) \
     SEP \
     MACRO(19, CONTEXT, _19)
+
+// for_cxt expansions
+#define metamacro_for_cxt0(MACRO, SEP, CONTEXT)
+#define metamacro_for_cxt1(MACRO, SEP, CONTEXT) MACRO(0, CONTEXT)
+
+#define metamacro_for_cxt2(MACRO, SEP, CONTEXT) \
+    metamacro_for_cxt1(MACRO, SEP, CONTEXT) \
+    SEP \
+    MACRO(1, CONTEXT)
+
+#define metamacro_for_cxt3(MACRO, SEP, CONTEXT) \
+    metamacro_for_cxt2(MACRO, SEP, CONTEXT) \
+    SEP \
+    MACRO(2, CONTEXT)
+
+#define metamacro_for_cxt4(MACRO, SEP, CONTEXT) \
+    metamacro_for_cxt3(MACRO, SEP, CONTEXT) \
+    SEP \
+    MACRO(3, CONTEXT)
+
+#define metamacro_for_cxt5(MACRO, SEP, CONTEXT) \
+    metamacro_for_cxt4(MACRO, SEP, CONTEXT) \
+    SEP \
+    MACRO(4, CONTEXT)
+
+#define metamacro_for_cxt6(MACRO, SEP, CONTEXT) \
+    metamacro_for_cxt5(MACRO, SEP, CONTEXT) \
+    SEP \
+    MACRO(5, CONTEXT)
+
+#define metamacro_for_cxt7(MACRO, SEP, CONTEXT) \
+    metamacro_for_cxt6(MACRO, SEP, CONTEXT) \
+    SEP \
+    MACRO(6, CONTEXT)
+
+#define metamacro_for_cxt8(MACRO, SEP, CONTEXT) \
+    metamacro_for_cxt7(MACRO, SEP, CONTEXT) \
+    SEP \
+    MACRO(7, CONTEXT)
+
+#define metamacro_for_cxt9(MACRO, SEP, CONTEXT) \
+    metamacro_for_cxt8(MACRO, SEP, CONTEXT) \
+    SEP \
+    MACRO(8, CONTEXT)
+
+#define metamacro_for_cxt10(MACRO, SEP, CONTEXT) \
+    metamacro_for_cxt9(MACRO, SEP, CONTEXT) \
+    SEP \
+    MACRO(9, CONTEXT)
+
+#define metamacro_for_cxt11(MACRO, SEP, CONTEXT) \
+    metamacro_for_cxt10(MACRO, SEP, CONTEXT) \
+    SEP \
+    MACRO(10, CONTEXT)
+
+#define metamacro_for_cxt12(MACRO, SEP, CONTEXT) \
+    metamacro_for_cxt11(MACRO, SEP, CONTEXT) \
+    SEP \
+    MACRO(11, CONTEXT)
+
+#define metamacro_for_cxt13(MACRO, SEP, CONTEXT) \
+    metamacro_for_cxt12(MACRO, SEP, CONTEXT) \
+    SEP \
+    MACRO(12, CONTEXT)
+
+#define metamacro_for_cxt14(MACRO, SEP, CONTEXT) \
+    metamacro_for_cxt13(MACRO, SEP, CONTEXT) \
+    SEP \
+    MACRO(13, CONTEXT)
+
+#define metamacro_for_cxt15(MACRO, SEP, CONTEXT) \
+    metamacro_for_cxt14(MACRO, SEP, CONTEXT) \
+    SEP \
+    MACRO(14, CONTEXT)
+
+#define metamacro_for_cxt16(MACRO, SEP, CONTEXT) \
+    metamacro_for_cxt15(MACRO, SEP, CONTEXT) \
+    SEP \
+    MACRO(15, CONTEXT)
+
+#define metamacro_for_cxt17(MACRO, SEP, CONTEXT) \
+    metamacro_for_cxt16(MACRO, SEP, CONTEXT) \
+    SEP \
+    MACRO(16, CONTEXT)
+
+#define metamacro_for_cxt18(MACRO, SEP, CONTEXT) \
+    metamacro_for_cxt17(MACRO, SEP, CONTEXT) \
+    SEP \
+    MACRO(17, CONTEXT)
+
+#define metamacro_for_cxt19(MACRO, SEP, CONTEXT) \
+    metamacro_for_cxt18(MACRO, SEP, CONTEXT) \
+    SEP \
+    MACRO(18, CONTEXT)
+
+#define metamacro_for_cxt20(MACRO, SEP, CONTEXT) \
+    metamacro_for_cxt19(MACRO, SEP, CONTEXT) \
+    SEP \
+    MACRO(19, CONTEXT)
 
 // metamacro_dec expansions
 #define metamacro_dec1 0
