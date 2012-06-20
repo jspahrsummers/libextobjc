@@ -24,6 +24,9 @@
 
 #define test_empty_concat(VALUE) ""
 
+#define test_recursive_foreach(INDEX, VALUE) \
+    metamacro_foreach_cxt_recursive(test_stringify_cxt,, "foo", (INDEX, VALUE))
+
 void metamacros_test (void) {
     assert(metamacro_argcount(x) == 1);
     assert(metamacro_argcount(x, x) == 2);
@@ -55,6 +58,10 @@ void metamacros_test (void) {
     assert(0 == strcmp(metamacro_foreach_cxt(test_stringify_cxt, ".", "foo", 0, 1), "0foo0.1foo1"));
     assert(0 == strcmp(metamacro_foreach_cxt(test_stringify_cxt, ".", "foo", 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19),
         "0foo0.1foo1.2foo2.3foo3.4foo4.5foo5.6foo6.7foo7.8foo8.9foo9.10foo10.11foo11.12foo12.13foo13.14foo14.15foo15.16foo16.17foo17.18foo18.19foo19"));
+
+    assert(0 == strcmp(metamacro_foreach(test_recursive_foreach, ".", 0), "0foo(0, 0)"));
+    assert(0 == strcmp(metamacro_foreach(test_recursive_foreach, ".", 0, 1), "0foo(0, 0).0foo(1, 1)"));
+    assert(0 == strcmp(metamacro_foreach(test_recursive_foreach, ".", 5, 10), "0foo(0, 5).0foo(1, 10)"));
 
     assert(0 == strcmp(metamacro_for_cxt(1, test_stringify_index, ".", "foo"), "0foo"));
     assert(0 == strcmp(metamacro_for_cxt(3, test_stringify_index, ".", "foo"), "0foo.1foo.2foo"));
