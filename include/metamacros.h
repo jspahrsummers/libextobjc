@@ -70,7 +70,7 @@
  *
  * This is useful when implementing a variadic macro, where you may have only
  * one variadic argument, but no way to retrieve it (for example, because \c ...
- * always needs to match at least one thing).
+ * always needs to match at least one argument).
  *
  * @code
 
@@ -80,6 +80,24 @@
  * @endcode
  */
 #define metamacro_first(FIRST, ...) FIRST
+
+/**
+ * Decrements VAL, which must be a number between one and twenty, inclusive.
+ *
+ * This is primarily useful when dealing with indexes and counts in
+ * metaprogramming.
+ */
+#define metamacro_dec(VAL) \
+        metamacro_concat(metamacro_dec, VAL)
+
+/**
+ * Increments VAL, which must be a number between zero and nineteen, inclusive.
+ *
+ * This is primarily useful when dealing with indexes and counts in
+ * metaprogramming.
+ */
+#define metamacro_inc(VAL) \
+        metamacro_concat(metamacro_inc, VAL)
 
 // IMPLEMENTATION DETAILS FOLLOW!
 // Do not write code that depends on anything below this line.
@@ -196,5 +214,49 @@
     metamacro_foreach_cxt19(MACRO, SEP, CONTEXT, _0, _1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12, _13, _14, _15, _16, _17, _18) \
     SEP \
     MACRO(19, CONTEXT, _19)
+
+// metamacro_dec expansions
+#define metamacro_dec1 0
+#define metamacro_dec2 1
+#define metamacro_dec3 2
+#define metamacro_dec4 3
+#define metamacro_dec5 4
+#define metamacro_dec6 5
+#define metamacro_dec7 6
+#define metamacro_dec8 7
+#define metamacro_dec9 8
+#define metamacro_dec10 9
+#define metamacro_dec11 10
+#define metamacro_dec12 11
+#define metamacro_dec13 12
+#define metamacro_dec14 13
+#define metamacro_dec15 14
+#define metamacro_dec16 15
+#define metamacro_dec17 16
+#define metamacro_dec18 17
+#define metamacro_dec19 18
+#define metamacro_dec20 19
+
+// metamacro_inc expansions
+#define metamacro_inc0 1
+#define metamacro_inc1 2
+#define metamacro_inc2 3
+#define metamacro_inc3 4
+#define metamacro_inc4 5
+#define metamacro_inc5 6
+#define metamacro_inc6 7
+#define metamacro_inc7 8
+#define metamacro_inc8 9
+#define metamacro_inc9 10
+#define metamacro_inc10 11
+#define metamacro_inc11 12
+#define metamacro_inc12 13
+#define metamacro_inc13 14
+#define metamacro_inc14 15
+#define metamacro_inc15 16
+#define metamacro_inc16 17
+#define metamacro_inc17 18
+#define metamacro_inc18 19
+#define metamacro_inc19 20
 
 #endif

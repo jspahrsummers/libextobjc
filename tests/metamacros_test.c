@@ -55,4 +55,19 @@ void metamacros_test (void) {
     assert(metamacro_first(5, 1) == 5);
     assert(metamacro_first(1, 5) == 1);
     assert(0 == strcmp(metamacro_first("foo", "bar"), "foo"));
+
+    assert(metamacro_inc(5) == 6);
+    assert(metamacro_inc(0) == 1);
+    assert(metamacro_inc(19) == 20);
+    assert(metamacro_inc(metamacro_inc(5)) == 7);
+
+    assert(metamacro_dec(5) == 4);
+    assert(metamacro_dec(1) == 0);
+    assert(metamacro_dec(20) == 19);
+    assert(metamacro_dec(metamacro_dec(5)) == 3);
+
+    assert(metamacro_dec(metamacro_inc(19)) == 19);
+    assert(metamacro_dec(metamacro_inc(0)) == 0);
+    assert(metamacro_inc(metamacro_dec(1)) == 1);
+    assert(metamacro_inc(metamacro_dec(20)) == 20);
 }
