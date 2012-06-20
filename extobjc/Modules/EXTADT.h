@@ -83,6 +83,10 @@ ColorT Color.Other (double r, double g, double b);
  * @bug Currently, only up to nine data constructors are supported, and each
  * constructor may only have up to eight parameters. This is a limitation
  * imposed primarily by #metamacro_foreach.
+ *
+ * @bug An ADT value nested within another ADT value will not be very readable
+ * when printed out with the generated NSStringFrom… function. All other data
+ * will behave correctly.
  */
 #define ADT(NAME, ...) \
     /* create typedefs for all of the parameters types used with any constructor */ \

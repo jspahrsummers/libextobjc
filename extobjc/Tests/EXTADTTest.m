@@ -16,6 +16,11 @@ ADT(Color,
     constructor(Other, double r, double g, double b)
 );
 
+ADT(Multicolor,
+    constructor(OneColor, ColorT c),
+    constructor(TwoColor, ColorT first, ColorT second)
+);
+
 @implementation EXTADTTest
 
 - (void)testRed {
@@ -38,6 +43,19 @@ ADT(Color,
     STAssertEqualsWithAccuracy(c.g, 0.5, 0.0001, @"");
     STAssertEqualsWithAccuracy(c.b, 0.25, 0.0001, @"");
     STAssertEqualObjects(NSStringFromColorT(c), @"Other { r = 1, g = 0.5, b = 0.25 }", @"");
+}
+
+- (void)testMulticolor {
+    MulticolorT c = Multicolor.TwoColor(Color.Gray(0.5), Color.Other(0.25, 0.5, 0.75));
+    STAssertTrue(c.tag == TwoColor, @"");
+
+    STAssertTrue(c.first.tag == Gray, @"");
+    STAssertEqualsWithAccuracy(c.first.alpha, 0.5, 0.0001, @"");
+
+    STAssertTrue(c.second.tag == Other, @"");
+    STAssertEqualsWithAccuracy(c.second.r, 0.25, 0.0001, @"");
+    STAssertEqualsWithAccuracy(c.second.g, 0.5, 0.0001, @"");
+    STAssertEqualsWithAccuracy(c.second.b, 0.75, 0.0001, @"");
 }
 
 @end
