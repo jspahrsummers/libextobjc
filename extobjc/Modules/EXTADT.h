@@ -12,7 +12,7 @@
     metamacro_foreach(ADT_predef_, __VA_ARGS__) \
     \
     typedef struct ADT_CURRENT_T { \
-        enum { \
+        const enum { \
             metamacro_foreach(ADT_enum_, __VA_ARGS__) \
         } tag; \
         \
@@ -122,9 +122,7 @@
     metamacro_concat(ADT_initialize, INDEX)(CONS)
 
 #define ADT_initialize0(CONS) \
-    struct ADT_CURRENT_T s; \
-    \
-    s.tag = CONS; \
+    struct ADT_CURRENT_T s = { .tag = CONS }; \
     struct ADT_CURRENT_CONS_ALIASES_T(CONS) *entry __attribute__((unused)) = &s.CONS;
 
 #define ADT_initialize1(CONS) entry->v0 = v0;
