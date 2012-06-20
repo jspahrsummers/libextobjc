@@ -80,8 +80,8 @@ ColorT Color.Other (double r, double g, double b);
  * (e.g., parameter data from other constructors) is considered undefined
  * behavior.
  *
- * @bug Currently, only up to twenty data constructors are supported, and each
- * constructor may only have up to twenty parameters. This is a limitation
+ * @bug Currently, only up to nineteen data constructors are supported, and each
+ * constructor may only have up to nineteen parameters. This is a limitation
  * imposed primarily by #metamacro_foreach_cxt.
  *
  * @bug An ADT value nested within another ADT value will not be very readable
@@ -153,9 +153,14 @@ ColorT Color.Other (double r, double g, double b);
  * a type definition of 'double').
  */
 #define ADT_typedef_constructor(...) \
+    /* our first argument will always be the constructor name, so if we only
+     * have one argument, we only have a constructor */ \
     metamacro_if_eq(1, metamacro_argcount(__VA_ARGS__)) \
-        (/* this constructor has only a name, don't add any typedefs */) \
-        (ADT_typedef_constructor_(__VA_ARGS__)) \
+        (/* no parameters, don't add any typedefs */) \
+        ( \
+            /* there are actually parameters */ \
+            ADT_typedef_constructor_(__VA_ARGS__) \
+        )
 
 #define ADT_typedef_constructor_(CONS, ...) \
     metamacro_foreach_cxt_recursive(ADT_typedef_iter,, CONS, __VA_ARGS__)
@@ -198,34 +203,21 @@ typedef struct {
 
     union {
         struct {
-            unsigned char Red_unused_;
-        };
-        struct Red_aliases {
-            unsigned char v0;
-        } Red;
-
-        ...
-
-        struct {
             double alpha;
-            unsigned char Gray_unused_;
         };
         struct Gray_aliases {
             double v0;
-            unsigned char v1;
         } Gray;
 
         struct {
             double r;
             double g;
             double b;
-            unsigned char Other_unused_;
         };
         struct Other_aliases {
             double v0;
             double v1;
             double v2;
-            unsigned char v3;
         } Other;
     };
 } ColorT;
@@ -236,9 +228,14 @@ typedef struct {
  * parameters -- even for different constructors -- from having the same name.
  */
 #define ADT_payload_constructor(...) \
+    /* our first argument will always be the constructor name, so if we only
+     * have one argument, we only have a constructor */ \
     metamacro_if_eq(1, metamacro_argcount(__VA_ARGS__)) \
         (/* this constructor has only a name, don't add any structures */)\
-        (ADT_payload_constructor_(__VA_ARGS__))
+        ( \
+            /* create structures for the parameters that exist */ \
+            ADT_payload_constructor_(__VA_ARGS__) \
+        )
 
 #define ADT_payload_constructor_(CONS, ...) \
     /* this is the "real" structure that the user accesses, using the parameter
@@ -291,13 +288,13 @@ typedef struct {
 /*
  * The macros below define each parameter to the constructor function.
  *
- * We use the type definitions created by ADT_typedef_param_() and give them
+ * We use the type definitions created by ADT_typedef_iter() and give them
  * simple, sequentially-numbered names, so we don't have to do any more work to
  * parse or otherwise manipulate the declarations given by the user.
  *
- * Because ADT_prototype0() is used for the constructor name (see its comment
- * for an explanation), our parameters actually need to be shifted down --
- * parameter index 1 actually corresponds to v0, our first value.
+ * Because the first argument to metamacro_foreach_recursive_cxt() is the
+ * constructor name, our parameters actually need to be shifted down --
+ * index 1 actually corresponds to v0, our first parameter.
  */
 #define ADT_prototype_iter(INDEX, CONS, PARAM) \
     metamacro_if_eq(0, INDEX) \
@@ -307,7 +304,12 @@ typedef struct {
         ( \
             /* insert a comma for every argument after index 1 */ \
             metamacro_if_eq_recursive(1, INDEX)()(,) \
-            ADT_CURRENT_CONS_ALIAS_T(CONS, metamacro_dec(INDEX)) metamacro_concat(v, metamacro_dec(INDEX)) \
+            \
+            /* parameter type */ \
+            ADT_CURRENT_CONS_ALIAS_T(CONS, metamacro_dec(INDEX)) \
+            \
+            /* parameter name */ \
+            metamacro_concat(v, metamacro_dec(INDEX)) \
         )
 
 /*
@@ -315,7 +317,7 @@ typedef struct {
  * in the constructor function.
  *
  * We merely need to map the given arguments onto the internal structure defined
- * by ADT_payload_alias_(). Because the internal structure is unioned with the
+ * by ADT_payload_alias_iter(). Because the internal structure is unioned with the
  * user-facing structure, the value can then be read by the user with the name
  * they gave it.
  *
@@ -324,9 +326,10 @@ typedef struct {
  */
 #define ADT_initialize_iter(INDEX, CONS, PARAM) \
     metamacro_if_eq(0, INDEX) \
-        (/* initialize the tag when the structure is created, because it cannot change later */ \
-        struct ADT_CURRENT_T s = { .tag = CONS }) \
-        \
+        ( \
+            /* initialize the tag when the structure is created, because it cannot change later */ \
+            struct ADT_CURRENT_T s = { .tag = CONS } \
+        ) \
         (s.CONS.metamacro_concat(v, metamacro_dec(INDEX)) = metamacro_concat(v, metamacro_dec(INDEX))) \
     ;
 
@@ -430,7 +433,7 @@ const struct {
  * parameter INDEX of constructor CONS.
  *
  * The actual typedef, which is then referred to later, is generated with
- * ADT_typedef_param_().
+ * ADT_typedef_iter().
  */
 #define ADT_CURRENT_CONS_ALIAS_T(CONS, INDEX) \
     metamacro_concat(metamacro_concat(ADT_CURRENT_T, _), metamacro_concat(CONS ## _alias, INDEX))
