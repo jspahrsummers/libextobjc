@@ -33,4 +33,8 @@ void metamacros_test (void) {
     assert(0 == strcmp(metamacro_foreach(test_stringify, 0, 1, 2, 3, 4, 5, 6), "00112233445566"));
     assert(0 == strcmp(metamacro_foreach(test_stringify, 0, 1, 2, 3, 4, 5, 6, 7), "0011223344556677"));
     assert(0 == strcmp(metamacro_foreach(test_stringify, 0, 1, 2, 3, 4, 5, 6, 7, 8), "001122334455667788"));
+
+    assert(metamacro_first(5, 1) == 5);
+    assert(metamacro_first(1, 5) == 1);
+    assert(0 == strcmp(metamacro_first("foo", "bar"), "foo"));
 }
