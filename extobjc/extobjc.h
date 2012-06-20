@@ -24,6 +24,7 @@
 #import "EXTScope.h"
 #import "EXTSwizzle.h"
 #import "EXTTuple.h"
+#import "EXTVarargs.h"
 #import "NSInvocation+EXT.h"
 #import "NSMethodSignature+EXT.h"
 
