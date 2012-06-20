@@ -63,12 +63,11 @@
         metamacro_concat(metamacro_for, metamacro_argcount(__VA_ARGS__))(MACRO, __VA_ARGS__)
 
 /**
- * Identical to #metamacro_foreach, but can be used when already expanding an
- * outer invocation to #metamacro_foreach (where another use of it would fail to
- * expand).
+ * Identical to #metamacro_foreach, but accepts an additional context argument,
+ * which will be passed through to MACRO after the index argument.
  */
-#define metamacro_foreach_recursive(MACRO, ...) \
-        metamacro_concat(metamacro_for_recursive, metamacro_argcount(__VA_ARGS__))(MACRO, __VA_ARGS__)
+#define metamacro_foreach_cxt(MACRO, CONTEXT, ...) \
+        metamacro_concat(metamacro_for_cxt, metamacro_argcount(__VA_ARGS__))(MACRO, CONTEXT, __VA_ARGS__)
 
 // IMPLEMENTATION DETAILS FOLLOW!
 // Do not write code that depends on anything below this line.
@@ -87,15 +86,15 @@
 #define metamacro_for9(MACRO, _0, _1, _2, _3, _4, _5, _6, _7, _8)       metamacro_for8(MACRO, _0, _1, _2, _3, _4, _5, _6, _7)       MACRO(8, _8)
 #define metamacro_for10(MACRO, _0, _1, _2, _3, _4, _5, _6, _7, _8, _9)  metamacro_for9(MACRO, _0, _1, _2, _3, _4, _5, _6, _7, _8)   MACRO(9, _9)
 
-#define metamacro_for_recursive1(MACRO, _0)                                                                                                             MACRO(0, _0)
-#define metamacro_for_recursive2(MACRO, _0, _1)                                   metamacro_for_recursive1(MACRO, _0)                                   MACRO(1, _1)
-#define metamacro_for_recursive3(MACRO, _0, _1, _2)                               metamacro_for_recursive2(MACRO, _0, _1)                               MACRO(2, _2)
-#define metamacro_for_recursive4(MACRO, _0, _1, _2, _3)                           metamacro_for_recursive3(MACRO, _0, _1, _2)                           MACRO(3, _3)
-#define metamacro_for_recursive5(MACRO, _0, _1, _2, _3, _4)                       metamacro_for_recursive4(MACRO, _0, _1, _2, _3)                       MACRO(4, _4)
-#define metamacro_for_recursive6(MACRO, _0, _1, _2, _3, _4, _5)                   metamacro_for_recursive5(MACRO, _0, _1, _2, _3, _4)                   MACRO(5, _5)
-#define metamacro_for_recursive7(MACRO, _0, _1, _2, _3, _4, _5, _6)               metamacro_for_recursive6(MACRO, _0, _1, _2, _3, _4, _5)               MACRO(6, _6)
-#define metamacro_for_recursive8(MACRO, _0, _1, _2, _3, _4, _5, _6, _7)           metamacro_for_recursive7(MACRO, _0, _1, _2, _3, _4, _5, _6)           MACRO(7, _7)
-#define metamacro_for_recursive9(MACRO, _0, _1, _2, _3, _4, _5, _6, _7, _8)       metamacro_for_recursive8(MACRO, _0, _1, _2, _3, _4, _5, _6, _7)       MACRO(8, _8)
-#define metamacro_for_recursive10(MACRO, _0, _1, _2, _3, _4, _5, _6, _7, _8, _9)  metamacro_for_recursive9(MACRO, _0, _1, _2, _3, _4, _5, _6, _7, _8)   MACRO(9, _9)
+#define metamacro_for_cxt1(MACRO, CONTEXT, _0) MACRO(0, CONTEXT, _0)
+#define metamacro_for_cxt2(MACRO, CONTEXT, _0, _1) metamacro_for_cxt1(MACRO, CONTEXT, _0) MACRO(1, CONTEXT, _1)
+#define metamacro_for_cxt3(MACRO, CONTEXT, _0, _1, _2) metamacro_for_cxt2(MACRO, CONTEXT, _0, _1) MACRO(2, CONTEXT, _2)
+#define metamacro_for_cxt4(MACRO, CONTEXT, _0, _1, _2, _3) metamacro_for_cxt3(MACRO, CONTEXT, _0, _1, _2) MACRO(3, CONTEXT, _3)
+#define metamacro_for_cxt5(MACRO, CONTEXT, _0, _1, _2, _3, _4) metamacro_for_cxt4(MACRO, CONTEXT, _0, _1, _2, _3) MACRO(4, CONTEXT, _4)
+#define metamacro_for_cxt6(MACRO, CONTEXT, _0, _1, _2, _3, _4, _5) metamacro_for_cxt5(MACRO, CONTEXT, _0, _1, _2, _3, _4) MACRO(5, CONTEXT, _5)
+#define metamacro_for_cxt7(MACRO, CONTEXT, _0, _1, _2, _3, _4, _5, _6) metamacro_for_cxt6(MACRO, CONTEXT, _0, _1, _2, _3, _4, _5) MACRO(6, CONTEXT, _6)
+#define metamacro_for_cxt8(MACRO, CONTEXT, _0, _1, _2, _3, _4, _5, _6, _7) metamacro_for_cxt7(MACRO, CONTEXT, _0, _1, _2, _3, _4, _5, _6) MACRO(7, CONTEXT, _7)
+#define metamacro_for_cxt9(MACRO, CONTEXT, _0, _1, _2, _3, _4, _5, _6, _7, _8) metamacro_for_cxt8(MACRO, CONTEXT, _0, _1, _2, _3, _4, _5, _6, _7) MACRO(8, CONTEXT, _8)
+#define metamacro_for_cxt10(MACRO, CONTEXT, _0, _1, _2, _3, _4, _5, _6, _7, _8, _9) metamacro_for_cxt9(MACRO, CONTEXT, _0, _1, _2, _3, _4, _5, _6, _7, _8) MACRO(9, CONTEXT, _9)
 
 #endif
