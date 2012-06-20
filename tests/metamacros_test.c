@@ -96,4 +96,17 @@ void metamacros_test (void) {
     assert(metamacro_dec(metamacro_inc(0)) == 0);
     assert(metamacro_inc(metamacro_dec(1)) == 1);
     assert(metamacro_inc(metamacro_dec(20)) == 20);
+
+    assert(metamacro_if_eq(0, 0)(true)(false) == true);
+    assert(metamacro_if_eq(0, 1)(true)(false) == false);
+    assert(metamacro_if_eq(0, 20)(true)(false) == false);
+    assert(metamacro_if_eq(19, 20)(true)(false) == false);
+    assert(metamacro_if_eq(20, 20)(true)(false) == true);
+
+    assert(0 == strcmp(metamacro_if_eq(0, 0)(metamacro_if_eq_recursive(0, 1)("A")("B"))("C"), "B"));
+    assert(0 == strcmp(metamacro_if_eq(0, 0)(metamacro_if_eq_recursive(1, 1)("A")("B"))("C"), "A"));
+    assert(0 == strcmp(metamacro_if_eq(0, 1)(metamacro_if_eq_recursive(1, 1)("A")("B"))("C"), "C"));
+    assert(0 == strcmp(metamacro_if_eq(0, 0)("A")(metamacro_if_eq_recursive(1, 1)("B")("C")), "A"));
+    assert(0 == strcmp(metamacro_if_eq(0, 1)("A")(metamacro_if_eq_recursive(1, 1)("B")("C")), "B"));
+    assert(0 == strcmp(metamacro_if_eq(0, 1)("A")(metamacro_if_eq_recursive(0, 1)("B")("C")), "C"));
 }
