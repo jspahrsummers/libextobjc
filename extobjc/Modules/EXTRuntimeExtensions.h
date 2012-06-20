@@ -341,6 +341,15 @@ BOOL ext_loadSpecialProtocol (Protocol *protocol, void (^injectionBehavior)(Clas
 void ext_specialProtocolReadyForInjection (Protocol *protocol);
 
 /**
+ * Creates a human-readable description of the data in \a bytes, interpreting it
+ * according to the given Objective-C type encoding.
+ *
+ * This is intended for use with debugging, and code should not depend upon the
+ * format of the returned string (just like a call to \c -description).
+ */
+NSString *ext_stringFromTypedBytes (const void *bytes, const char *encoding);
+
+/**
  * "Removes" any instance method matching \a methodName from \a aClass. This
  * removal can mean one of two things:
  *
