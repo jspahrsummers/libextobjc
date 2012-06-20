@@ -69,6 +69,22 @@
 #define metamacro_foreach_cxt(MACRO, CONTEXT, ...) \
         metamacro_concat(metamacro_for_cxt, metamacro_argcount(__VA_ARGS__))(MACRO, CONTEXT, __VA_ARGS__)
 
+/**
+ * Returns the first argument given.
+ *
+ * This is useful when implementing a variadic macro, where you may have only
+ * one variadic argument, but no way to retrieve it (for example, because \c ...
+ * always needs to match at least one thing).
+ *
+ * @code
+
+#define varmacro(...) \
+    metamacro_first(__VA_ARGS__, 0)
+
+ * @endcode
+ */
+#define metamacro_first(FIRST, ...) FIRST
+
 // IMPLEMENTATION DETAILS FOLLOW!
 // Do not write code that depends on anything below this line.
 #define metamacro_stringify_(VALUE) # VALUE
