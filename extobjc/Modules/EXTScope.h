@@ -43,7 +43,7 @@
  */
 #define weakify(...) \
     try {} @finally {} \
-    metamacro_foreach(ext_weakify_, __VA_ARGS__)
+    metamacro_foreach(ext_weakify_,, __VA_ARGS__)
 
 /**
  * Strongly references each of the variables provided as arguments, which must
@@ -73,7 +73,7 @@
  */
 #define strongify(...) \
     try {} @finally {} \
-    metamacro_foreach(ext_strongify_, __VA_ARGS__)
+    metamacro_foreach(ext_strongify_,, __VA_ARGS__)
 
 /*** implementation details follow ***/
 typedef void (^ext_cleanupBlock_t)();
