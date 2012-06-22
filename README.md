@@ -9,11 +9,15 @@ Please feel free to open issues for feature requests or ideas for language exten
 libextobjc currently includes the following features:
 
  * **Safe categories**, using the EXTSafeCategory module, for adding methods to a class without overwriting anything already there (identifying conflicts for you).
+ * **Macros making it easier to use weak variables in blocks**, using the EXTScope module.
+ * **Simpler and safer key paths**, using the EXTKeyPathCoding module, which automatically checks key paths at compile-time.
  * **Concrete protocols**, using the EXTConcreteProtocol module, for providing default implementations of the methods in a protocol.
- * **Scope-based resource cleanup**, using the EXTScope module, for automatically cleaning up manually-allocated memory, file handles, locks, etc., at the end of a scope.
+ * **Scope-based resource cleanup**, also as part of the EXTScope module, for automatically cleaning up manually-allocated memory, file handles, locks, etc., at the end of a scope.
  * **EXTNil, which is like `NSNull`, but behaves much more closely to actual `nil`** (i.e., doesn't crash when sent unrecognized messages).
  * **EXTBlockTarget, which extends the target-action mechanism with support for blocks**.
  * Tuples, for multiple return values and assignment, using the EXTTuple module.
+ * Algebraic data types, using the EXTADT module, generated completely at compile-time.
+ * Better variadic arguments, with support for packaging the arguments up as an array, using the EXTVarargs module.
  * Aspect-oriented programming, using the EXTAspect module. This feature [requires libffi](#Requirements), and so is not enabled by default.
  * Block-based coroutines, using the EXTCoroutine module.
  * Final methods – methods which cannot be overridden – using the EXTFinalMethod module.
