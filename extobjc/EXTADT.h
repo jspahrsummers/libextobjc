@@ -199,7 +199,7 @@ ADT(Color,
  * The resulting structure is laid out something like this:
 
 typedef struct {
-    const enum { Red, Green, Blue, Gray, Other };
+    const enum { Red, Green, Blue, Gray, Other } tag;
 
     union {
         struct {
