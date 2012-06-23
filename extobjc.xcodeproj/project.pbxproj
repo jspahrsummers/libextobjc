@@ -138,6 +138,8 @@
 		D0FE93FF1596665D00F3AE1C /* EXTMultipleDispatch.h in Headers */ = {isa = PBXBuildFile; fileRef = D0FE93FC1596665D00F3AE1C /* EXTMultipleDispatch.h */; };
 		D0FE94001596665D00F3AE1C /* EXTMultipleDispatch.m in Sources */ = {isa = PBXBuildFile; fileRef = D0FE93FD1596665D00F3AE1C /* EXTMultipleDispatch.m */; };
 		D0FE94011596665D00F3AE1C /* EXTMultipleDispatch.m in Sources */ = {isa = PBXBuildFile; fileRef = D0FE93FD1596665D00F3AE1C /* EXTMultipleDispatch.m */; };
+		D0FE94041596668400F3AE1C /* EXTMultipleDispatchTest.m in Sources */ = {isa = PBXBuildFile; fileRef = D0FE94031596668400F3AE1C /* EXTMultipleDispatchTest.m */; };
+		D0FE94051596668400F3AE1C /* EXTMultipleDispatchTest.m in Sources */ = {isa = PBXBuildFile; fileRef = D0FE94031596668400F3AE1C /* EXTMultipleDispatchTest.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -278,6 +280,8 @@
 		D0FD397313243A31009300A7 /* EXTRuntimeExtensionsTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXTRuntimeExtensionsTest.m; sourceTree = "<group>"; };
 		D0FE93FC1596665D00F3AE1C /* EXTMultipleDispatch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXTMultipleDispatch.h; sourceTree = "<group>"; };
 		D0FE93FD1596665D00F3AE1C /* EXTMultipleDispatch.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXTMultipleDispatch.m; sourceTree = "<group>"; };
+		D0FE94021596668400F3AE1C /* EXTMultipleDispatchTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXTMultipleDispatchTest.h; sourceTree = "<group>"; };
+		D0FE94031596668400F3AE1C /* EXTMultipleDispatchTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXTMultipleDispatchTest.m; sourceTree = "<group>"; };
 		D2AAC07E0554694100DB518D /* libextobjc_OSX.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libextobjc_OSX.a; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -536,6 +540,8 @@
 				D088C7BD159121A300C70CE2 /* EXTKeyPathCodingTest.m */,
 				D0737D9214CB9438005BF183 /* EXTMaybeTest.h */,
 				D0737D9314CB9438005BF183 /* EXTMaybeTest.m */,
+				D0FE94021596668400F3AE1C /* EXTMultipleDispatchTest.h */,
+				D0FE94031596668400F3AE1C /* EXTMultipleDispatchTest.m */,
 				D002DAF613656CDF005348A5 /* EXTNilTest.h */,
 				D002DAF713656CDF005348A5 /* EXTNilTest.m */,
 				D033765B131E53DB0039ACFD /* EXTPrivateMethodTest.h */,
@@ -850,6 +856,7 @@
 				D088C7BE159121A300C70CE2 /* EXTKeyPathCodingTest.m in Sources */,
 				D088C7F51591377000C70CE2 /* EXTADTTest.m in Sources */,
 				D003EEEF15924CF000410411 /* EXTVarargsTest.m in Sources */,
+				D0FE94041596668400F3AE1C /* EXTMultipleDispatchTest.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -875,6 +882,7 @@
 				D088C7BF159121A300C70CE2 /* EXTKeyPathCodingTest.m in Sources */,
 				D088C7F61591377000C70CE2 /* EXTADTTest.m in Sources */,
 				D003EEF015924CF000410411 /* EXTVarargsTest.m in Sources */,
+				D0FE94051596668400F3AE1C /* EXTMultipleDispatchTest.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
