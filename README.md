@@ -18,7 +18,7 @@ libextobjc currently includes the following features:
  * EXTTuple, for multiple return values and assignment.
  * Algebraic data types generated completely at compile-time, defined using EXTADT.
  * Better variadic arguments, with support for packaging the arguments up as an array, using EXTVarargs.
- * Aspect-oriented programming, using EXTAspect. This feature [requires libffi](#Requirements), and so is not enabled by default.
+ * Aspect-oriented programming, using EXTAspect. This feature [requires libffi](#requirements), and so is not enabled by default.
  * Block-based coroutines, using EXTCoroutine.
  * Final methods – methods which cannot be overridden – using EXTFinalMethod.
  * Private methods – methods which cannot be invoked by other classes – using EXTPrivateMethod.
