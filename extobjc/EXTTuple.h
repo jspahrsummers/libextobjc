@@ -9,8 +9,10 @@
 #import "metamacros.h"
 
 /**
- * Returns an \c EXTTupleN structure holding the given arguments, where \c N is
+ * Returns an \c EXTTupleN structure holding the given objects, where \c N is
  * the number of arguments given.
+ *
+ * Tuples cannot contain primitives, but may contain \c nil values.
  */
 #define tuple(...) \
     ((metamacro_concat(EXTTuple, metamacro_argcount(__VA_ARGS__))){ __VA_ARGS__ })
@@ -20,7 +22,7 @@
  * macro _must_ be followed by = and a call to #unpack.
  *
  * The result of the multiple assignment (i.e., if used as part of a larger
- * expression) will be the first tuple value.
+ * expression) will be the first object of the tuple.
  *
  * @code
 
