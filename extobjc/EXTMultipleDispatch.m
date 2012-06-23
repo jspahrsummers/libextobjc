@@ -1,0 +1,347 @@
+//
+//  EXTMultipleDispatch.m
+//  extobjc
+//
+//  Created by Justin Spahr-Summers on 23.06.12.
+//  Released into the public domain.
+//
+
+#import "EXTMultipleDispatch.h"
+#import "EXTRuntimeExtensions.h"
+#import "EXTScope.h"
+
+#define EXT_MULTIMETHOD_DEBUG 1
+
+typedef EXTMultimethodAttributes *(*ext_copyMultimethodAttributes_IMP)(void);
+
+@interface EXTMultimethodAttributes ()
+@property (nonatomic, readwrite) SEL selector;
+@property (nonatomic, readwrite) IMP implementation;
+@property (nonatomic, readwrite) NSUInteger parameterCount;
+@property (nonatomic, readwrite) const Class *parameterClasses;
+@end
+
+EXTMultimethodAttributes *ext_bestMultimethod (NSArray *implementations, const id *args, size_t argCount) {
+    NSMutableArray *possibilities = [NSMutableArray arrayWithCapacity:implementations.count];
+
+    // only consider implementations that match the arguments given
+    [implementations enumerateObjectsUsingBlock:^(EXTMultimethodAttributes *attributes, NSUInteger implementationIndex, BOOL *stop){
+        #if EXT_MULTIMETHOD_DEBUG
+        NSLog(@"*** Considering multimethod %@", attributes);
+        #endif
+
+        BOOL possible = YES;
+
+        for (NSUInteger argIndex = 0; argIndex < argCount; ++argIndex) {
+            NSCAssert(argIndex < attributes.parameterCount, @"Argument index %lu is out-of-bounds of parameter count %lu", (unsigned long)argIndex, (unsigned long)attributes.parameterCount);
+
+            id arg = args[argIndex];
+            Class paramClass = attributes.parameterClasses[argIndex];
+
+            // if there's no parameter class, the argument is of type 'id' (and
+            // thus anything is valid)
+            //
+            // likewise, if the argument is nil, it might match anything
+            if (paramClass && arg) {
+                if ([paramClass isEqual:[EXTMultimethod_Class_Parameter_Placeholder class]]) {
+                    // the argument has to be a class object
+                    Class argClass = object_getClass(arg);
+
+                    if (!class_isMetaClass(argClass)) {
+                        possible = NO;
+                        break;
+                    }
+                } else if (![arg isKindOfClass:paramClass]) {
+                    possible = NO;
+                    break;
+                }
+            }
+        }
+
+        if (possible)
+            [possibilities addObject:attributes];
+    }];
+
+    if (!possibilities.count)
+        return nil;
+
+    // sort by best match
+    //
+    // NSOrderedAscending == the left method is a closer match
+    // NSOrderedDescending == the right method is a closer match
+    [possibilities sortUsingComparator:^ NSComparisonResult (EXTMultimethodAttributes *left, EXTMultimethodAttributes *right){
+        NSCAssert(left.parameterCount == right.parameterCount, @"Two implementations of the same multimethod should have the same number of parameters");
+
+        for (NSUInteger i = 0; i < left.parameterCount; ++i) {
+            Class leftClass = left.parameterClasses[i];
+            Class rightClass = right.parameterClasses[i];
+            id arg = args[i];
+
+            if (!leftClass) {
+                if (!rightClass) {
+                    continue;
+                } else {
+                    if (!arg) {
+                        // nil should bind more tightly to 'id' than to a specific type
+                        return NSOrderedAscending;
+                    } else {
+                        return NSOrderedDescending;
+                    }
+                }
+            } else if (!rightClass) {
+                if (!arg) {
+                    // nil should bind more tightly to 'id' than to a specific type
+                    return NSOrderedDescending;
+                } else {
+                    return NSOrderedAscending;
+                }
+            }
+
+            if ([leftClass isEqual:rightClass])
+                continue;
+
+            if ([leftClass isSubclassOfClass:rightClass]) {
+                return NSOrderedAscending;
+            } else if ([rightClass isSubclassOfClass:leftClass]) {
+                return NSOrderedDescending;
+            } else {
+                return NSOrderedSame;
+            }
+        }
+
+        NSLog(@"*** Multimethod implementations are ambiguous -- which one will be used is undefined:\n%@\n%@", left, right);
+        return NSOrderedSame;
+    }];
+
+    // and return the bestest match
+    return [possibilities objectAtIndex:0];
+}
+
+Class ext_multimethod_parameterClassFromEncoding (const char *encoding) {
+    if (*encoding == *(@encode(id)))
+        return Nil;
+    else if (*encoding == *(@encode(Class)))
+        return [EXTMultimethod_Class_Parameter_Placeholder class];
+
+    const char *openingBrace = strchr(encoding, '{');
+    if (!openingBrace)
+        return Nil;
+
+    ++openingBrace;
+
+    const char *eqSign = strchr(openingBrace, '=');
+    if (!eqSign)
+        return Nil;
+
+    NSUInteger nameLen = eqSign - openingBrace;
+    if (!nameLen)
+        return Nil;
+
+    char name[nameLen + 1];
+    strncpy(name, openingBrace, nameLen);
+    name[nameLen] = '\0';
+
+    return objc_getClass(name);
+}
+
+BOOL ext_loadMultimethods (Class targetClass) {
+    Class targetSuperclass = class_getSuperclass(targetClass);
+
+    unsigned methodCount = 0;
+    Method *methods = class_copyMethodList(object_getClass(targetClass), &methodCount);
+    if (!methods)
+        return NO;
+
+    NSMutableDictionary *implementationsBySelectorName = [NSMutableDictionary dictionary];
+
+    for (unsigned i = 0; i < methodCount; ++i) {
+        SEL selector = method_getName(methods[i]);
+        NSString *name = NSStringFromSelector(selector);
+        
+        if (![name hasPrefix:@"ext_copyMultimethodAttributes_"])
+            continue;
+
+        ext_copyMultimethodAttributes_IMP impl = (ext_copyMultimethodAttributes_IMP)method_getImplementation(methods[i]);
+        EXTMultimethodAttributes *attributes = impl();
+        if (!attributes)
+            return NO;
+
+        NSString *metamethodName = NSStringFromSelector(attributes.selector);
+        NSMutableArray *implementations = implementationsBySelectorName[metamethodName];
+
+        if (!implementations) {
+            implementations = [NSMutableArray array];
+            implementationsBySelectorName[metamethodName] = implementations;
+        }
+
+        [implementations addObject:attributes];
+    }
+
+    for (NSString *name in implementationsBySelectorName) {
+        NSArray *implementations = implementationsBySelectorName[name];
+        EXTMultimethodAttributes *attributes = implementations.lastObject;
+
+        SEL selector = NSSelectorFromString(name);
+        id dispatchMethodBlock = nil;
+
+        #define ext_multimethod_dispatch_case(N) \
+            case N: { \
+                dispatchMethodBlock = [^ id (id self, metamacro_for_cxt(N, ext_multimethod_dispatch_param_iter_,,)) { \
+                    id args[] = { metamacro_for_cxt(N, ext_multimethod_dispatch_args_iter_,,) }; \
+                    \
+                    EXTMultimethodAttributes *match = ext_bestMultimethod(implementations, args, N); \
+                    if (match) { \
+                        if (EXT_MULTIMETHOD_DEBUG) { \
+                            NSLog(@"*** Invoking multimethod %@ for argument list (" \
+                                metamacro_for_cxt(N, ext_multimethod_dispatch_format_iter_,,) ")", \
+                                match, metamacro_for_cxt(N, ext_multimethod_dispatch_error_args_iter_,,)); \
+                        } \
+                        \
+                        return ((id (*)(metamacro_for_cxt(N, ext_multimethod_dispatch_param_iter_,,)))match.implementation) \
+                            (metamacro_for_cxt(N, ext_multimethod_dispatch_args_iter_,,)); \
+                    } \
+                    \
+                    Method superclassMethod = NULL; \
+                    if (targetSuperclass) \
+                        superclassMethod = class_getInstanceMethod(targetSuperclass, selector); \
+                    \
+                    if (superclassMethod) { \
+                        IMP superclassIMP = method_getImplementation(superclassMethod); \
+                        return ((id (*)(metamacro_for_cxt(N, ext_multimethod_dispatch_param_iter_,,)))superclassIMP) \
+                            (metamacro_for_cxt(N, ext_multimethod_dispatch_args_iter_,,)); \
+                    } \
+                    \
+                    [NSException \
+                        raise:NSInvalidArgumentException \
+                        format:@"No multimethod implementation found to handle argument list (" \
+                            metamacro_for_cxt(N, ext_multimethod_dispatch_format_iter_,,) ")", \
+                            metamacro_for_cxt(N, ext_multimethod_dispatch_error_args_iter_,,) \
+                    ]; \
+                    \
+                    abort(); \
+                } copy]; \
+                \
+                break; \
+            }
+
+        #define ext_multimethod_dispatch_param_iter_(INDEX, CONTEXT) \
+            /* insert a comma for each argument after the first */ \
+            metamacro_if_eq(0, INDEX)()(,) \
+            id metamacro_concat(param, INDEX)
+
+        #define ext_multimethod_dispatch_args_iter_(INDEX, CONTEXT) \
+            /* insert a comma for each argument after the first */ \
+            metamacro_if_eq(0, INDEX)()(,) \
+            metamacro_concat(param, INDEX)
+
+        #define ext_multimethod_dispatch_format_iter_(INDEX, CONTEXT) \
+            /* insert a comma for each argument after the first */ \
+            metamacro_if_eq(0, INDEX)()(", ") \
+            "%@ %@"
+
+        #define ext_multimethod_dispatch_error_args_iter_(INDEX, CONTEXT) \
+            /* insert a comma for each argument after the first */ \
+            metamacro_if_eq(0, INDEX)()(,) \
+            [metamacro_concat(param, INDEX) class], \
+            metamacro_concat(param, INDEX)
+
+        switch (attributes.parameterCount) {
+            ext_multimethod_dispatch_case(1)
+            ext_multimethod_dispatch_case(2)
+            ext_multimethod_dispatch_case(3)
+            ext_multimethod_dispatch_case(4)
+            ext_multimethod_dispatch_case(5)
+            ext_multimethod_dispatch_case(6)
+            ext_multimethod_dispatch_case(7)
+            ext_multimethod_dispatch_case(8)
+            ext_multimethod_dispatch_case(9)
+            ext_multimethod_dispatch_case(10)
+
+            default:
+                NSLog(@"*** Unsupported number of parameters for multimethod: %lu", (unsigned long)attributes.parameterCount);
+                abort();
+        }
+
+        NSMutableString *typeString = [NSMutableString stringWithFormat:@"%s%s%s", @encode(id), @encode(id), @encode(SEL)];
+        for (NSUInteger i = 0; i < attributes.parameterCount; ++i)
+            [typeString appendFormat:@"%s", @encode(id)];
+
+        BOOL success = class_addMethod(
+            targetClass,
+            selector,
+            imp_implementationWithBlock(dispatchMethodBlock),
+            typeString.UTF8String
+        );
+        
+        if (!success)
+            return NO;
+    }
+
+    return YES;
+}
+
+@implementation EXTMultimethodAttributes
+
+- (id)initWithSelector:(SEL)selector implementation:(IMP)implementation parameterCount:(NSUInteger)parameterCount parameterClasses:(const Class *)parameterClasses; {
+    self = [super init];
+    if (!self)
+        return nil;
+
+    self.selector = selector;
+    self.implementation = implementation;
+
+    Class *classesCopy = (Class *)malloc(parameterCount * sizeof(*classesCopy));
+    if (!classesCopy)
+        return nil;
+
+    memcpy(classesCopy, parameterClasses, parameterCount * sizeof(*classesCopy));
+
+    self.parameterCount = parameterCount;
+    self.parameterClasses = classesCopy;
+    return self;
+}
+
+- (void)dealloc {
+    free((void *)self.parameterClasses);
+    self.parameterClasses = NULL;
+}
+
+- (id)copyWithZone:(NSZone *)zone {
+    return self;
+}
+
+- (NSUInteger)hash {
+    return (NSUInteger)self.selector;
+}
+
+- (BOOL)isEqual:(EXTMultimethodAttributes *)attributes {
+    if (![attributes isKindOfClass:[EXTMultimethodAttributes class]])
+        return NO;
+
+    return self.implementation == attributes.implementation;
+}
+
+- (NSString *)description {
+    NSMutableString *str = [NSMutableString stringWithFormat:@"%s (", sel_getName(self.selector)];
+    
+    for (NSUInteger i = 0; i < self.parameterCount; ++i) {
+        if (i > 0)
+            [str appendString:@", "];
+
+        Class paramClass = self.parameterClasses[i];
+        if (!paramClass)
+            [str appendString:@"id"];
+        else if ([paramClass isEqual:[EXTMultimethod_Class_Parameter_Placeholder class]])
+            [str appendString:@"Class"];
+        else
+            [str appendString:NSStringFromClass(paramClass)];
+    }
+
+    [str appendString:@")"];
+    return str;
+}
+
+@end
+
+@implementation EXTMultimethod_Class_Parameter_Placeholder
+@end
