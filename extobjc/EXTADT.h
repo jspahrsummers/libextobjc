@@ -84,6 +84,11 @@ ColorT Color.Other (double r, double g, double b);
  * constructor may only have up to nineteen parameters. This is a limitation
  * imposed primarily by #metamacro_foreach_cxt.
  *
+ * @bug ADT parameters cannot currently be declared with asterisks (including
+ * patterns like "const char *" or "NSString *"). This can be worked around by
+ * using typedefs (e.g., "typedef const char *my_type_t;") or less-specific
+ * types (like "id") instead.
+ *
  * @bug An ADT value nested within another ADT value will not be very readable
  * when printed out with the generated NSStringFrom… function. All other data
  * will behave correctly.
