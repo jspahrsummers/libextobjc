@@ -22,7 +22,7 @@
         NSUInteger parameterCount = (sizeof(parameterClasses) / sizeof(*parameterClasses)) - 1; \
         \
         return [[EXTMultimethodAttributes alloc] \
-            initWithSelector:@selector(metamacro_foreach(ext_multimethod_selector_iter,, __VA_ARGS__)) \
+            initWithName:metamacro_stringify(metamacro_foreach(ext_multimethod_selector_iter,, __VA_ARGS__)) \
             implementation:(IMP)&metamacro_concat(ext_multimethod_impl_, __LINE__) \
             parameterCount:parameterCount \
             parameterClasses:parameterClasses \
@@ -83,9 +83,10 @@ BOOL ext_loadMultimethods (Class targetClass);
 
 @interface EXTMultimethodAttributes : NSObject <NSCopying>
 @property (nonatomic, readonly) SEL selector;
+@property (nonatomic, getter = isClassMethod, readonly) BOOL classMethod;
 @property (nonatomic, readonly) IMP implementation;
 @property (nonatomic, readonly) NSUInteger parameterCount;
 @property (nonatomic, readonly) const Class *parameterClasses;
 
-- (id)initWithSelector:(SEL)selector implementation:(IMP)implementation parameterCount:(NSUInteger)parameterCount parameterClasses:(const Class *)parameterClasses;
+- (id)initWithName:(const char *)name implementation:(IMP)implementation parameterCount:(NSUInteger)parameterCount parameterClasses:(const Class *)parameterClasses;
 @end

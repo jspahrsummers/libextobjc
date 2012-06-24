@@ -16,6 +16,7 @@ typedef EXTMultimethodAttributes *(*ext_copyMultimethodAttributes_IMP)(void);
 
 @interface EXTMultimethodAttributes ()
 @property (nonatomic, readwrite) SEL selector;
+@property (nonatomic, getter = isClassMethod, readwrite) BOOL classMethod;
 @property (nonatomic, readwrite) IMP implementation;
 @property (nonatomic, readwrite) NSUInteger parameterCount;
 @property (nonatomic, readwrite) const Class *parameterClasses;
@@ -197,6 +198,11 @@ BOOL ext_loadMultimethods (Class targetClass) {
             return NO;
 
         NSString *metamethodName = NSStringFromSelector(attributes.selector);
+        if (attributes.classMethod)
+            metamethodName = [@"+" stringByAppendingString:metamethodName];
+        else
+            metamethodName = [@"-" stringByAppendingString:metamethodName];
+
         NSMutableArray *implementations = implementationsBySelectorName[metamethodName];
 
         if (!implementations) {
@@ -214,7 +220,6 @@ BOOL ext_loadMultimethods (Class targetClass) {
         NSArray *implementations = [implementationsBySelectorName[name] copy];
         EXTMultimethodAttributes *attributes = implementations.lastObject;
 
-        SEL selector = NSSelectorFromString(name);
         id dispatchMethodBlock = nil;
 
         #define ext_multimethod_dispatch_case(N) \
@@ -235,17 +240,21 @@ BOOL ext_loadMultimethods (Class targetClass) {
                         } \
                         \
                         return ((id (*)(id, SEL, metamacro_for_cxt(N, ext_multimethod_dispatch_param_iter_,,)))match.implementation) \
-                            (self, selector, metamacro_for_cxt(N, ext_multimethod_dispatch_args_iter_,,)); \
+                            (self, attributes.selector, metamacro_for_cxt(N, ext_multimethod_dispatch_args_iter_,,)); \
                     } \
                     \
                     Method superclassMethod = NULL; \
-                    if (targetSuperclass) \
-                        superclassMethod = class_getInstanceMethod(targetSuperclass, selector); \
+                    if (targetSuperclass) { \
+                        if (attributes.classMethod) \
+                            superclassMethod = class_getClassMethod(targetSuperclass, attributes.selector); \
+                        else \
+                            superclassMethod = class_getInstanceMethod(targetSuperclass, attributes.selector); \
+                    } \
                     \
                     if (superclassMethod) { \
                         IMP superclassIMP = method_getImplementation(superclassMethod); \
                         return ((id (*)(id, SEL, metamacro_for_cxt(N, ext_multimethod_dispatch_param_iter_,,)))superclassIMP) \
-                            (self, selector, metamacro_for_cxt(N, ext_multimethod_dispatch_args_iter_,,)); \
+                            (self, attributes.selector, metamacro_for_cxt(N, ext_multimethod_dispatch_args_iter_,,)); \
                     } \
                     \
                     [NSException \
@@ -292,8 +301,8 @@ BOOL ext_loadMultimethods (Class targetClass) {
             [typeString appendFormat:@"%s", @encode(id)];
 
         BOOL success = class_addMethod(
-            targetClass,
-            selector,
+            (attributes.classMethod ? object_getClass(targetClass) : targetClass),
+            attributes.selector,
             imp_implementationWithBlock(dispatchMethodBlock),
             typeString.UTF8String
         );
@@ -307,12 +316,30 @@ BOOL ext_loadMultimethods (Class targetClass) {
 
 @implementation EXTMultimethodAttributes
 
-- (id)initWithSelector:(SEL)selector implementation:(IMP)implementation parameterCount:(NSUInteger)parameterCount parameterClasses:(const Class *)parameterClasses; {
+- (id)initWithName:(const char *)name implementation:(IMP)implementation parameterCount:(NSUInteger)parameterCount parameterClasses:(const Class *)parameterClasses; {
     self = [super init];
     if (!self)
         return nil;
 
-    self.selector = selector;
+    if (name[0] == '+') {
+        self.classMethod = YES;
+        ++name;
+    } else if (name[0] == '-') {
+        ++name;
+    }
+
+    NSMutableString *nameString = [NSMutableString stringWithUTF8String:name];
+
+    // sanitize the selector by removing whitespace
+    for (;;) {
+        NSRange range = [nameString rangeOfCharacterFromSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+        if (range.location == NSNotFound)
+            break;
+
+        [nameString deleteCharactersInRange:range];
+    }
+
+    self.selector = NSSelectorFromString(nameString);
     self.implementation = implementation;
 
     Class *classesCopy = (Class *)malloc(parameterCount * sizeof(*classesCopy));
