@@ -43,6 +43,10 @@
     return [cls description];
 }
 
+@multimethod(+match:, NSValue *obj) {
+    return @"value";
+}
+
 @multimethod(+match:, NSNumber *obj) {
     return [obj description];
 }
@@ -75,8 +79,12 @@
 - (void)testClassMethod {
     STAssertEqualObjects([MultimethodObject match:nil], @"unknown", @"");
     STAssertEqualObjects([MultimethodObject match:[NSObject new]], @"unknown", @"");
+    STAssertEqualObjects([MultimethodObject match:[NSValue valueWithPointer:NULL]], @"value", @"");
     STAssertEqualObjects([MultimethodObject match:@3.14], @"3.14", @"");
     STAssertEqualObjects([MultimethodObject match:[NSString class]], @"NSString", @"");
+
+    double value = 3.14;
+    STAssertEqualObjects([MultimethodObject match:[NSValue valueWithBytes:&value objCType:@encode(double)]], @"value", @"");
 }
 
 @end

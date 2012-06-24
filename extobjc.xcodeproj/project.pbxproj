@@ -280,7 +280,7 @@
 		D0FD397313243A31009300A7 /* EXTRuntimeExtensionsTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXTRuntimeExtensionsTest.m; sourceTree = "<group>"; };
 		D0FE93FC1596665D00F3AE1C /* EXTMultimethod.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXTMultimethod.h; sourceTree = "<group>"; };
 		D0FE93FD1596665D00F3AE1C /* EXTMultimethod.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXTMultimethod.m; sourceTree = "<group>"; };
-		D0FE94021596668400F3AE1C /* EXTMultimethodTest.h */ = {isa = PBXFileReference; fileEncoding = 4; path = EXTMultimethodTest.h; sourceTree = "<group>"; };
+		D0FE94021596668400F3AE1C /* EXTMultimethodTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXTMultimethodTest.h; sourceTree = "<group>"; };
 		D0FE94031596668400F3AE1C /* EXTMultimethodTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXTMultimethodTest.m; sourceTree = "<group>"; };
 		D2AAC07E0554694100DB518D /* libextobjc_OSX.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libextobjc_OSX.a; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
