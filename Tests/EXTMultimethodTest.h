@@ -1,5 +1,5 @@
 //
-//  EXTMultipleDispatchTest.h
+//  EXTMultimethodTest.h
 //  extobjc
 //
 //  Created by Justin Spahr-Summers on 23.06.12.
@@ -7,8 +7,8 @@
 //
 
 #import <SenTestingKit/SenTestingKit.h>
-#import "EXTMultipleDispatch.h"
+#import "EXTMultimethod.h"
 
-@interface EXTMultipleDispatchTest : SenTestCase
+@interface EXTMultimethodTest : SenTestCase
 
 @end

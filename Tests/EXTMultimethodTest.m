@@ -1,22 +1,22 @@
 //
-//  EXTMultipleDispatchTest.m
+//  EXTMultimethodTest.m
 //  extobjc
 //
 //  Created by Justin Spahr-Summers on 23.06.12.
 //  Released into the public domain.
 //
 
-#import "EXTMultipleDispatchTest.h"
+#import "EXTMultimethodTest.h"
 
-@interface MultipleDispatchObject : NSObject
+@interface MultimethodObject : NSObject
 @end
 
-@interface MultipleDispatchObject (Multimethods)
+@interface MultimethodObject (Multimethods)
 - (NSString *)match:(id)obj with:(id)obj2;
 @end
 
-@implementation MultipleDispatchObject
-@load_multimethods(MultipleDispatchObject);
+@implementation MultimethodObject
+@load_multimethods(MultimethodObject);
 
 @multimethod(match:, id obj, with:, id obj2) {
     return @"unknown";
@@ -36,10 +36,10 @@
 
 @end
 
-@implementation EXTMultipleDispatchTest
+@implementation EXTMultimethodTest
 
 - (void)testDispatch {
-    MultipleDispatchObject *obj = [[MultipleDispatchObject alloc] init];
+    MultimethodObject *obj = [[MultimethodObject alloc] init];
 
     STAssertEqualObjects([obj match:@5 with:nil], @"left number", @"");
     STAssertEqualObjects([obj match:nil with:@10], @"right number", @"");

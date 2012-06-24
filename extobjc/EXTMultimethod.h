@@ -1,5 +1,5 @@
 //
-//  EXTMultipleDispatch.h
+//  EXTMultimethod.h
 //  extobjc
 //
 //  Created by Justin Spahr-Summers on 23.06.12.

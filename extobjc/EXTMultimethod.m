@@ -1,12 +1,12 @@
 //
-//  EXTMultipleDispatch.m
+//  EXTMultimethod.m
 //  extobjc
 //
 //  Created by Justin Spahr-Summers on 23.06.12.
 //  Released into the public domain.
 //
 
-#import "EXTMultipleDispatch.h"
+#import "EXTMultimethod.h"
 #import "EXTRuntimeExtensions.h"
 #import "EXTScope.h"
 
