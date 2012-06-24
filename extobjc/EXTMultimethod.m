@@ -208,7 +208,10 @@ BOOL ext_loadMultimethods (Class targetClass) {
     }
 
     for (NSString *name in implementationsBySelectorName) {
-        NSArray *implementations = implementationsBySelectorName[name];
+        // make the array immutable, since the block we create below will close
+        // over it, and we want it to have as efficient a representation as
+        // possible
+        NSArray *implementations = [implementationsBySelectorName[name] copy];
         EXTMultimethodAttributes *attributes = implementations.lastObject;
 
         SEL selector = NSSelectorFromString(name);
@@ -231,8 +234,8 @@ BOOL ext_loadMultimethods (Class targetClass) {
                                 match, ext_multimethodArgumentListDescription(args, N)); \
                         } \
                         \
-                        return ((id (*)(metamacro_for_cxt(N, ext_multimethod_dispatch_param_iter_,,)))match.implementation) \
-                            (metamacro_for_cxt(N, ext_multimethod_dispatch_args_iter_,,)); \
+                        return ((id (*)(id, SEL, metamacro_for_cxt(N, ext_multimethod_dispatch_param_iter_,,)))match.implementation) \
+                            (self, selector, metamacro_for_cxt(N, ext_multimethod_dispatch_args_iter_,,)); \
                     } \
                     \
                     Method superclassMethod = NULL; \
@@ -241,8 +244,8 @@ BOOL ext_loadMultimethods (Class targetClass) {
                     \
                     if (superclassMethod) { \
                         IMP superclassIMP = method_getImplementation(superclassMethod); \
-                        return ((id (*)(metamacro_for_cxt(N, ext_multimethod_dispatch_param_iter_,,)))superclassIMP) \
-                            (metamacro_for_cxt(N, ext_multimethod_dispatch_args_iter_,,)); \
+                        return ((id (*)(id, SEL, metamacro_for_cxt(N, ext_multimethod_dispatch_param_iter_,,)))superclassIMP) \
+                            (self, selector, metamacro_for_cxt(N, ext_multimethod_dispatch_args_iter_,,)); \
                     } \
                     \
                     [NSException \
