@@ -452,7 +452,7 @@ const struct {
     [NSString stringWithFormat:@"%@ = %@", \
         /* this is the only place where we actually parse a parameter declaration */ \
         /* we do it here to remove the type from the description, keeping only the name */ \
-        [@ # PARAM substringFromIndex:[@ # PARAM rangeOfCharacterFromSet:[NSCharacterSet whitespaceCharacterSet] options:NSBackwardsSearch].location + 1], \
+        [@ # PARAM substringFromIndex:[@ # PARAM rangeOfCharacterFromSet:[NSCharacterSet whitespaceAndNewlineCharacterSet] options:NSBackwardsSearch].location + 1], \
         /* convert the parameter type into an Objective-C type encoding, which,
          * along with a pointer to the data, can be used to generate
          * a human-readable description of the actual value */ \
