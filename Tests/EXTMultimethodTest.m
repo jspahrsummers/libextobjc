@@ -39,6 +39,10 @@
     return @"unknown";
 }
 
+@multimethod(+match:, Class cls) {
+    return [cls description];
+}
+
 @multimethod(+match:, NSNumber *obj) {
     return [obj description];
 }
@@ -51,15 +55,28 @@
     MultimethodObject *obj = [[MultimethodObject alloc] init];
 
     STAssertEqualObjects([obj match:@5 with:nil], @"left number", @"");
+    STAssertEqualObjects([obj match:@5 with:@"buzz"], @"left number", @"");
+    STAssertEqualObjects([obj match:@5 with:[NSObject class]], @"left number", @"");
+
     STAssertEqualObjects([obj match:nil with:@10], @"right number", @"");
+    STAssertEqualObjects([obj match:@"foo" with:@10], @"right number", @"");
+    STAssertEqualObjects([obj match:[NSObject class] with:@10], @"right number", @"");
+
     STAssertEqualObjects([obj match:@"foo" with:@"bar"], @"foobar", @"");
+    STAssertNil([obj match:nil with:@"bar"], @"");
+
     STAssertEqualObjects([obj match:nil with:nil], @"unknown", @"");
+    STAssertEqualObjects([obj match:[NSObject new] with:nil], @"unknown", @"");
+    STAssertEqualObjects([obj match:nil with:[NSObject new]], @"unknown", @"");
+    STAssertEqualObjects([obj match:@"fuzz" with:[NSObject new]], @"unknown", @"");
+    STAssertEqualObjects([obj match:[NSObject class] with:[NSObject new]], @"unknown", @"");
 }
 
 - (void)testClassMethod {
     STAssertEqualObjects([MultimethodObject match:nil], @"unknown", @"");
     STAssertEqualObjects([MultimethodObject match:[NSObject new]], @"unknown", @"");
     STAssertEqualObjects([MultimethodObject match:@3.14], @"3.14", @"");
+    STAssertEqualObjects([MultimethodObject match:[NSString class]], @"NSString", @"");
 }
 
 @end
