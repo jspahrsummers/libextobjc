@@ -99,6 +99,18 @@ static EXTMultimethodAttributes *ext_bestMultimethod (NSArray *implementations, 
     [possibilities sortUsingComparator:^ NSComparisonResult (EXTMultimethodAttributes *left, EXTMultimethodAttributes *right){
         NSCAssert(left.parameterCount == right.parameterCount, @"Two implementations of the same multimethod should have the same number of parameters");
 
+        /*
+         * Nil arguments should bind more tightly to 'id' than to any specific
+         * type, but other non-nil arguments should carry more weight, since
+         * they provide more information. Therefore, we try to match specific
+         * types first, and only fall back to nil-id binding if it would
+         * otherwise be ambiguous.
+         *
+         * If this is less than zero, the left multimethod is a better fit;
+         * greater than zero means the right multimethod is better.
+         */
+        NSInteger nilArgumentWeight = 0;
+
         for (NSUInteger i = 0; i < left.parameterCount; ++i) {
             Class leftClass = left.parameterClasses[i];
             Class rightClass = right.parameterClasses[i];
@@ -109,16 +121,16 @@ static EXTMultimethodAttributes *ext_bestMultimethod (NSArray *implementations, 
                     continue;
                 } else {
                     if (!arg) {
-                        // nil should bind more tightly to 'id' than to a specific type
-                        return NSOrderedAscending;
+                        --nilArgumentWeight;
+                        continue;
                     } else {
                         return NSOrderedDescending;
                     }
                 }
             } else if (!rightClass) {
                 if (!arg) {
-                    // nil should bind more tightly to 'id' than to a specific type
-                    return NSOrderedDescending;
+                    ++nilArgumentWeight;
+                    continue;
                 } else {
                     return NSOrderedAscending;
                 }
@@ -131,10 +143,16 @@ static EXTMultimethodAttributes *ext_bestMultimethod (NSArray *implementations, 
                 return NSOrderedAscending;
             } else if ([rightClass isSubclassOfClass:leftClass]) {
                 return NSOrderedDescending;
-            } else {
-                return NSOrderedSame;
             }
         }
+
+        // well, we've exhausted any differences in specific types, so now fall
+        // back to matching nil arguments with the most general parameters (like
+        // "id")
+        if (nilArgumentWeight < 0)
+            return NSOrderedAscending;
+        else if (nilArgumentWeight > 0)
+            return NSOrderedDescending;
 
         NSLog(@"*** Multimethod implementations are ambiguous -- which one will be used is undefined:\n%@\n%@", left, right);
         return NSOrderedSame;
