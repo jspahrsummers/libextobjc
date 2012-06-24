@@ -40,6 +40,22 @@ static NSString *ext_multimethodArgumentListDescription (const id *args, size_t 
     return str;
 }
 
+static NSArray *ext_collectMultimethodImplementations (Class descendantClass, SEL multimethodSelector) {
+    if (!descendantClass)
+        return nil;
+
+    NSArray *implementations = objc_getAssociatedObject(descendantClass, multimethodSelector);
+
+    NSArray *superclassImplementations = ext_collectMultimethodImplementations(class_getSuperclass(descendantClass), multimethodSelector);
+    if (superclassImplementations) {
+        // keep the most descendant implementations at the top for our stable
+        // sort in ext_bestMultimethod()
+        implementations = [implementations arrayByAddingObjectsFromArray:superclassImplementations];
+    }
+
+    return implementations;
+}
+
 static EXTMultimethodAttributes *ext_bestMultimethod (NSArray *implementations, const id *args, size_t argCount) {
     NSMutableArray *possibilities = [NSMutableArray arrayWithCapacity:implementations.count];
 
@@ -92,11 +108,13 @@ static EXTMultimethodAttributes *ext_bestMultimethod (NSArray *implementations, 
     if (!possibilities.count)
         return nil;
 
-    // sort by best match
+    // sort by best match, and keep equal implementations in the same relative
+    // position (descendants before ancestors) so that descendant multimethods
+    // properly override ancestors
     //
     // NSOrderedAscending == the left method is a closer match
     // NSOrderedDescending == the right method is a closer match
-    [possibilities sortUsingComparator:^ NSComparisonResult (EXTMultimethodAttributes *left, EXTMultimethodAttributes *right){
+    [possibilities sortWithOptions:NSSortStable usingComparator:^ NSComparisonResult (EXTMultimethodAttributes *left, EXTMultimethodAttributes *right){
         NSCAssert(left.parameterCount == right.parameterCount, @"Two implementations of the same multimethod should have the same number of parameters");
 
         /*
@@ -194,8 +212,6 @@ Class ext_multimethod_parameterClassFromEncoding (const char *encoding) {
 }
 
 BOOL ext_loadMultimethods (Class targetClass) {
-    Class targetSuperclass = class_getSuperclass(targetClass);
-
     unsigned methodCount = 0;
     Method *methods = class_copyMethodList(object_getClass(targetClass), &methodCount);
     if (!methods)
@@ -232,11 +248,14 @@ BOOL ext_loadMultimethods (Class targetClass) {
     }
 
     for (NSString *name in implementationsBySelectorName) {
-        // make the array immutable, since the block we create below will close
-        // over it, and we want it to have as efficient a representation as
-        // possible
-        NSArray *implementations = [implementationsBySelectorName[name] copy];
+        NSArray *implementations = implementationsBySelectorName[name];
         EXTMultimethodAttributes *attributes = implementations.lastObject;
+
+        // associate the multimethod implementations with the class, so we can
+        // traverse the implementations associated with each class in
+        // a hierarchy when dispatching
+        Class injectionClass = (attributes.classMethod ? object_getClass(targetClass) : targetClass);
+        objc_setAssociatedObject(injectionClass, attributes.selector, implementations, OBJC_ASSOCIATION_COPY_NONATOMIC);
 
         id dispatchMethodBlock = nil;
 
@@ -250,7 +269,12 @@ BOOL ext_loadMultimethods (Class targetClass) {
                             name, ext_multimethodArgumentListDescription(args, N)); \
                     } \
                     \
+                    /* only consider multimethod implementations from this class
+                     * and upward, so subclass' invocations of "super" behave as
+                     * expected */ \
+                    NSArray *implementations = ext_collectMultimethodImplementations(injectionClass, attributes.selector); \
                     EXTMultimethodAttributes *match = ext_bestMultimethod(implementations, args, N); \
+                    \
                     if (match) { \
                         if (EXT_MULTIMETHOD_DEBUG) { \
                             NSLog(@"*** Invoking multimethod %@ for argument list %@", \
@@ -262,12 +286,10 @@ BOOL ext_loadMultimethods (Class targetClass) {
                     } \
                     \
                     Method superclassMethod = NULL; \
-                    if (targetSuperclass) { \
-                        if (attributes.classMethod) \
-                            superclassMethod = class_getClassMethod(targetSuperclass, attributes.selector); \
-                        else \
-                            superclassMethod = class_getInstanceMethod(targetSuperclass, attributes.selector); \
-                    } \
+                    Class injectionSuperclass = object_getClass(injectionClass); \
+                    \
+                    if (injectionSuperclass) \
+                        superclassMethod = class_getInstanceMethod(injectionSuperclass, attributes.selector); \
                     \
                     if (superclassMethod) { \
                         IMP superclassIMP = method_getImplementation(superclassMethod); \
@@ -319,7 +341,7 @@ BOOL ext_loadMultimethods (Class targetClass) {
             [typeString appendFormat:@"%s", @encode(id)];
 
         BOOL success = class_addMethod(
-            (attributes.classMethod ? object_getClass(targetClass) : targetClass),
+            injectionClass,
             attributes.selector,
             imp_implementationWithBlock(dispatchMethodBlock),
             typeString.UTF8String

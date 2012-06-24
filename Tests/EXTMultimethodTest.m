@@ -8,16 +8,19 @@
 
 #import "EXTMultimethodTest.h"
 
-@interface MultimethodObject : NSObject
+@interface MultimethodClass : NSObject
 @end
 
-@interface MultimethodObject (Multimethods)
+@interface MultimethodClass (Multimethods)
 - (NSString *)match:(id)obj with:(id)obj2;
 + (NSString *)match:(id)obj;
 @end
 
-@implementation MultimethodObject
-@load_multimethods(MultimethodObject);
+@interface MultimethodSubclass : MultimethodClass
+@end
+
+@implementation MultimethodClass
+@load_multimethods(MultimethodClass);
 
 @multimethod(-match:, id obj, with:, id obj2) {
     return @"unknown";
@@ -53,10 +56,23 @@
 
 @end
 
+@implementation MultimethodSubclass
+@load_multimethods(MultimethodSubclass);
+
+@multimethod(-match:, NSNumber *obj, with:, NSNumber *obj2) {
+    return @"both numbers";
+}
+
+@multimethod(+match:, NSString *str) {
+    return str;
+}
+
+@end
+
 @implementation EXTMultimethodTest
 
 - (void)testInstanceMethod {
-    MultimethodObject *obj = [[MultimethodObject alloc] init];
+    MultimethodClass *obj = [[MultimethodClass alloc] init];
 
     STAssertEqualObjects([obj match:@5 with:nil], @"left number", @"");
     STAssertEqualObjects([obj match:@5 with:@"buzz"], @"left number", @"");
@@ -77,14 +93,26 @@
 }
 
 - (void)testClassMethod {
-    STAssertEqualObjects([MultimethodObject match:nil], @"unknown", @"");
-    STAssertEqualObjects([MultimethodObject match:[NSObject new]], @"unknown", @"");
-    STAssertEqualObjects([MultimethodObject match:[NSValue valueWithPointer:NULL]], @"value", @"");
-    STAssertEqualObjects([MultimethodObject match:@3.14], @"3.14", @"");
-    STAssertEqualObjects([MultimethodObject match:[NSString class]], @"NSString", @"");
+    STAssertEqualObjects([MultimethodClass match:nil], @"unknown", @"");
+    STAssertEqualObjects([MultimethodClass match:[NSObject new]], @"unknown", @"");
+    STAssertEqualObjects([MultimethodClass match:[NSValue valueWithPointer:NULL]], @"value", @"");
+    STAssertEqualObjects([MultimethodClass match:@3.14], @"3.14", @"");
+    STAssertEqualObjects([MultimethodClass match:[NSString class]], @"NSString", @"");
 
     double value = 3.14;
-    STAssertEqualObjects([MultimethodObject match:[NSValue valueWithBytes:&value objCType:@encode(double)]], @"value", @"");
+    STAssertEqualObjects([MultimethodClass match:[NSValue valueWithBytes:&value objCType:@encode(double)]], @"value", @"");
+}
+
+- (void)testMultimethodInheritance {
+    STAssertEqualObjects([MultimethodSubclass match:nil], @"unknown", @"");
+    STAssertEqualObjects([MultimethodSubclass match:[NSObject class]], @"NSObject", @"");
+    STAssertEqualObjects([MultimethodSubclass match:@"foobar"], @"foobar", @"");
+
+    MultimethodSubclass *obj = [[MultimethodSubclass alloc] init];
+
+    STAssertEqualObjects([obj match:@5 with:nil], @"left number", @"");
+    STAssertEqualObjects([obj match:nil with:@10], @"right number", @"");
+    STAssertEqualObjects([obj match:@5 with:@10], @"both numbers", @"");
 }
 
 @end
