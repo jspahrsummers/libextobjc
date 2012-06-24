@@ -21,13 +21,31 @@ typedef EXTMultimethodAttributes *(*ext_copyMultimethodAttributes_IMP)(void);
 @property (nonatomic, readwrite) const Class *parameterClasses;
 @end
 
-EXTMultimethodAttributes *ext_bestMultimethod (NSArray *implementations, const id *args, size_t argCount) {
+static NSString *ext_multimethodArgumentListDescription (const id *args, size_t argCount) {
+    NSMutableString *str = [@"(" mutableCopy];
+
+    for (size_t i = 0; i < argCount; ++i) {
+        if (i > 0)
+            [str appendString:@", "];
+
+        id arg = args[i];
+        if (!arg)
+            [str appendString:@"nil"];
+        else
+            [str appendFormat:@"%@ %@", object_getClass(arg), arg];
+    }
+
+    [str appendString:@")"];
+    return str;
+}
+
+static EXTMultimethodAttributes *ext_bestMultimethod (NSArray *implementations, const id *args, size_t argCount) {
     NSMutableArray *possibilities = [NSMutableArray arrayWithCapacity:implementations.count];
 
     // only consider implementations that match the arguments given
     [implementations enumerateObjectsUsingBlock:^(EXTMultimethodAttributes *attributes, NSUInteger implementationIndex, BOOL *stop){
         #if EXT_MULTIMETHOD_DEBUG
-        NSLog(@"*** Considering multimethod %@", attributes);
+        NSLog(@"*** Considering implementation %@", attributes);
         #endif
 
         BOOL possible = YES;
@@ -48,10 +66,18 @@ EXTMultimethodAttributes *ext_bestMultimethod (NSArray *implementations, const i
                     Class argClass = object_getClass(arg);
 
                     if (!class_isMetaClass(argClass)) {
+                        #if EXT_MULTIMETHOD_DEBUG
+                        NSLog(@"*** Rejecting implementation %@ because argument %lu is not a class object", attributes, (unsigned long)argIndex);
+                        #endif
+
                         possible = NO;
                         break;
                     }
                 } else if (![arg isKindOfClass:paramClass]) {
+                    #if EXT_MULTIMETHOD_DEBUG
+                    NSLog(@"*** Rejecting implementation %@ because argument %lu is not of class %@", attributes, (unsigned long)argIndex, paramClass);
+                    #endif
+
                     possible = NO;
                     break;
                 }
@@ -112,6 +138,10 @@ EXTMultimethodAttributes *ext_bestMultimethod (NSArray *implementations, const i
         NSLog(@"*** Multimethod implementations are ambiguous -- which one will be used is undefined:\n%@\n%@", left, right);
         return NSOrderedSame;
     }];
+
+    #if EXT_MULTIMETHOD_DEBUG
+    NSLog(@"*** Matching multimethod implementations, in order of best match: %@", possibilities);
+    #endif
 
     // and return the bestest match
     return [possibilities objectAtIndex:0];
@@ -189,12 +219,16 @@ BOOL ext_loadMultimethods (Class targetClass) {
                 dispatchMethodBlock = [^ id (id self, metamacro_for_cxt(N, ext_multimethod_dispatch_param_iter_,,)) { \
                     id args[] = { metamacro_for_cxt(N, ext_multimethod_dispatch_args_iter_,,) }; \
                     \
+                    if (EXT_MULTIMETHOD_DEBUG) { \
+                        NSLog(@"*** Looking for best implementation of multimethod %@ to match argument list %@", \
+                            name, ext_multimethodArgumentListDescription(args, N)); \
+                    } \
+                    \
                     EXTMultimethodAttributes *match = ext_bestMultimethod(implementations, args, N); \
                     if (match) { \
                         if (EXT_MULTIMETHOD_DEBUG) { \
-                            NSLog(@"*** Invoking multimethod %@ for argument list (" \
-                                metamacro_for_cxt(N, ext_multimethod_dispatch_format_iter_,,) ")", \
-                                match, metamacro_for_cxt(N, ext_multimethod_dispatch_error_args_iter_,,)); \
+                            NSLog(@"*** Invoking multimethod %@ for argument list %@", \
+                                match, ext_multimethodArgumentListDescription(args, N)); \
                         } \
                         \
                         return ((id (*)(metamacro_for_cxt(N, ext_multimethod_dispatch_param_iter_,,)))match.implementation) \
@@ -213,9 +247,8 @@ BOOL ext_loadMultimethods (Class targetClass) {
                     \
                     [NSException \
                         raise:NSInvalidArgumentException \
-                        format:@"No multimethod implementation found to handle argument list (" \
-                            metamacro_for_cxt(N, ext_multimethod_dispatch_format_iter_,,) ")", \
-                            metamacro_for_cxt(N, ext_multimethod_dispatch_error_args_iter_,,) \
+                        format:@"No multimethod implementation found to handle argument list %@", \
+                            ext_multimethodArgumentListDescription(args, N) \
                     ]; \
                     \
                     abort(); \
@@ -232,17 +265,6 @@ BOOL ext_loadMultimethods (Class targetClass) {
         #define ext_multimethod_dispatch_args_iter_(INDEX, CONTEXT) \
             /* insert a comma for each argument after the first */ \
             metamacro_if_eq(0, INDEX)()(,) \
-            metamacro_concat(param, INDEX)
-
-        #define ext_multimethod_dispatch_format_iter_(INDEX, CONTEXT) \
-            /* insert a comma for each argument after the first */ \
-            metamacro_if_eq(0, INDEX)()(", ") \
-            "%@ %@"
-
-        #define ext_multimethod_dispatch_error_args_iter_(INDEX, CONTEXT) \
-            /* insert a comma for each argument after the first */ \
-            metamacro_if_eq(0, INDEX)()(,) \
-            [metamacro_concat(param, INDEX) class], \
             metamacro_concat(param, INDEX)
 
         switch (attributes.parameterCount) {
