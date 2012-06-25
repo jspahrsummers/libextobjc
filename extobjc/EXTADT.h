@@ -462,9 +462,13 @@ const struct {
     [NSString stringWithFormat:@"%@ = %@", \
         /* this is the only place where we actually parse a parameter declaration */ \
         /* we do it here to remove the type from the description, keeping only the name */ \
-        [@ # PARAM substringFromIndex:[@ # PARAM rangeOfCharacterFromSet:[NSCharacterSet whitespaceAndNewlineCharacterSet] options:NSBackwardsSearch].location + 1], \
+        ext_parameterNameFromDeclaration(@ # PARAM), \
         /* convert the parameter type into an Objective-C type encoding, which,
          * along with a pointer to the data, can be used to generate
          * a human-readable description of the actual value */ \
-        ext_stringFromTypedBytes(&(ADT).CONS.metamacro_concat(v, INDEX), @encode(ADT_CURRENT_CONS_ALIAS_T(CONS, INDEX))) \
+        ext_stringFromTypedBytes(&(ADT).CONS.metamacro_concat(v, INDEX), \
+            ext_trimADTJunkFromTypeEncoding(@encode(ADT_CURRENT_CONS_ALIAS_T(CONS, INDEX)))) \
     ]
+
+const char *ext_trimADTJunkFromTypeEncoding (const char *encoding);
+NSString *ext_parameterNameFromDeclaration (NSString *declaration);
