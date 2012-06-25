@@ -6,9 +6,6 @@
 //  Released into the public domain.
 //
 
-// see EXTAspect.h
-#if HAVE_LIBFFI
-
 #import <SenTestingKit/SenTestingKit.h>
 #import "EXTAspect.h"
 
@@ -17,5 +14,3 @@
 
 @aspect(TestAspect);
 @aspect(OtherTestAspect);
-
-#endif

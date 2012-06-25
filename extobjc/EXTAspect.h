@@ -6,29 +6,6 @@
 //  Released into the public domain.
 //
 
-/**
- * This module is disabled by default, as it depends upon a working installation
- * of libffi.
- *
- * For Mac OS X, libffi should be installed with Homebrew (the version included
- * with the operating system will not work). Afterwards, the Header and Library
- * Search Paths of this project will need to be updated to match the installed
- * library, and the library added to the "Link Binary With Libraries" build
- * phase.
- *
- * For iOS, the libextobjc repository should have a \c libffi-ios submodule that
- * points to https://github.com/jspahrsummers/libffi. Run <tt>git submodule
- * update --init</tt> and reopen the project, and the iOS target should be set
- * up to automatically build libffi. You will still need to manually add the
- * library to the "Link Binary With Libraries" build phase. Note that the build
- * may fail the first time, but should immediately succeed afterwards.
- *
- * In either case, you will need to add \c HAVE_LIBFFI=1 to the project or
- * target "Preprocessor Macros" (or "Preprocessor Macros Not Used In Precompiled
- * Headers") build setting.
- */
-#if HAVE_LIBFFI
-
 #import <Foundation/Foundation.h>
 #import <objc/runtime.h>
 #import "metamacros.h"
@@ -130,6 +107,4 @@
 /*** implementation details follow ***/
 BOOL ext_addAspect (Protocol *protocol, Class methodContainer);
 void ext_loadAspect (Protocol *protocol);
-
-#endif
 

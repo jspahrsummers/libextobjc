@@ -6,9 +6,6 @@
 //  Released into the public domain.
 //
 
-// see EXTAspect.h
-#if HAVE_LIBFFI
-
 #import "EXTAspectTest.h"
 
 @interface AspectTestClass : NSObject <TestAspect, OtherTestAspect>
@@ -76,4 +73,3 @@
 
 @end
 
-#endif

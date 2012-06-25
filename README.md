@@ -18,7 +18,7 @@ libextobjc currently includes the following features:
  * EXTTuple, for multiple return values and assignment.
  * Algebraic data types generated completely at compile-time, defined using EXTADT.
  * Better variadic arguments, with support for packaging the arguments up as an array, using EXTVarargs.
- * Aspect-oriented programming, using EXTAspect. This feature [requires libffi](#requirements), and so is not enabled by default.
+ * Aspect-oriented programming, using EXTAspect.
  * Block-based coroutines, using EXTCoroutine.
  * Multimethods - methods which overload based on argument type - using EXTMultimethod.
  * Final methods – methods which cannot be overridden – using EXTFinalMethod.
@@ -39,8 +39,6 @@ This library is public domain, and can be incorporated for free and without attr
 
 # Requirements
 
-* The latest version of [libffi](https://github.com/atgreen/libffi) is needed to enable EXTAspect, but is not required for the rest of the project. 
-    * For iOS, [a compatible version of libffi](https://github.com/jspahrsummers/libffi) is included as a submodule, and is built and linked automatically.
-    * For Mac OS X, libffi should be installed with [Homebrew](https://github.com/atgreen/homebrew).
+[libffi](https://github.com/jspahrsummers/libffi) is used for EXTAspect, but is not required for the other modules of the project.
 
-See `Modules/EXTAspect.h` for more information and instructions on setting up the project to use libffi.
+In order for the unit tests to build and pass, libffi must be retrieved using `git submodule update --init` after cloning the repository.
