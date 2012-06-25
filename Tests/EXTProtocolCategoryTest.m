@@ -23,9 +23,9 @@
 @implementation EXTProtocolCategoryTest
 - (void)testProtocolCategory {
     NSArray *testObjects = [[NSArray alloc] initWithObjects:
-        [NSNumber numberWithInt:42],
-        [NSArray arrayWithObjects:@"foo", @"bar", nil],
-        [NSDictionary dictionaryWithObject:[NSNumber numberWithInt:0xDEADBEEF] forKey:@"deadbeef"],
+        @42,
+        @[@"foo", @"bar"],
+        @{@"deadbeef": @0xDEADBEEF},
         nil
     ];
 

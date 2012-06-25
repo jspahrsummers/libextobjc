@@ -32,7 +32,7 @@
 }
 
 - (NSError *)error {
-    NSDictionary *userInfo = [NSDictionary dictionaryWithObject:self.errorDescription forKey:NSLocalizedDescriptionKey];
+    NSDictionary *userInfo = @{NSLocalizedDescriptionKey: self.errorDescription};
 
     NSError *error = [NSError errorWithDomain:self.errorDomain code:self.errorCode userInfo:userInfo];
     STAssertNotNil(error, @"");
@@ -56,7 +56,7 @@
     id obj = [EXTMaybe validObjectWithMaybe:maybe orElse:^(NSError *localError){
         STAssertEqualObjects(error, localError, @"");
 
-        return [NSNumber numberWithBool:YES];
+        return @YES;
     }];
 
     STAssertEqualObjects(obj, [NSNumber numberWithBool:YES], @"");
@@ -66,7 +66,7 @@
     id obj = [EXTMaybe validObjectWithMaybe:nil orElse:^(NSError *localError){
         STAssertNil(localError, @"");
 
-        return [NSNumber numberWithBool:YES];
+        return @YES;
     }];
 
     STAssertEqualObjects(obj, [NSNumber numberWithBool:YES], @"");
@@ -76,7 +76,7 @@
     id obj = [EXTMaybe validObjectWithMaybe:[EXTNil null] orElse:^(NSError *localError){
         STAssertNil(localError, @"");
 
-        return [NSNumber numberWithBool:YES];
+        return @YES;
     }];
 
     STAssertEqualObjects(obj, [NSNumber numberWithBool:YES], @"");
@@ -86,7 +86,7 @@
     id obj = [EXTMaybe validObjectWithMaybe:[NSNull null] orElse:^(NSError *localError){
         STAssertNil(localError, @"");
 
-        return [NSNumber numberWithBool:YES];
+        return @YES;
     }];
 
     STAssertEqualObjects(obj, [NSNumber numberWithBool:YES], @"");

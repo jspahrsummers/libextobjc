@@ -25,17 +25,17 @@
     STAssertEqualsWithAccuracy([obj doubleValue], 0.0, 0.01, @"any method on EXTNil object should return zero value");
     STAssertTrue(NSEqualRanges([obj rangeOfString:@""], NSMakeRange(0, 0)), @"any method on EXTNil object should return zero value");
 
-    NSArray *arr = [NSArray arrayWithObject:obj];
+    NSArray *arr = @[obj];
     STAssertNotNil(arr, @"");
-    STAssertEqualObjects([arr objectAtIndex:0], obj, @"EXTNil object properties should be preserved in a collection");
-    STAssertEqualObjects([[arr objectAtIndex:0] target], nil, @"EXTNil object properties should be preserved in a collection");
+    STAssertEqualObjects(arr[0], obj, @"EXTNil object properties should be preserved in a collection");
+    STAssertEqualObjects([arr[0] target], nil, @"EXTNil object properties should be preserved in a collection");
 }
 
 - (void)testKeyValueCoding {
     id obj = [EXTNil null];
     [obj setValue:@"foo" forKey:@"bar"];
 
-    NSDictionary *values = [obj dictionaryWithValuesForKeys:[NSArray arrayWithObject:@"bar"]];
+    NSDictionary *values = [obj dictionaryWithValuesForKeys:@[@"bar"]];
     STAssertNil(values, @"");
 }
 
