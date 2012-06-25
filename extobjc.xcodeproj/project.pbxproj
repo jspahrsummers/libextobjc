@@ -967,6 +967,7 @@
 			baseConfigurationReference = D0919C5E146F99B900D680C9 /* Mac-StaticLibrary.xcconfig */;
 			buildSettings = {
 				GCC_PREFIX_HEADER = extobjc/extobjc_Prefix.pch;
+				HEADER_SEARCH_PATHS = libffi/osx/include;
 				INSTALL_PATH = /usr/local/lib;
 				PRODUCT_NAME = extobjc_OSX;
 			};
@@ -977,6 +978,7 @@
 			baseConfigurationReference = D0919C5E146F99B900D680C9 /* Mac-StaticLibrary.xcconfig */;
 			buildSettings = {
 				GCC_PREFIX_HEADER = extobjc/extobjc_Prefix.pch;
+				HEADER_SEARCH_PATHS = libffi/osx/include;
 				INSTALL_PATH = /usr/local/lib;
 				PRODUCT_NAME = extobjc_OSX;
 			};
@@ -1022,7 +1024,7 @@
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				GCC_PREFIX_HEADER = extobjc/extobjc_Prefix.pch;
-				HEADER_SEARCH_PATHS = "../libffi-ios/ios/**";
+				HEADER_SEARCH_PATHS = "libffi/ios/include/**";
 				PRODUCT_NAME = extobjc_iOS;
 			};
 			name = Debug;
@@ -1033,7 +1035,7 @@
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				GCC_PREFIX_HEADER = extobjc/extobjc_Prefix.pch;
-				HEADER_SEARCH_PATHS = "../libffi-ios/ios/**";
+				HEADER_SEARCH_PATHS = "libffi/ios/include/**";
 				PRODUCT_NAME = extobjc_iOS;
 			};
 			name = Release;
@@ -1049,6 +1051,7 @@
 				);
 				GCC_TREAT_WARNINGS_AS_ERRORS = NO;
 				GCC_WARN_PEDANTIC = NO;
+				HEADER_SEARCH_PATHS = libffi/osx/include;
 				INFOPLIST_FILE = "Tests/OSX-Info.plist";
 				INSTALL_PATH = "$(USER_LIBRARY_DIR)/Bundles";
 				OTHER_LDFLAGS = (
@@ -1074,6 +1077,7 @@
 				);
 				GCC_TREAT_WARNINGS_AS_ERRORS = NO;
 				GCC_WARN_PEDANTIC = NO;
+				HEADER_SEARCH_PATHS = libffi/osx/include;
 				INFOPLIST_FILE = "Tests/OSX-Info.plist";
 				INSTALL_PATH = "$(USER_LIBRARY_DIR)/Bundles";
 				OTHER_LDFLAGS = (
@@ -1104,6 +1108,7 @@
 					NDEBUG,
 				);
 				GCC_TREAT_WARNINGS_AS_ERRORS = NO;
+				HEADER_SEARCH_PATHS = libffi/ios/include;
 				INFOPLIST_FILE = "Tests/iOS-Info.plist";
 				OTHER_LDFLAGS = (
 					"-all_load",
@@ -1136,6 +1141,7 @@
 					NDEBUG,
 				);
 				GCC_TREAT_WARNINGS_AS_ERRORS = NO;
+				HEADER_SEARCH_PATHS = libffi/ios/include;
 				INFOPLIST_FILE = "Tests/iOS-Info.plist";
 				OTHER_LDFLAGS = (
 					"-all_load",
