@@ -171,9 +171,8 @@ static EXTMultimethodAttributes *ext_bestMultimethod (NSArray *implementations, 
             return NSOrderedAscending;
         else if (nilArgumentWeight > 0)
             return NSOrderedDescending;
-
-        NSLog(@"*** Multimethod implementations are ambiguous -- which one will be used is undefined:\n%@\n%@", left, right);
-        return NSOrderedSame;
+        else
+            return NSOrderedSame;
     }];
 
     #if EXT_MULTIMETHOD_DEBUG
