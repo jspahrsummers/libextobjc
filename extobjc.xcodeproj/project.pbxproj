@@ -107,6 +107,8 @@
 		D03EC9A4138A25F100559080 /* EXTCoroutineTest.m in Sources */ = {isa = PBXBuildFile; fileRef = D03EC9A2138A25F100559080 /* EXTCoroutineTest.m */; };
 		D05F5BF71335E43F00A34927 /* EXTBlockMethodTest.m in Sources */ = {isa = PBXBuildFile; fileRef = D05F5BF61335E43F00A34927 /* EXTBlockMethodTest.m */; };
 		D05F5BF81335E43F00A34927 /* EXTBlockMethodTest.m in Sources */ = {isa = PBXBuildFile; fileRef = D05F5BF61335E43F00A34927 /* EXTBlockMethodTest.m */; };
+		D06674E715990AB8001537C5 /* libffi.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D06674E215990AAB001537C5 /* libffi.a */; };
+		D06674E815990ABD001537C5 /* libffi.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D06674E015990AAB001537C5 /* libffi.a */; };
 		D0737D9414CB9438005BF183 /* EXTMaybeTest.m in Sources */ = {isa = PBXBuildFile; fileRef = D0737D9314CB9438005BF183 /* EXTMaybeTest.m */; };
 		D0737D9514CB9438005BF183 /* EXTMaybeTest.m in Sources */ = {isa = PBXBuildFile; fileRef = D0737D9314CB9438005BF183 /* EXTMaybeTest.m */; };
 		D07F83B2135D50E9008B9D6D /* EXTBlockTargetTest.m in Sources */ = {isa = PBXBuildFile; fileRef = D07F83B1135D50E9008B9D6D /* EXTBlockTargetTest.m */; };
@@ -143,19 +145,33 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		D02BA14F159505A000CAC3D5 /* PBXContainerItemProxy */ = {
+		D06674DF15990AAB001537C5 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = D0E4D528147F3D2E002C3C9F /* libffi.xcodeproj */;
+			containerPortal = D06674D715990AAB001537C5 /* libffi.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = F6F980BA147386130008F121;
-			remoteInfo = ffi;
+			remoteInfo = "libffi iOS";
 		};
-		D02BA15A1595068E00CAC3D5 /* PBXContainerItemProxy */ = {
+		D06674E115990AAB001537C5 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = D0E4D528147F3D2E002C3C9F /* libffi.xcodeproj */;
+			containerPortal = D06674D715990AAB001537C5 /* libffi.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 6C43CB3D1534E9D100162364;
+			remoteInfo = "libffi OS X";
+		};
+		D06674E315990AB1001537C5 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D06674D715990AAB001537C5 /* libffi.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = F6F980B9147386130008F121;
-			remoteInfo = ffi;
+			remoteInfo = "libffi iOS";
+		};
+		D06674E515990AB4001537C5 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D06674D715990AAB001537C5 /* libffi.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 6C43CB3C1534E9D100162364;
+			remoteInfo = "libffi OS X";
 		};
 		D0CFB603128A8EB6006DC377 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -232,6 +248,7 @@
 		D03EC9A2138A25F100559080 /* EXTCoroutineTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXTCoroutineTest.m; sourceTree = "<group>"; };
 		D05F5BF51335E43F00A34927 /* EXTBlockMethodTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXTBlockMethodTest.h; sourceTree = "<group>"; };
 		D05F5BF61335E43F00A34927 /* EXTBlockMethodTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXTBlockMethodTest.m; sourceTree = "<group>"; };
+		D06674D715990AAB001537C5 /* libffi.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = libffi.xcodeproj; path = libffi/libffi.xcodeproj; sourceTree = "<group>"; };
 		D0737D9214CB9438005BF183 /* EXTMaybeTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXTMaybeTest.h; sourceTree = "<group>"; };
 		D0737D9314CB9438005BF183 /* EXTMaybeTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXTMaybeTest.m; sourceTree = "<group>"; };
 		D07F83B0135D50E9008B9D6D /* EXTBlockTargetTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXTBlockTargetTest.h; sourceTree = "<group>"; };
@@ -269,8 +286,6 @@
 		D0CD1BE6158F2A2A0039C845 /* EXTTupleTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXTTupleTest.m; sourceTree = "<group>"; };
 		D0CFB60F128A8EEE006DC377 /* iOS Tests.octest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "iOS Tests.octest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		D0CFB610128A8EEE006DC377 /* iOS-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "iOS-Info.plist"; sourceTree = "<group>"; };
-		D0E4D528147F3D2E002C3C9F /* libffi.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = libffi.xcodeproj; path = "libffi-ios/libffi.xcodeproj"; sourceTree = "<group>"; };
-		D0E4D567147F4624002C3C9F /* libffi.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libffi.a; path = /usr/local/Cellar/libffi/HEAD/lib/libffi.a; sourceTree = "<absolute>"; };
 		D0E7E839128F7F2E00FE0263 /* EXTSafeCategoryTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXTSafeCategoryTest.h; sourceTree = "<group>"; };
 		D0E7E83A128F7F2E00FE0263 /* EXTSafeCategoryTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXTSafeCategoryTest.m; sourceTree = "<group>"; };
 		D0E7E8C9128F8D1400FE0263 /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = System/Library/Frameworks/CoreFoundation.framework; sourceTree = SDKROOT; };
@@ -290,6 +305,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D06674E815990ABD001537C5 /* libffi.a in Frameworks */,
 				D0A8B188128A4303004AACE0 /* Foundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -315,6 +331,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D06674E715990AB8001537C5 /* libffi.a in Frameworks */,
 				D0A8B04F128A42F4004AACE0 /* Foundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -348,6 +365,7 @@
 		0867D69AFE84028FC02AAC07 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				D06674D715990AAB001537C5 /* libffi.xcodeproj */,
 				D0A8B20B128A430D004AACE0 /* iOS */,
 				D0A8B20A128A430A004AACE0 /* Mac OS X */,
 			);
@@ -430,10 +448,11 @@
 			name = "Other Sources";
 			sourceTree = "<group>";
 		};
-		D02BA14C159505A000CAC3D5 /* Products */ = {
+		D06674D815990AAB001537C5 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				D02BA150159505A000CAC3D5 /* libffi.a */,
+				D06674E015990AAB001537C5 /* libffi.a */,
+				D06674E215990AAB001537C5 /* libffi.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -503,7 +522,6 @@
 		D0A8B20A128A430A004AACE0 /* Mac OS X */ = {
 			isa = PBXGroup;
 			children = (
-				D0E4D567147F4624002C3C9F /* libffi.a */,
 				D0E7E8C9128F8D1400FE0263 /* CoreFoundation.framework */,
 				0867D69BFE84028FC02AAC07 /* Foundation.framework */,
 			);
@@ -513,7 +531,6 @@
 		D0A8B20B128A430D004AACE0 /* iOS */ = {
 			isa = PBXGroup;
 			children = (
-				D0E4D528147F3D2E002C3C9F /* libffi.xcodeproj */,
 				D0A8B187128A4303004AACE0 /* Foundation.framework */,
 			);
 			name = iOS;
@@ -651,7 +668,7 @@
 			buildRules = (
 			);
 			dependencies = (
-				D02BA15B1595068E00CAC3D5 /* PBXTargetDependency */,
+				D06674E415990AB1001537C5 /* PBXTargetDependency */,
 			);
 			name = "libextobjc (iOS)";
 			productName = "libextobjc (iOS)";
@@ -707,6 +724,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				D06674E615990AB4001537C5 /* PBXTargetDependency */,
 			);
 			name = "libextobjc (OS X)";
 			productName = libextobjc;
@@ -736,8 +754,8 @@
 			projectDirPath = "";
 			projectReferences = (
 				{
-					ProductGroup = D02BA14C159505A000CAC3D5 /* Products */;
-					ProjectRef = D0E4D528147F3D2E002C3C9F /* libffi.xcodeproj */;
+					ProductGroup = D06674D815990AAB001537C5 /* Products */;
+					ProjectRef = D06674D715990AAB001537C5 /* libffi.xcodeproj */;
 				},
 			);
 			projectRoot = "";
@@ -751,11 +769,18 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
-		D02BA150159505A000CAC3D5 /* libffi.a */ = {
+		D06674E015990AAB001537C5 /* libffi.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
 			path = libffi.a;
-			remoteRef = D02BA14F159505A000CAC3D5 /* PBXContainerItemProxy */;
+			remoteRef = D06674DF15990AAB001537C5 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		D06674E215990AAB001537C5 /* libffi.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libffi.a;
+			remoteRef = D06674E115990AAB001537C5 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */
@@ -914,10 +939,15 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		D02BA15B1595068E00CAC3D5 /* PBXTargetDependency */ = {
+		D06674E415990AB1001537C5 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			name = ffi;
-			targetProxy = D02BA15A1595068E00CAC3D5 /* PBXContainerItemProxy */;
+			name = "libffi iOS";
+			targetProxy = D06674E315990AB1001537C5 /* PBXContainerItemProxy */;
+		};
+		D06674E615990AB4001537C5 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = "libffi OS X";
+			targetProxy = D06674E515990AB4001537C5 /* PBXContainerItemProxy */;
 		};
 		D0CFB604128A8EB6006DC377 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
