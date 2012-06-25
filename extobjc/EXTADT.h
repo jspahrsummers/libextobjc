@@ -171,10 +171,17 @@ ColorT Color.Other (double r, double g, double b);
     metamacro_foreach_cxt_recursive(ADT_typedef_iter,, CONS, __VA_ARGS__)
 
 #define ADT_typedef_iter(INDEX, CONS, PARAM) \
-    /* the form being generated here is similar to 'typedef PTYPE PNAME_JUNK, ALIAS' */ \
-    /* with the comma, we've successfully separated the name from the type,
-     * and will use the latter via ADT_CURRENT_CONS_ALIAS_T. */ \
-    typedef metamacro_concat(PARAM, metamacro_concat(_junk_, __LINE__)), ADT_CURRENT_CONS_ALIAS_T(CONS, INDEX);
+    typedef union { \
+        union { \
+            PARAM; \
+            \
+            unsigned char bytes[sizeof( \
+                struct __attribute__((packed)) { PARAM; } \
+            )]; \
+        } payload; \
+        \
+        PARAM; \
+    } __attribute__((transparent_union)) ADT_CURRENT_CONS_ALIAS_T(CONS, INDEX);
 
 /*
  * This macro simply creates an enum entry for the given constructor name.
@@ -442,6 +449,9 @@ const struct {
  */
 #define ADT_CURRENT_CONS_ALIAS_T(CONS, INDEX) \
     metamacro_concat(metamacro_concat(ADT_CURRENT_T, _), metamacro_concat(CONS ## _alias, INDEX))
+
+#define ADT_CURRENT_CONS_ALIAS_BYTES_T(CONS, INDEX) \
+    metamacro_concat(CONS ## _alias_, INDEX)
 
 /*
  * Expands to an NSString with a human-readable description of the current value
