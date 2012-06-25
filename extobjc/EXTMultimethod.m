@@ -10,7 +10,7 @@
 #import "EXTRuntimeExtensions.h"
 #import "EXTScope.h"
 
-#define EXT_MULTIMETHOD_DEBUG 1
+#define EXT_MULTIMETHOD_DEBUG 0
 
 typedef EXTMultimethodAttributes *(*ext_copyMultimethodAttributes_IMP)(void);
 
