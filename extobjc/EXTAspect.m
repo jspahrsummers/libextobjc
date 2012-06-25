@@ -445,7 +445,7 @@ static void ext_injectAspect (Class containerClass, Class class) {
             }
 
             if (getter || setter) {
-                NSString *propertyName = [NSString stringWithUTF8String:property_getName(propertyList[i])];
+                NSString *propertyName = @(property_getName(propertyList[i]));
 
                 if (getter) {
                     objc_setAssociatedObject(class, attributes->getter, propertyName, OBJC_ASSOCIATION_COPY_NONATOMIC);

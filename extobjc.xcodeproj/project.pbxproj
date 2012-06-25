@@ -970,6 +970,7 @@
 				HEADER_SEARCH_PATHS = libffi/osx/include;
 				INSTALL_PATH = /usr/local/lib;
 				PRODUCT_NAME = extobjc_OSX;
+				SDKROOT = macosx;
 			};
 			name = Debug;
 		};
@@ -981,6 +982,7 @@
 				HEADER_SEARCH_PATHS = libffi/osx/include;
 				INSTALL_PATH = /usr/local/lib;
 				PRODUCT_NAME = extobjc_OSX;
+				SDKROOT = macosx;
 			};
 			name = Release;
 		};
@@ -1064,6 +1066,7 @@
 					SenTestingKit,
 				);
 				PRODUCT_NAME = "Logic Tests";
+				SDKROOT = macosx;
 				WRAPPER_EXTENSION = octest;
 			};
 			name = Debug;
@@ -1090,6 +1093,7 @@
 					SenTestingKit,
 				);
 				PRODUCT_NAME = "Logic Tests";
+				SDKROOT = macosx;
 				WRAPPER_EXTENSION = octest;
 			};
 			name = Release;

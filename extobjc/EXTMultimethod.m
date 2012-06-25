@@ -180,7 +180,7 @@ static EXTMultimethodAttributes *ext_bestMultimethod (NSArray *implementations, 
     #endif
 
     // and return the bestest match
-    return [possibilities objectAtIndex:0];
+    return possibilities[0];
 }
 
 Class ext_multimethod_parameterClassFromEncoding (const char *encoding) {
