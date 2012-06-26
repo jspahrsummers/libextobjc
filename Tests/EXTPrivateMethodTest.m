@@ -2,90 +2,92 @@
 //  EXTPrivateMethodTest.m
 //  extobjc
 //
-//  Created by Justin Spahr-Summers on 2011-03-02.
+//  Created by Justin Spahr-Summers on 2012-06-26.
 //  Released into the public domain.
 //
 
 #import "EXTPrivateMethodTest.h"
 
-/*** test superclass ***/
-@interface PrivateTestClass : NSURLRequest {
-}
+// make sure failed private methods don't crash the test (since we explicitly
+// test such a case below)
+#ifndef NDEBUG
+#define NDEBUG
+#endif
 
-+ (float)classStuff;
-- (int)stuff;
+#undef DEBUG
+#import "EXTPrivateMethod.h"
 
+@interface PrivateClass : NSObject
 @end
 
-@private (PrivateTestClass)
-+ (float)privateClassValue;
-- (int)privateValue;
-@endprivate
+@private(PrivateClass)
+- (BOOL)privateMethod;
++ (BOOL)privateMethod;
 
-@implementation PrivateTestClass
-+ (float)classStuff {
-    return [privateSelf privateClassValue];
-}
+@property (nonatomic, assign, getter = isPrivate) BOOL private;
 
-+ (float)privateClassValue {
-    return 3.14f;
-}
-
-- (int)stuff {
-    return [privateSelf privateValue];
-}
-
-- (int)privateValue {
-    return 42;
-}
+// this should warn about a conflict with NSObject
+- (NSString *)description;
 @end
 
-/*** test subclass ***/
-@interface PrivateTestSubclass : PrivateTestClass {
-}
-
-+ (float)classStuff;
-- (int)getValue;
-@end
-
-@private (PrivateTestSubclass)
-+ (float)privateClassValue;
-- (int)privateValue;
-@endprivate
-
-@implementation PrivateTestSubclass
-+ (float)classStuff {
-    return [privateSelf privateClassValue];
-}
-
-+ (float)privateClassValue {
-    return -85.24f;
-}
-
-- (int)getValue {
-    return [privateSelf privateValue];
-}
-
-- (int)privateValue {
-    return 1337;
-}
+@interface PrivateSubclass : PrivateClass
+// these should warn about conflicts with PrivateClass
+- (BOOL)privateMethod;
+- (BOOL)isPrivate;
+- (void)setPrivate:(BOOL)value;
 @end
 
 @implementation EXTPrivateMethodTest
-- (void)testBasicPrivateMethods {
-    PrivateTestClass *obj = [[PrivateTestClass alloc] init];
 
-    STAssertNotNil(obj, @"could not allocate instance of class with private methods");
-    STAssertEquals([obj stuff], 42, @"expected -[PrivateTestClass stuff] to return 42");
-    STAssertEqualsWithAccuracy([PrivateTestClass classStuff], 3.14f, 0.01f, @"expected +[PrivateTestClass classStuff] to return 3.14");
+- (void)testClassRespondsToPrivateMethods {
+    STAssertTrue([PrivateClass privateMethod], @"");
+
+    PrivateClass *obj = [PrivateClass new];
+    STAssertFalse(obj.private, @"");
+    STAssertFalse([obj privateMethod], NO, @"");
+
+    obj.private = YES;
+    STAssertTrue(obj.private, @"");
+    STAssertTrue([obj privateMethod], @"");
 }
 
-- (void)testPrivateMethodInheritance {
-    PrivateTestSubclass *obj = [[PrivateTestSubclass alloc] init];
-
-    STAssertNotNil(obj, @"could not allocate instance of subclass with private methods");
-    STAssertEquals([obj stuff], 42, @"expected -[PrivateTestSubclass stuff] to return 42");
-    STAssertEquals([obj getValue], 1337, @"expected -[PrivateTestSubclass getValue] to return 1337");
-    STAssertEqualsWithAccuracy([PrivateTestSubclass classStuff], -85.24f, 0.01f, @"expected +[PrivateTestSubclass classStuff] to return -85.24");
+- (void)testConflictingMethodsStillUseOverrides {
+    PrivateSubclass *obj = [PrivateSubclass new];
+    STAssertEqualObjects(obj.description, @"foobar", @"");
+    STAssertTrue([obj privateMethod], @"");
+    STAssertFalse(obj.private, @"");
 }
+
+@end
+
+@implementation PrivateClass
+@synthesize private = _private;
+
+- (BOOL)privateMethod {
+    return self.private;
+}
+
++ (BOOL)privateMethod {
+    return YES;
+}
+
+- (NSString *)description {
+    return @"foobar";
+}
+
+@end
+
+@implementation PrivateSubclass
+
+- (BOOL)privateMethod {
+    return YES;
+}
+
+- (BOOL)isPrivate {
+    return NO;
+}
+
+- (void)setPrivate:(BOOL)value {
+}
+
 @end

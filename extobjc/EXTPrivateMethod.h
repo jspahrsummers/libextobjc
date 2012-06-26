@@ -2,41 +2,25 @@
 //  EXTPrivateMethod.h
 //  extobjc
 //
-//  Created by Justin Spahr-Summers on 2011-03-02.
+//  Created by Justin Spahr-Summers on 2012-06-26.
 //  Released into the public domain.
 //
 
+#import <Foundation/Foundation.h>
 #import <objc/runtime.h>
-#import <stdio.h>
-#import <stdlib.h>
 #import "metamacros.h"
 
 /**
- * \@ private declares private methods for \a CLASS. Any methods declared inside this block
- * will not be visible to or invokable by other classes, and will not conflict
- * with private or public methods by the same name declared in any subclasses.
+ * \@private declares methods or properties of the given \a CLASS to be private.
+ * At application startup, if any of those methods conflict with superclass
+ * methods, or are accidentally overridden by subclasses, an error will be
+ * logged. If \c DEBUG is defined and \c NDEBUG is not defined, any method
+ * conflicts will also abort the application.
  *
- * Private method declarations must be followed by \c @endprivate. The methods
- * themselves must be invoked using #privateSelf. This macro should only be used
- * in an implementation file.
- *
- * @bug Private methods by the same name currently cannot exist in classes that
- * are immediate descendants of the same superclass.
- * 
- * @bug Due to implementation details, private methods can be invoked publicly
- * against the superclass of the implementing class. However, in such cases,
- * their behavior will differ, being subject to normal inheritance and
- * overriding.
- *
- * @note Private methods will conflict with unqualified methods of the same name
- * in the immediate ancestor of the implementing class. This is not considered
- * a bug, but may nonetheless be fixed in the future.
- *
- * @warning Private methods will not be available at the point of \c +load, and
- * possibly not even by \c +initialize.
- *
- * @todo \c @property declarations are currently not supported within \c @final
- * blocks.
+ * This macro should be used in implementation files. Any method or property
+ * declarations may appear between \@private and \@end, just as with a protocol
+ * or category. The method implementations should go into the main
+ * implementation block for the class.
  */
 #define private(CLASS) \
     protocol ext_ ## CLASS ## _PrivateMethods; \
@@ -46,47 +30,33 @@
     @interface NSObject (CLASS ## _PrivateMethodsProtocol) <ext_ ## CLASS ## _PrivateMethodsFakeProtocol> \
     @end \
     \
-    extern __unsafe_unretained Class ext_privateMethodsClass_; \
-    extern __unsafe_unretained Protocol *ext_privateMethodsFakeProtocol_; \
-    \
     __attribute__((constructor)) \
-    static void ext_ ## CLASS ## _preparePrivateMethods (void) { \
-        ext_privateMethodsClass_ = objc_getClass(# CLASS); \
-        ext_privateMethodsFakeProtocol_ = @protocol(ext_ ## CLASS ## _PrivateMethodsFakeProtocol); \
-    } \
-    \
-    @protocol ext_ ## CLASS ## _PrivateMethods
-
-/**
- * Ends a set of private method declarations. This must be used instead of \c
- * @end.
- *
- * @note This macro should only be used in an implementation file.
- */
-#define endprivate \
-    end \
-    \
-    __attribute__((constructor)) \
-    static void metamacro_concat(ext_injectPrivateMethods_, __LINE__) (void) { \
-        Class targetClass = ext_privateMethodsClass_; \
+    static void ext_ ## CLASS ## _validatePrivateMethods (void) { \
+        Class targetClass = objc_getClass(# CLASS); \
+        Protocol *fakeProtocol = @protocol(ext_ ## CLASS ## _PrivateMethodsFakeProtocol); \
         \
         unsigned listCount = 0; \
-        __unsafe_unretained Protocol **protocolList = protocol_copyProtocolList(ext_privateMethodsFakeProtocol_, &listCount); \
+        __unsafe_unretained Protocol **protocolList = protocol_copyProtocolList(fakeProtocol, &listCount); \
         \
         Protocol *privateMethodsProtocol = protocolList[0]; \
         free(protocolList); \
         \
-        if (!ext_makeProtocolMethodsPrivate(targetClass, privateMethodsProtocol)) { \
-            fprintf(stderr, "ERROR: Could not add private methods for class %s\n", class_getName(targetClass)); \
+        if (!ext_validatePrivateMethodsOfClass(targetClass, privateMethodsProtocol)) { \
+            ext_privateMethodsFailed(targetClass); \
         } \
-    }
-
-/**
- * Required to invoke a private method against \c self. If this keyword is not
- * used, method lookup may fail. Note that you cannot invoke a private class
- * method from an instance method.
- */
-#define privateSelf super
+    } \
+    \
+    @protocol ext_ ## CLASS ## _PrivateMethods \
+    @required
 
 /*** implementation details follow ***/
-BOOL ext_makeProtocolMethodsPrivate (Class targetClass, Protocol *protocol);
+BOOL ext_validatePrivateMethodsOfClass (Class targetClass, Protocol *privateMethodsProtocol);
+
+// if this is a debug build...
+#if defined(DEBUG) && !defined(NDEBUG)
+    // abort if private methods collide
+    #define ext_privateMethodsFailed(CLASS) \
+        abort()
+#else
+    #define ext_privateMethodsFailed(CLASS)
+#endif
