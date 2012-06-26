@@ -11,6 +11,7 @@ libextobjc currently includes the following features:
  * **Safe categories**, using EXTSafeCategory, for adding methods to a class without overwriting anything already there (identifying conflicts for you).
  * **Concrete protocols**, using EXTConcreteProtocol, for providing default implementations of the methods in a protocol.
  * **Simpler and safer key paths**, using EXTKeyPathCoding, which automatically checks key paths at compile-time.
+ * **Compile-time checking of selectors** to ensure that an object declares a given selector, using EXTSelectorChecking.
  * **Easier use of weak variables in blocks**, using `@weakify` and `@strongify` in the EXTScope module.
  * **Scope-based resource cleanup**, using `@onExit` in the EXTScope module, for automatically cleaning up manually-allocated memory, file handles, locks, etc., at the end of a scope.
  * **EXTNil, which is like `NSNull`, but behaves much more closely to actual `nil`** (i.e., doesn't crash when sent unrecognized messages).

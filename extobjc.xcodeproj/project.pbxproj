@@ -117,6 +117,12 @@
 		D088C7BF159121A300C70CE2 /* EXTKeyPathCodingTest.m in Sources */ = {isa = PBXBuildFile; fileRef = D088C7BD159121A300C70CE2 /* EXTKeyPathCodingTest.m */; };
 		D088C7F51591377000C70CE2 /* EXTADTTest.m in Sources */ = {isa = PBXBuildFile; fileRef = D088C7F41591377000C70CE2 /* EXTADTTest.m */; };
 		D088C7F61591377000C70CE2 /* EXTADTTest.m in Sources */ = {isa = PBXBuildFile; fileRef = D088C7F41591377000C70CE2 /* EXTADTTest.m */; };
+		D09FB2F6159A41C400A5F6A4 /* EXTSelectorChecking.h in Headers */ = {isa = PBXBuildFile; fileRef = D09FB2F5159A41C400A5F6A4 /* EXTSelectorChecking.h */; };
+		D09FB2F7159A41C400A5F6A4 /* EXTSelectorChecking.h in Headers */ = {isa = PBXBuildFile; fileRef = D09FB2F5159A41C400A5F6A4 /* EXTSelectorChecking.h */; };
+		D09FB2FA159A41D100A5F6A4 /* EXTSelectorCheckingTest.m in Sources */ = {isa = PBXBuildFile; fileRef = D09FB2F9159A41D100A5F6A4 /* EXTSelectorCheckingTest.m */; };
+		D09FB2FB159A41D100A5F6A4 /* EXTSelectorCheckingTest.m in Sources */ = {isa = PBXBuildFile; fileRef = D09FB2F9159A41D100A5F6A4 /* EXTSelectorCheckingTest.m */; };
+		D09FB2FD159A459700A5F6A4 /* EXTSelectorChecking.m in Sources */ = {isa = PBXBuildFile; fileRef = D09FB2FC159A459700A5F6A4 /* EXTSelectorChecking.m */; };
+		D09FB2FE159A459700A5F6A4 /* EXTSelectorChecking.m in Sources */ = {isa = PBXBuildFile; fileRef = D09FB2FC159A459700A5F6A4 /* EXTSelectorChecking.m */; };
 		D0A8B04F128A42F4004AACE0 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0867D69BFE84028FC02AAC07 /* Foundation.framework */; };
 		D0A8B188128A4303004AACE0 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D0A8B187128A4303004AACE0 /* Foundation.framework */; };
 		D0A8B30E128A4B56004AACE0 /* EXTSwizzleTest.m in Sources */ = {isa = PBXBuildFile; fileRef = D0A8B30D128A4B56004AACE0 /* EXTSwizzleTest.m */; };
@@ -274,6 +280,10 @@
 		D0919C5D146F99B900D680C9 /* Mac-Framework.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "Mac-Framework.xcconfig"; sourceTree = "<group>"; };
 		D0919C5E146F99B900D680C9 /* Mac-StaticLibrary.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "Mac-StaticLibrary.xcconfig"; sourceTree = "<group>"; };
 		D0919C5F146F99B900D680C9 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = text; path = README.md; sourceTree = "<group>"; };
+		D09FB2F5159A41C400A5F6A4 /* EXTSelectorChecking.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXTSelectorChecking.h; sourceTree = "<group>"; };
+		D09FB2F8159A41D100A5F6A4 /* EXTSelectorCheckingTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXTSelectorCheckingTest.h; sourceTree = "<group>"; };
+		D09FB2F9159A41D100A5F6A4 /* EXTSelectorCheckingTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXTSelectorCheckingTest.m; sourceTree = "<group>"; };
+		D09FB2FC159A459700A5F6A4 /* EXTSelectorChecking.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXTSelectorChecking.m; sourceTree = "<group>"; };
 		D0A8B029128A4261004AACE0 /* libextobjc_iOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libextobjc_iOS.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		D0A8B187128A4303004AACE0 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		D0A8B2DC128A495D004AACE0 /* Logic Tests.octest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Logic Tests.octest"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -423,6 +433,8 @@
 				D005F03715950509007A8A1C /* EXTSafeCategory.m */,
 				D005F03815950509007A8A1C /* EXTScope.h */,
 				D005F03915950509007A8A1C /* EXTScope.m */,
+				D09FB2F5159A41C400A5F6A4 /* EXTSelectorChecking.h */,
+				D09FB2FC159A459700A5F6A4 /* EXTSelectorChecking.m */,
 				D005F03A15950509007A8A1C /* EXTSwizzle.h */,
 				D005F03B15950509007A8A1C /* EXTTuple.h */,
 				D005F03C15950509007A8A1C /* EXTVarargs.h */,
@@ -575,6 +587,8 @@
 				D0E7E83A128F7F2E00FE0263 /* EXTSafeCategoryTest.m */,
 				D0B9B0B313727EF800EC1224 /* EXTScopeTest.h */,
 				D0B9B0B413727EF800EC1224 /* EXTScopeTest.m */,
+				D09FB2F8159A41D100A5F6A4 /* EXTSelectorCheckingTest.h */,
+				D09FB2F9159A41D100A5F6A4 /* EXTSelectorCheckingTest.m */,
 				D0A8B30C128A4B56004AACE0 /* EXTSwizzleTest.h */,
 				D0A8B30D128A4B56004AACE0 /* EXTSwizzleTest.m */,
 				D0CD1BE5158F2A2A0039C845 /* EXTTupleTest.h */,
@@ -621,6 +635,7 @@
 				D005F09215950509007A8A1C /* NSInvocation+EXT.h in Headers */,
 				D005F09615950509007A8A1C /* NSMethodSignature+EXT.h in Headers */,
 				D0FE93FF1596665D00F3AE1C /* EXTMultimethod.h in Headers */,
+				D09FB2F7159A41C400A5F6A4 /* EXTSelectorChecking.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -655,6 +670,7 @@
 				D005F09115950509007A8A1C /* NSInvocation+EXT.h in Headers */,
 				D005F09515950509007A8A1C /* NSMethodSignature+EXT.h in Headers */,
 				D0FE93FE1596665D00F3AE1C /* EXTMultimethod.h in Headers */,
+				D09FB2F6159A41C400A5F6A4 /* EXTSelectorChecking.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -861,6 +877,7 @@
 				D005F09815950509007A8A1C /* NSMethodSignature+EXT.m in Sources */,
 				D0FE94011596665D00F3AE1C /* EXTMultimethod.m in Sources */,
 				D0EF9C0015992F080066DFBC /* EXTADT.m in Sources */,
+				D09FB2FE159A459700A5F6A4 /* EXTSelectorChecking.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -887,6 +904,7 @@
 				D088C7F51591377000C70CE2 /* EXTADTTest.m in Sources */,
 				D003EEEF15924CF000410411 /* EXTVarargsTest.m in Sources */,
 				D0FE94041596668400F3AE1C /* EXTMultimethodTest.m in Sources */,
+				D09FB2FA159A41D100A5F6A4 /* EXTSelectorCheckingTest.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -913,6 +931,7 @@
 				D088C7F61591377000C70CE2 /* EXTADTTest.m in Sources */,
 				D003EEF015924CF000410411 /* EXTVarargsTest.m in Sources */,
 				D0FE94051596668400F3AE1C /* EXTMultimethodTest.m in Sources */,
+				D09FB2FB159A41D100A5F6A4 /* EXTSelectorCheckingTest.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -939,6 +958,7 @@
 				D005F09715950509007A8A1C /* NSMethodSignature+EXT.m in Sources */,
 				D0FE94001596665D00F3AE1C /* EXTMultimethod.m in Sources */,
 				D0EF9BFF15992F080066DFBC /* EXTADT.m in Sources */,
+				D09FB2FD159A459700A5F6A4 /* EXTSelectorChecking.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

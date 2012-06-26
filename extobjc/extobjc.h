@@ -23,6 +23,7 @@
 #import "EXTProtocolCategory.h"
 #import "EXTSafeCategory.h"
 #import "EXTScope.h"
+#import "EXTSelectorChecking.h"
 #import "EXTSwizzle.h"
 #import "EXTTuple.h"
 #import "EXTVarargs.h"
