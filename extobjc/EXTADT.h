@@ -84,11 +84,6 @@ ColorT Color.Other (double r, double g, double b);
  * constructor may only have up to nineteen parameters. This is a limitation
  * imposed primarily by #metamacro_foreach_cxt.
  *
- * @bug ADT parameters cannot currently be declared with asterisks (including
- * patterns like "const char *" or "NSString *"). This can be worked around by
- * using typedefs (e.g., "typedef const char *my_type_t;") or less-specific
- * types (like "id") instead.
- *
  * @bug An ADT value nested within another ADT value will not be very readable
  * when printed out with the generated NSStringFrom… function. All other data
  * will behave correctly.
@@ -150,40 +145,6 @@ ColorT Color.Other (double r, double g, double b);
 /*** implementation details follow ***/
 
 /*
- * The next few macros create type definitions for every possible parameter type
- * used in the current ADT.
- *
- * We do this so that instead of a type and name for each parameter (e.g.,
- * 'double alpha'), we know just the types for each parameter (e.g., through
- * a type definition of 'double').
- */
-#define ADT_typedef_constructor(...) \
-    /* our first argument will always be the constructor name, so if we only
-     * have one argument, we only have a constructor */ \
-    metamacro_if_eq(1, metamacro_argcount(__VA_ARGS__)) \
-        (/* no parameters, don't add any typedefs */) \
-        ( \
-            /* there are actually parameters */ \
-            ADT_typedef_constructor_(__VA_ARGS__) \
-        )
-
-#define ADT_typedef_constructor_(CONS, ...) \
-    metamacro_foreach_cxt_recursive(ADT_typedef_iter,, CONS, __VA_ARGS__)
-
-#define ADT_typedef_iter(INDEX, CONS, PARAM) \
-    typedef union { \
-        union { \
-            PARAM; \
-            \
-            unsigned char bytes[sizeof( \
-                struct __attribute__((packed)) { PARAM; } \
-            )]; \
-        } payload; \
-        \
-        PARAM; \
-    } __attribute__((transparent_union)) ADT_CURRENT_CONS_ALIAS_T(CONS, INDEX);
-
-/*
  * This macro simply creates an enum entry for the given constructor name.
  */
 #define ADT_enum_constructor(...) \
@@ -214,23 +175,43 @@ typedef struct {
     const enum { Red, Green, Blue, Gray, Other } tag;
 
     union {
+        // Gray
         struct {
-            double alpha;
-        };
-        struct Gray_aliases {
-            double v0;
-        } Gray;
+            union {
+                union {
+                    double alpha;
+                } Gray_payload_0;
 
-        struct {
-            double r;
-            double g;
-            double b;
+                double alpha;
+            };
         };
-        struct Other_aliases {
-            double v0;
-            double v1;
-            double v2;
-        } Other;
+
+        // Other
+        struct {
+            union {
+                union {
+                    double r;
+                } Other_payload_0;
+
+                double r;
+            };
+
+            union {
+                union {
+                    double g;
+                } Other_payload_1;
+
+                double g;
+            };
+
+            union {
+                union {
+                    double b;
+                } Other_payload_2;
+
+                double b;
+            };
+        };
     };
 } ColorT;
 
@@ -250,25 +231,41 @@ typedef struct {
         )
 
 #define ADT_payload_constructor_(CONS, ...) \
-    /* this is the "real" structure that the user accesses, using the parameter
-     * names given in the ADT definition */ \
     struct { \
-        metamacro_foreach_cxt_recursive(ADT_payload_entry_iter,,, __VA_ARGS__) \
-    }; \
-    \
-    /* this is an internal, exactly overlapping structure that we use to
-     * manipulate the parameter values without needing to know their names */ \
-    struct { \
-        metamacro_for_cxt(metamacro_argcount(__VA_ARGS__), ADT_payload_alias_iter,, CONS) \
-    } CONS;
+        metamacro_foreach_cxt_recursive(ADT_payload_entry_iter,, CONS, __VA_ARGS__) \
+    };
 
-#define ADT_payload_entry_iter(INDEX, CONTEXT, PARAM) \
-    /* for the user-facing structure, use the parameters exactly as given */ \
-    PARAM;
+#define ADT_payload_entry_iter(INDEX, CONS, PARAM) \
+    ADT_CURRENT_CONS_UNION_T(CONS, INDEX, PARAM);
 
-#define ADT_payload_alias_iter(INDEX, CONS) \
-    /* for the internal structure, use consecutively-numbered members */ \
-    ADT_CURRENT_CONS_ALIAS_T(CONS, INDEX) v ## INDEX;
+/*
+ * The next few macros create type definitions for the unions used for each
+ * parameter in the current ADT (e.g., those within the example structures
+ * above).
+ *
+ * We do this so that instead of a type and name for each parameter (e.g.,
+ * 'double alpha'), we can manipulate a union (e.g., 'Gray_payload_0') that
+ * matches the type, but has a name we define.
+ *
+ * The type definitions are later used for function parameters created by
+ * ADT_prototype_iter().
+ */
+#define ADT_typedef_constructor(...) \
+    /* our first argument will always be the constructor name, so if we only
+     * have one argument, we only have a constructor */ \
+    metamacro_if_eq(1, metamacro_argcount(__VA_ARGS__)) \
+        (/* no parameters, don't add any typedefs */) \
+        ( \
+            /* there are actually parameters */ \
+            ADT_typedef_constructor_(__VA_ARGS__) \
+        )
+
+#define ADT_typedef_constructor_(CONS, ...) \
+    metamacro_foreach_cxt_recursive(ADT_typedef_iter,, CONS, __VA_ARGS__)
+
+#define ADT_typedef_iter(INDEX, CONS, PARAM) \
+    typedef ADT_CURRENT_CONS_UNION_T(CONS, INDEX, PARAM) __attribute__((transparent_union)) \
+        ADT_CURRENT_CONS_ALIAS_T(CONS, INDEX);
 
 /*
  * This macro generates an inline function corresponding to one of the data
@@ -328,10 +325,10 @@ typedef struct {
  * The macros below generate the initialization code that is actually executed
  * in the constructor function.
  *
- * We merely need to map the given arguments onto the internal structure defined
- * by ADT_payload_alias_iter(). Because the internal structure is unioned with the
- * user-facing structure, the value can then be read by the user with the name
- * they gave it.
+ * We merely need to map the given arguments onto the internal unions defined by
+ * ADT_payload_entry_iter(). Because the union is itself unioned with the
+ * user-facing fields, the value can then be read by the user with the name they
+ * gave it.
  *
  * As with ADT_prototype*(), our parameter numbers need to be shifted down to
  * correspond to the values in the structure.
@@ -342,8 +339,11 @@ typedef struct {
             /* initialize the tag when the structure is created, because it cannot change later */ \
             struct ADT_CURRENT_T s = { .tag = CONS } \
         ) \
-        (s.CONS.metamacro_concat(v, metamacro_dec(INDEX)) = metamacro_concat(v, metamacro_dec(INDEX))) \
+        (ADT_initialize_memcpy(ADT_CURRENT_CONS_PAYLOAD_T(CONS, metamacro_dec(INDEX)), s, metamacro_concat(v, metamacro_dec(INDEX)))) \
     ;
+
+#define ADT_initialize_memcpy(UNION_NAME, ADT, ARG) \
+    memcpy(&ADT.UNION_NAME, &ARG.UNION_NAME, sizeof(ADT.UNION_NAME));
 
 /*
  * The macros below declare and initialize the function pointers used to
@@ -442,16 +442,39 @@ const struct {
 
 /*
  * This generates an alias name that can be used to refer to the type of
- * parameter INDEX of constructor CONS.
+ * parameter INDEX of constructor CONS (as a transparent union).
  *
  * The actual typedef, which is then referred to later, is generated with
  * ADT_typedef_iter().
+ *
+ * Because the type by this name is a transparent union, it can be used as
+ * a function or method argument and appear to be the actual parameter type
+ * given by the user.
  */
 #define ADT_CURRENT_CONS_ALIAS_T(CONS, INDEX) \
     metamacro_concat(metamacro_concat(ADT_CURRENT_T, _), metamacro_concat(CONS ## _alias, INDEX))
 
-#define ADT_CURRENT_CONS_ALIAS_BYTES_T(CONS, INDEX) \
-    metamacro_concat(CONS ## _alias_, INDEX)
+/**
+ * Creates an anonymous union that contains the user's parameter declaration as
+ * a member, as well as an (other) internal union that is used to access the
+ * data without needing to know the name given by the user.
+ *
+ * See ADT_payload_constructor() for more information.
+ */
+#define ADT_CURRENT_CONS_UNION_T(CONS, INDEX, PARAM) \
+    /* create unions upon unions (oh my!) so that we can treat the user's
+     * parameter as a typedef, without needing to split apart the type and name
+     * inside it (which is probably not possible) */ \
+    union { \
+        union { \
+            PARAM; \
+        } ADT_CURRENT_CONS_PAYLOAD_T(CONS, INDEX); \
+        \
+        PARAM; \
+    }
+
+#define ADT_CURRENT_CONS_PAYLOAD_T(CONS, INDEX) \
+    metamacro_concat(CONS ## _payload_, INDEX)
 
 /*
  * Expands to an NSString with a human-readable description of the current value
@@ -466,7 +489,7 @@ const struct {
         /* convert the parameter type into an Objective-C type encoding, which,
          * along with a pointer to the data, can be used to generate
          * a human-readable description of the actual value */ \
-        ext_stringFromTypedBytes(&(ADT).CONS.metamacro_concat(v, INDEX), \
+        ext_stringFromTypedBytes(&(ADT).ADT_CURRENT_CONS_PAYLOAD_T(CONS, INDEX), \
             ext_trimADTJunkFromTypeEncoding(@encode(ADT_CURRENT_CONS_ALIAS_T(CONS, INDEX)))) \
     ]
 
