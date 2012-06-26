@@ -18,8 +18,8 @@ ADT(Color,
 );
 
 ADT(Multicolor,
-    constructor(OneColor, ColorT c),
-    constructor(TwoColor, ColorT first, ColorT second)
+    constructor(OneColor, const ColorT c),
+    constructor(TwoColor, const ColorT first, const ColorT second)
 );
 
 ADT(MaxConstructors,
