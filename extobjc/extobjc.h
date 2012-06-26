@@ -16,6 +16,7 @@
 #import "EXTKeyPathCoding.h"
 #import "EXTMaybe.h"
 #import "EXTMixin.h"
+#import "EXTMultimethod.h"
 #import "EXTMultiObject.h"
 #import "EXTNil.h"
 #import "EXTPrivateMethod.h"
