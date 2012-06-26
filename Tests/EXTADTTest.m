@@ -13,12 +13,13 @@ ADT(Color,
     constructor(Green),
     constructor(Blue),
     constructor(Gray, double alpha),
-    constructor(Other, double r, double g, double b)
+    constructor(Other, double r, double g, double b),
+    constructor(Named, __unsafe_unretained NSString *name)
 );
 
 ADT(Multicolor,
-    constructor(OneColor, ColorT c),
-    constructor(TwoColor, ColorT first, ColorT second)
+    constructor(OneColor, const ColorT c),
+    constructor(TwoColor, const ColorT first, const ColorT second)
 );
 
 ADT(MaxConstructors,
@@ -65,6 +66,13 @@ ADT(MaxConstructors,
     STAssertEqualsWithAccuracy(c.g, 0.5, 0.0001, @"");
     STAssertEqualsWithAccuracy(c.b, 0.25, 0.0001, @"");
     STAssertEqualObjects(NSStringFromColorT(c), @"Other { r = 1, g = 0.5, b = 0.25 }", @"");
+}
+
+- (void)testNamed {
+    ColorT c = Color.Named(@"foobar");
+    STAssertEquals(c.tag, Named, @"");
+    STAssertEqualObjects(c.name, @"foobar", @"");
+    STAssertEqualObjects(NSStringFromColorT(c), @"Named { name = foobar }", @"");
 }
 
 - (void)testMulticolor {
