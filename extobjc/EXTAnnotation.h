@@ -42,7 +42,7 @@
  * @note Due to an implementation detail, each annotation adds at least one byte
  * of space to all instances of \a CLASS. For almost all purposes, the
  * difference in space will be negligible, but it may be detrimental for classes
- * that may have many thousands of instances.
+ * that can have thousands of instances.
  */
 #define annotate(CLASS, ...) \
     annotate_(CLASS, metamacro_concat(_, __COUNTER__), __VA_ARGS__)
@@ -71,6 +71,6 @@ NSDictionary *ext_getAnnotation (Class annotatedClass, NSString *propertyName);
         } \
     } \
     \
-    @interface CLASS () \
+    @interface CLASS ()
 
 BOOL ext_applyAnnotationAfterMarkerProperty (Class targetClass, id annotation, const char *markerPropertyName);
