@@ -139,6 +139,8 @@
 		D0E6A0EF159BB43B00FB92FC /* EXTAnnotation.h in Headers */ = {isa = PBXBuildFile; fileRef = D0E6A0EC159BB43B00FB92FC /* EXTAnnotation.h */; };
 		D0E6A0F0159BB43B00FB92FC /* EXTAnnotation.m in Sources */ = {isa = PBXBuildFile; fileRef = D0E6A0ED159BB43B00FB92FC /* EXTAnnotation.m */; };
 		D0E6A0F1159BB43B00FB92FC /* EXTAnnotation.m in Sources */ = {isa = PBXBuildFile; fileRef = D0E6A0ED159BB43B00FB92FC /* EXTAnnotation.m */; };
+		D0E6A0F4159BB46D00FB92FC /* EXTAnnotationTest.m in Sources */ = {isa = PBXBuildFile; fileRef = D0E6A0F3159BB46D00FB92FC /* EXTAnnotationTest.m */; };
+		D0E6A0F5159BB46D00FB92FC /* EXTAnnotationTest.m in Sources */ = {isa = PBXBuildFile; fileRef = D0E6A0F3159BB46D00FB92FC /* EXTAnnotationTest.m */; };
 		D0E7E85A128F81FA00FE0263 /* EXTSafeCategoryTest.m in Sources */ = {isa = PBXBuildFile; fileRef = D0E7E83A128F7F2E00FE0263 /* EXTSafeCategoryTest.m */; };
 		D0E7E85B128F81FA00FE0263 /* EXTSafeCategoryTest.m in Sources */ = {isa = PBXBuildFile; fileRef = D0E7E83A128F7F2E00FE0263 /* EXTSafeCategoryTest.m */; };
 		D0E7E8CA128F8D1400FE0263 /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D0E7E8C9128F8D1400FE0263 /* CoreFoundation.framework */; };
@@ -304,6 +306,8 @@
 		D0CFB610128A8EEE006DC377 /* iOS-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "iOS-Info.plist"; sourceTree = "<group>"; };
 		D0E6A0EC159BB43B00FB92FC /* EXTAnnotation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXTAnnotation.h; sourceTree = "<group>"; };
 		D0E6A0ED159BB43B00FB92FC /* EXTAnnotation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXTAnnotation.m; sourceTree = "<group>"; };
+		D0E6A0F2159BB46D00FB92FC /* EXTAnnotationTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXTAnnotationTest.h; sourceTree = "<group>"; };
+		D0E6A0F3159BB46D00FB92FC /* EXTAnnotationTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXTAnnotationTest.m; sourceTree = "<group>"; };
 		D0E7E839128F7F2E00FE0263 /* EXTSafeCategoryTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXTSafeCategoryTest.h; sourceTree = "<group>"; };
 		D0E7E83A128F7F2E00FE0263 /* EXTSafeCategoryTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXTSafeCategoryTest.m; sourceTree = "<group>"; };
 		D0E7E8C9128F8D1400FE0263 /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = System/Library/Frameworks/CoreFoundation.framework; sourceTree = SDKROOT; };
@@ -565,6 +569,8 @@
 			children = (
 				D088C7F31591377000C70CE2 /* EXTADTTest.h */,
 				D088C7F41591377000C70CE2 /* EXTADTTest.m */,
+				D0E6A0F2159BB46D00FB92FC /* EXTAnnotationTest.h */,
+				D0E6A0F3159BB46D00FB92FC /* EXTAnnotationTest.m */,
 				D035A5B9148022B9006C1001 /* EXTAspectTest.h */,
 				D035A5BA148022B9006C1001 /* EXTAspectTest.m */,
 				D05F5BF51335E43F00A34927 /* EXTBlockMethodTest.h */,
@@ -916,6 +922,7 @@
 				D003EEEF15924CF000410411 /* EXTVarargsTest.m in Sources */,
 				D0FE94041596668400F3AE1C /* EXTMultimethodTest.m in Sources */,
 				D09FB2FA159A41D100A5F6A4 /* EXTSelectorCheckingTest.m in Sources */,
+				D0E6A0F4159BB46D00FB92FC /* EXTAnnotationTest.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -943,6 +950,7 @@
 				D003EEF015924CF000410411 /* EXTVarargsTest.m in Sources */,
 				D0FE94051596668400F3AE1C /* EXTMultimethodTest.m in Sources */,
 				D09FB2FB159A41D100A5F6A4 /* EXTSelectorCheckingTest.m in Sources */,
+				D0E6A0F5159BB46D00FB92FC /* EXTAnnotationTest.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
