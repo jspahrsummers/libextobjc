@@ -16,14 +16,14 @@ libextobjc currently includes the following features:
  * **Scope-based resource cleanup**, using `@onExit` in the EXTScope module, for automatically cleaning up manually-allocated memory, file handles, locks, etc., at the end of a scope.
  * **EXTNil, which is like `NSNull`, but behaves much more closely to actual `nil`** (i.e., doesn't crash when sent unrecognized messages).
  * **EXTBlockTarget, which extends the target-action mechanism with support for blocks**.
+ * **Safer private methods**, using EXTPrivateMethod, for declaring methods on a class, and getting notified if they conflict with other existing methods.
  * EXTTuple, for multiple return values and assignment.
  * Algebraic data types generated completely at compile-time, defined using EXTADT.
  * Better variadic arguments, with support for packaging the arguments up as an array, using EXTVarargs.
  * Aspect-oriented programming, using EXTAspect.
  * Block-based coroutines, using EXTCoroutine.
- * Multimethods - methods which overload based on argument type - using EXTMultimethod.
+ * Multimethods – methods which overload based on argument type – using EXTMultimethod.
  * Final methods – methods which cannot be overridden – using EXTFinalMethod.
- * Private methods – methods which cannot be invoked by other classes – using EXTPrivateMethod.
  * EXTDispatchObject, which forwards messages to all objects in a given array.
  * EXTMaybe, which behaves like `NSError` _and_ `nil`, making it safe for use as an erroneous return value.
  * EXTMultiObject, which behaves like all of the objects in a given array (forwarding to the first one that responds to each message).
