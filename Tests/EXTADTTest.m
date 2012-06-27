@@ -19,7 +19,8 @@ ADT(Color,
 
 ADT(Multicolor,
     constructor(OneColor, const ColorT c),
-    constructor(TwoColor, const ColorT first, const ColorT second)
+    constructor(TwoColor, const ColorT first, const ColorT second),
+    constructor(RecursiveColor, const MulticolorT *mc)
 );
 
 ADT(MaxConstructors,
@@ -86,6 +87,12 @@ ADT(MaxConstructors,
     STAssertEqualsWithAccuracy(c.second.r, 0.25, 0.0001, @"");
     STAssertEqualsWithAccuracy(c.second.g, 0.5, 0.0001, @"");
     STAssertEqualsWithAccuracy(c.second.b, 0.75, 0.0001, @"");
+}
+
+- (void)testRecursiveMulticolor {
+    MulticolorT c1 = Multicolor.OneColor(Color.Red());
+    MulticolorT c2 = Multicolor.RecursiveColor(&c1);
+    STAssertEquals(*c2.mc, c1, @"");
 }
 
 - (void)testMaximums {

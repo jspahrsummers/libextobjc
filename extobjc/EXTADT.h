@@ -76,6 +76,10 @@ ColorT Color.Other (double r, double g, double b);
  * the ADT's constructors, so that dot-syntax (e.g., "color.r") works without
  * needing to prefix the name of the data constructor (e.g., "color.Other.r").
  *
+ * @note To define recursive types, ADT parameters can be pointers to the type
+ * already being defined. For example, a parameter for the Color ADT is allowed
+ * to be a pointer to a ColorT.
+ *
  * @warning Accessing members that do not correspond to the structure's tag
  * (e.g., parameter data from other constructors) is considered undefined
  * behavior.
@@ -89,13 +93,15 @@ ColorT Color.Other (double r, double g, double b);
  * will behave correctly.
  */
 #define ADT(NAME, ...) \
+    /* a type (NameT) for values defined by this ADT */ \
+    typedef struct ADT_CURRENT_T NAME ## T; \
+    \
     /* create typedefs for all of the parameters types used with any constructor */ \
     /* this will append ADT_typedef_ to each constructor() call, thus invoking
      * ADT_typedef_constructor() instead */ \
     metamacro_foreach_concat(ADT_typedef_,, __VA_ARGS__) \
     \
-    /* a type (NameT) for values defined by this ADT */ \
-    typedef struct ADT_CURRENT_T { \
+    struct ADT_CURRENT_T { \
         /* an enum listing all the constructor names for this ADT */ \
         /* this will also be how we know the type of this value */ \
         const enum { \
@@ -107,7 +113,7 @@ ColorT Color.Other (double r, double g, double b);
         union { \
             metamacro_foreach_concat(ADT_payload_,, __VA_ARGS__) \
         }; \
-    } NAME ## T; \
+    }; \
     \
     /* defines the actual constructor functions for this type */ \
     metamacro_foreach_concat(ADT_,, __VA_ARGS__) \
