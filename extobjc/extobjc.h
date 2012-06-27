@@ -7,6 +7,7 @@
  */
 
 #import "EXTADT.h"
+#import "EXTAnnotation.h"
 #import "EXTAspect.h"
 #import "EXTBlockMethod.h"
 #import "EXTBlockTarget.h"
