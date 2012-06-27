@@ -13,12 +13,12 @@ libextobjc currently includes the following features:
  * **Simpler and safer key paths**, using EXTKeyPathCoding, which automatically checks key paths at compile-time.
  * **Compile-time checking of selectors** to ensure that an object declares a given selector, using EXTSelectorChecking.
  * **Easier use of weak variables in blocks**, using `@weakify` and `@strongify` in the EXTScope module.
+ * **Safer private methods**, using EXTPrivateMethod, for declaring methods on a class, and getting notified if they conflict with other existing methods.
  * **Scope-based resource cleanup**, using `@onExit` in the EXTScope module, for automatically cleaning up manually-allocated memory, file handles, locks, etc., at the end of a scope.
  * **EXTNil, which is like `NSNull`, but behaves much more closely to actual `nil`** (i.e., doesn't crash when sent unrecognized messages).
- * **EXTBlockTarget, which extends the target-action mechanism with support for blocks**.
- * **Safer private methods**, using EXTPrivateMethod, for declaring methods on a class, and getting notified if they conflict with other existing methods.
+ * **Algebraic data types** generated completely at compile-time, defined using EXTADT.
+ * EXTBlockTarget, which extends the target-action mechanism with support for blocks.
  * EXTTuple, for multiple return values and assignment.
- * Algebraic data types generated completely at compile-time, defined using EXTADT.
  * Better variadic arguments, with support for packaging the arguments up as an array, using EXTVarargs.
  * Aspect-oriented programming, using EXTAspect.
  * Block-based coroutines, using EXTCoroutine.
