@@ -23,6 +23,7 @@ libextobjc currently includes the following features:
  * Aspect-oriented programming, using EXTAspect.
  * Block-based coroutines, using EXTCoroutine.
  * Multimethods – methods which overload based on argument type – using EXTMultimethod.
+ * Key-value annotations on properties, using EXTAnnotation.
  * Final methods – methods which cannot be overridden – using EXTFinalMethod.
  * EXTDispatchObject, which forwards messages to all objects in a given array.
  * EXTMaybe, which behaves like `NSError` _and_ `nil`, making it safe for use as an erroneous return value.
