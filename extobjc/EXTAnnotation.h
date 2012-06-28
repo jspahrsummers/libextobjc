@@ -52,7 +52,7 @@
  * arguments should be dictionary entries, following the syntax used within
  * dictionary literals.
  *
- * At runtime, the annotation can be retrieved with #ext_getClassAnnotations.
+ * At runtime, the annotation can be retrieved with #ext_getClassAnnotation.
  *
  * @code
 
@@ -88,7 +88,7 @@ NSDictionary *ext_getPropertyAnnotation (Class annotatedClass, NSString *propert
  * Returns the annotations applied to the given class (excluding any
  * property-level annotations), or \c nil if no such annotations exist.
  */
-NSDictionary *ext_getClassAnnotations (Class annotatedClass);
+NSDictionary *ext_getClassAnnotation (Class annotatedClass);
 
 /*** implementation details follow ***/
 #define annotate_(CLASS, ID, ...) \

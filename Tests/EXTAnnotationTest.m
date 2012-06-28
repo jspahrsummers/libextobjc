@@ -35,7 +35,7 @@
 }
 
 - (void)testVersion {
-    NSDictionary *annotations = ext_getClassAnnotations([AnnotatedClass class]);
+    NSDictionary *annotations = ext_getClassAnnotation([AnnotatedClass class]);
     NSDictionary *expected = @{ @"version" : @"1.1", @"debug_name": @"EXTAnnotation test class" };
     STAssertEqualObjects(annotations, expected, @"");
 }

@@ -41,7 +41,7 @@ BOOL ext_applyAnnotationToClass (Class targetClass, id annotation) {
     return YES;
 }
 
-NSDictionary *ext_getClassAnnotations (Class annotatedClass) {
+NSDictionary *ext_getClassAnnotation (Class annotatedClass) {
     return objc_getAssociatedObject(annotatedClass, ext_classAnnotationKey);
 }
 
