@@ -50,14 +50,14 @@ ADT(MaxConstructors,
 - (void)testRed {
     ColorT c = Color.Red();
     STAssertEquals(c.tag, Red, @"");
-    STAssertEqualObjects(NSStringFromColorT(c), @"Red", @"");
+    STAssertEqualObjects(NSStringFromColor(c), @"Red", @"");
 }
 
 - (void)testGray {
     ColorT c = Color.Gray(0.75);
     STAssertEquals(c.tag, Gray, @"");
     STAssertEqualsWithAccuracy(c.alpha, 0.75, 0.0001, @"");
-    STAssertEqualObjects(NSStringFromColorT(c), @"Gray { alpha = 0.75 }", @"");
+    STAssertEqualObjects(NSStringFromColor(c), @"Gray { alpha = 0.75 }", @"");
 }
 
 - (void)testOther {
@@ -66,14 +66,14 @@ ADT(MaxConstructors,
     STAssertEqualsWithAccuracy(c.r, 1.0, 0.0001, @"");
     STAssertEqualsWithAccuracy(c.g, 0.5, 0.0001, @"");
     STAssertEqualsWithAccuracy(c.b, 0.25, 0.0001, @"");
-    STAssertEqualObjects(NSStringFromColorT(c), @"Other { r = 1, g = 0.5, b = 0.25 }", @"");
+    STAssertEqualObjects(NSStringFromColor(c), @"Other { r = 1, g = 0.5, b = 0.25 }", @"");
 }
 
 - (void)testNamed {
     ColorT c = Color.Named(@"foobar");
     STAssertEquals(c.tag, Named, @"");
     STAssertEqualObjects(c.name, @"foobar", @"");
-    STAssertEqualObjects(NSStringFromColorT(c), @"Named { name = foobar }", @"");
+    STAssertEqualObjects(NSStringFromColor(c), @"Named { name = foobar }", @"");
 }
 
 - (void)testMulticolor {

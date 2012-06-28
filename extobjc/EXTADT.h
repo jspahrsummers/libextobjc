@@ -24,7 +24,7 @@
  *  - A structure type NameT, where "Name" is the first argument to this macro.
  *  Instances of the structure will each contain a member "tag", which is filled
  *  in with the enum value of the constructor used to create the value.
- *  - A function NSStringFromNameT(), which will convert an ADT value into
+ *  - A function NSStringFromName(), which will convert an ADT value into
  *  a human-readable string.
  *  - And, for each constructor Cons:
  *      - An enum value Cons, which can be used to refer to that data constructor.
@@ -62,7 +62,7 @@ typedef struct {
     }
 } ColorT;
 
-NSString *NSStringFromColorT (ColorT c);
+NSString *NSStringFromColor (ColorT c);
 
 ColorT Color.Red ();
 ColorT Color.Green ();
@@ -128,8 +128,8 @@ ColorT Color.Other (double r, double g, double b);
         metamacro_foreach_concat(ADT_fptrinit_,, __VA_ARGS__) \
     }; \
     \
-    /* implements NSStringFromNameT(), to describe an ADT value */ \
-    static inline NSString *NSStringFrom ## NAME ## T (NAME ## T s) { \
+    /* implements NSStringFromName(), to describe an ADT value */ \
+    static inline NSString *NSStringFrom ## NAME (NAME ## T s) { \
         NSMutableString *str = [[NSMutableString alloc] init]; \
         \
         /* only values with parameters will have braces added */ \
@@ -394,7 +394,7 @@ const struct {
 
 /*
  * The following macros are used to generate the code for the
- * NSStringFromNameT() function. They essentially do something similar to
+ * NSStringFromName() function. They essentially do something similar to
  * an Objective-C implementation of -description.
  *
  * As with ADT_constructor(), the first variadic argument here is always the
