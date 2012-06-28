@@ -51,6 +51,7 @@ ADT(MaxConstructors,
     ColorT c = Color.Red();
     STAssertEquals(c.tag, Red, @"");
     STAssertEqualObjects(NSStringFromColor(c), @"Red", @"");
+    STAssertTrue(ColorEqualToColor(c, Color.Red()), @"");
 }
 
 - (void)testGray {
@@ -58,6 +59,7 @@ ADT(MaxConstructors,
     STAssertEquals(c.tag, Gray, @"");
     STAssertEqualsWithAccuracy(c.alpha, 0.75, 0.0001, @"");
     STAssertEqualObjects(NSStringFromColor(c), @"Gray { alpha = 0.75 }", @"");
+    STAssertTrue(ColorEqualToColor(c, Color.Gray(0.75)), @"");
 }
 
 - (void)testOther {
@@ -67,6 +69,7 @@ ADT(MaxConstructors,
     STAssertEqualsWithAccuracy(c.g, 0.5, 0.0001, @"");
     STAssertEqualsWithAccuracy(c.b, 0.25, 0.0001, @"");
     STAssertEqualObjects(NSStringFromColor(c), @"Other { r = 1, g = 0.5, b = 0.25 }", @"");
+    STAssertTrue(ColorEqualToColor(c, Color.Other(1.0, 0.5, 0.25)), @"");
 }
 
 - (void)testNamed {
@@ -74,6 +77,7 @@ ADT(MaxConstructors,
     STAssertEquals(c.tag, Named, @"");
     STAssertEqualObjects(c.name, @"foobar", @"");
     STAssertEqualObjects(NSStringFromColor(c), @"Named { name = foobar }", @"");
+    STAssertTrue(ColorEqualToColor(c, Color.Named(@"foobar")), @"");
 }
 
 - (void)testMulticolor {
@@ -82,17 +86,23 @@ ADT(MaxConstructors,
 
     STAssertEquals(c.first.tag, Gray, @"");
     STAssertEqualsWithAccuracy(c.first.alpha, 0.5, 0.0001, @"");
+    STAssertTrue(ColorEqualToColor(c.first, Color.Gray(0.5)), @"");
 
     STAssertEquals(c.second.tag, Other, @"");
     STAssertEqualsWithAccuracy(c.second.r, 0.25, 0.0001, @"");
     STAssertEqualsWithAccuracy(c.second.g, 0.5, 0.0001, @"");
     STAssertEqualsWithAccuracy(c.second.b, 0.75, 0.0001, @"");
+    STAssertTrue(ColorEqualToColor(c.second, Color.Other(0.25, 0.5, 0.75)), @"");
+
+    STAssertTrue(MulticolorEqualToMulticolor(c, Multicolor.TwoColor(Color.Gray(0.5), Color.Other(0.25, 0.5, 0.75))), @"");
 }
 
 - (void)testRecursiveMulticolor {
     MulticolorT c1 = Multicolor.OneColor(Color.Red());
     MulticolorT c2 = Multicolor.RecursiveColor(&c1);
     STAssertEquals(*c2.mc, c1, @"");
+
+    STAssertTrue(MulticolorEqualToMulticolor(c2, Multicolor.RecursiveColor(&c1)), @"");
 }
 
 - (void)testMaximums {
@@ -101,6 +111,8 @@ ADT(MaxConstructors,
 
     STAssertEquals(v.C19P1, 0, @"");
     STAssertEquals(v.C19P19, 18, @"");
+    STAssertTrue(MaxConstructorsEqualToMaxConstructors(v,
+        MaxConstructors.MaxParams19(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18)), @"");
 }
 
 @end
