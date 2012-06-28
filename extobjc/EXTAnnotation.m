@@ -10,6 +10,8 @@
 #import "EXTScope.h"
 #import <objc/runtime.h>
 
+static void * const ext_classAnnotationKey = "ext_classAnnotation";
+
 BOOL ext_applyAnnotationAfterMarkerProperty (Class targetClass, id annotation, const char *markerPropertyName) {
     unsigned propertyCount = 0;
     objc_property_t *properties = class_copyPropertyList(targetClass, &propertyCount);
@@ -32,6 +34,15 @@ BOOL ext_applyAnnotationAfterMarkerProperty (Class targetClass, id annotation, c
     }
 
     return NO;
+}
+
+BOOL ext_applyAnnotationToClass (Class targetClass, id annotation) {
+    objc_setAssociatedObject(targetClass, ext_classAnnotationKey, annotation, OBJC_ASSOCIATION_COPY);
+    return YES;
+}
+
+NSDictionary *ext_getClassAnnotations (Class annotatedClass) {
+    return objc_getAssociatedObject(annotatedClass, ext_classAnnotationKey);
 }
 
 NSDictionary *ext_getPropertyAnnotation (Class annotatedClass, NSString *propertyName) {

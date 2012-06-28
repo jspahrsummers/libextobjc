@@ -10,7 +10,7 @@
 #import "metamacros.h"
 
 /**
- * \@annotate applies an annotation to the \@property of CLASS that immediately
+ * \@annotate applies an annotation to the \@property of \a CLASS that immediately
  * follows the macro. The variadic arguments should be dictionary entries,
  * following the syntax used within dictionary literals.
  *
@@ -48,10 +48,47 @@
     annotate_(CLASS, metamacro_concat(_, __COUNTER__), __VA_ARGS__)
 
 /**
+ * \@annotateClass applies an annotation directly to \a CLASS. The variadic
+ * arguments should be dictionary entries, following the syntax used within
+ * dictionary literals.
+ *
+ * At runtime, the annotation can be retrieved with #ext_getClassAnnotations.
+ *
+ * @code
+
+@annotateClass(AnnotatedClass, @"designatedInitializer": @"initWithName:")
+@interface AnnotatedClass : NSObject
+
+- (id)initWithName:(NSString *)name;
+
+@end
+
+ * @endcode
+ */
+#define annotateClass(CLASS, ...) \
+    class CLASS; \
+    \
+    __attribute__((constructor)) \
+    static void ext_annotation_apply_ ## CLASS (void) { \
+        Class targetClass = objc_getClass(# CLASS); \
+        id annotation = @{ __VA_ARGS__ }; \
+        \
+        if (!ext_applyAnnotationToClass(targetClass, annotation)) { \
+            NSLog(@"*** Failed to apply annotation %@ at %s:%lu", annotation, __FILE__, (unsigned long)__LINE__); \
+        } \
+    }
+
+/**
  * Returns the annotations applied to \a propertyName on the given class, or
  * \c nil if no such annotations exist.
  */
 NSDictionary *ext_getPropertyAnnotation (Class annotatedClass, NSString *propertyName);
+
+/**
+ * Returns the annotations applied to the given class (excluding any
+ * property-level annotations), or \c nil if no such annotations exist.
+ */
+NSDictionary *ext_getClassAnnotations (Class annotatedClass);
 
 /*** implementation details follow ***/
 #define annotate_(CLASS, ID, ...) \
@@ -74,3 +111,4 @@ NSDictionary *ext_getPropertyAnnotation (Class annotatedClass, NSString *propert
     @interface CLASS ()
 
 BOOL ext_applyAnnotationAfterMarkerProperty (Class targetClass, id annotation, const char *markerPropertyName);
+BOOL ext_applyAnnotationToClass (Class targetClass, id annotation);
