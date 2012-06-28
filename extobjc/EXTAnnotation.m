@@ -34,7 +34,7 @@ BOOL ext_applyAnnotationAfterMarkerProperty (Class targetClass, id annotation, c
     return NO;
 }
 
-NSDictionary *ext_getAnnotation (Class annotatedClass, NSString *propertyName) {
+NSDictionary *ext_getPropertyAnnotation (Class annotatedClass, NSString *propertyName) {
     objc_property_t property = class_getProperty(annotatedClass, propertyName.UTF8String);
     if (!property)
         return nil;

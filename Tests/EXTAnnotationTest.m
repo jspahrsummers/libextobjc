@@ -22,13 +22,13 @@
 @implementation EXTAnnotationTest
 
 - (void)testObjectID {
-    NSDictionary *annotations = ext_getAnnotation([AnnotatedClass class], @"objectID");
+    NSDictionary *annotations = ext_getPropertyAnnotation([AnnotatedClass class], @"objectID");
     NSDictionary *expected = @{ @"APIKey" : @"object_id" };
     STAssertEqualObjects(annotations, expected, @"");
 }
 
 - (void)testName {
-    NSDictionary *annotations = ext_getAnnotation([AnnotatedClass class], @"name");
+    NSDictionary *annotations = ext_getPropertyAnnotation([AnnotatedClass class], @"name");
     NSDictionary *expected = @{ @"APIKey": @"full_name", @"other_info": @5 };
     STAssertEqualObjects(annotations, expected, @"");
 }

@@ -14,7 +14,7 @@
  * follows the macro. The variadic arguments should be dictionary entries,
  * following the syntax used within dictionary literals.
  *
- * At runtime, the annotation can be retrieved with #ext_getAnnotation.
+ * At runtime, the annotation can be retrieved with #ext_getPropertyAnnotation.
  *
  * @code
 
@@ -31,7 +31,7 @@
 @implementation AnnotatedClass
 
 - (NSString *)APIKeyForProperty:(NSString *)property {
-    NSDictionary *annotations = ext_getAnnotation(self.class, property);
+    NSDictionary *annotations = ext_getPropertyAnnotation(self.class, property);
     return annotations[@"APIKey"];
 }
 
@@ -51,7 +51,7 @@
  * Returns the annotations applied to \a propertyName on the given class, or
  * \c nil if no such annotations exist.
  */
-NSDictionary *ext_getAnnotation (Class annotatedClass, NSString *propertyName);
+NSDictionary *ext_getPropertyAnnotation (Class annotatedClass, NSString *propertyName);
 
 /*** implementation details follow ***/
 #define annotate_(CLASS, ID, ...) \
