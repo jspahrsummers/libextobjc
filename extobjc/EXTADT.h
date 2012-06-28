@@ -26,6 +26,9 @@
  *  in with the enum value of the constructor used to create the value.
  *  - A function NSStringFromName(), which will convert an ADT value into
  *  a human-readable string.
+ *  - A function NameEqualToName(), which determines whether two ADT values are
+ *  equal. For the purposes of the check, object parameters are compared with \c
+ *  isEqual:.
  *  - And, for each constructor Cons:
  *      - An enum value Cons, which can be used to refer to that data constructor.
  *      - A function Name.Cons(...), which accepts the parameters of the
@@ -146,6 +149,21 @@ ColorT Color.Other (double r, double g, double b);
             [str appendString:@" }"]; \
         \
         return str; \
+    } \
+    \
+    /* implements NameEqualToName(), to compare ADT values for equality */ \
+    static inline BOOL NAME ## EqualTo ## NAME (NAME ## T a, NAME ## T b) { \
+        if (a.tag != b.tag) \
+            return NO; \
+        \
+        /* construct the check differently depending on the constructor used */ \
+        switch (a.tag) { \
+            metamacro_foreach_concat(ADT_equalto_,, __VA_ARGS__) \
+            default: \
+                ; \
+        } \
+        \
+        return YES; \
     }
 
 /*** implementation details follow ***/
@@ -434,6 +452,52 @@ const struct {
 
 #define ADT_tostring_defaultcase(INDEX, CONS, PARAM) \
     [str appendFormat: @", %@", ADT_CURRENT_PARAMETER_DESCRIPTION(CONS, PARAM, s, metamacro_dec(INDEX))];
+
+/*
+ * The following macros are used to generate the code for the
+ * NameEqualToName() function. They essentially do something similar to
+ * an Objective-C implementation of -isEqual:.
+ *
+ * As with ADT_constructor(), the first variadic argument here is always the
+ * constructor name. The arguments following are the parameters (as given by the
+ * user).
+ *
+ * As with ADT_prototype*(), our parameter numbers need to be shifted down to
+ * correspond to the values in the structure.
+ */
+#define ADT_equalto_constructor(...) \
+        /* try to match each constructor against the value's tag */ \
+        case metamacro_head(__VA_ARGS__): { \
+            metamacro_if_eq(1, metamacro_argcount(...)) \
+                (/* no parameters, so we're equal merely if the tags are the same */) \
+                (metamacro_foreach_cxt_recursive(ADT_equalto_iter,, __VA_ARGS__)) \
+            \
+            break; \
+        }
+
+#define ADT_equalto_iter(INDEX, CONS, PARAM) \
+    { \
+        const char *paramEncoding = ext_trimADTJunkFromTypeEncoding(@encode(ADT_CURRENT_CONS_ALIAS_T(CONS, INDEX)); \
+        \
+        /* use isEqual: for objects (including class objects) */ \
+        if (*paramEncoding == *@encode(id) || *paramEncoding == *@encode(Class)) { \
+            id aObj = *(__unsafe_unretained id *)&a.ADT_CURRENT_CONS_PAYLOAD_T(CONS, INDEX); \
+            id bObj = *(__unsafe_unretained id *)&b.ADT_CURRENT_CONS_PAYLOAD_T(CONS, INDEX); \
+            \
+            if (!aObj) { \
+                if (bObj) { \
+                    return NO; \
+                } \
+            } else if (![aObj isEqual:bObj]) { \
+                return NO; \
+            } \
+        } else { \
+            /* prefer == to memcmp() here, since ADT values may have garbage padding
+             * bits that would cause false negatives with the latter */ \
+            if (a.ADT_CURRENT_CONS_PAYLOAD_T(CONS, INDEX) != b.ADT_CURRENT_CONS_PAYLOAD_T(CONS, INDEX)) \
+                return NO; \
+        } \
+    }
 
 /*
  * The structure tag for the ADT currently being defined. This takes advantage
