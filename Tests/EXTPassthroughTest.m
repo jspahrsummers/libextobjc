@@ -55,7 +55,7 @@
 @implementation OuterClass
 @passthrough(OuterClass, renamedMethod, self.inner, voidMethod);
 @passthrough(OuterClass, methodWithString:, self.inner);
-@passthrough(OuterClass, methodWithString:number:, self.inner);
+@passthrough(OuterClass, methodWithString:number:, [self inner]);
 @passthrough(OuterClass, isEnabled, self.inner);
 @passthrough(OuterClass, setEnabled:, self.inner);
 
