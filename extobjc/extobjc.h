@@ -20,6 +20,7 @@
 #import "EXTMultimethod.h"
 #import "EXTMultiObject.h"
 #import "EXTNil.h"
+#import "EXTPassthrough.h"
 #import "EXTPrivateMethod.h"
 #import "EXTProtocolCategory.h"
 #import "EXTSafeCategory.h"
