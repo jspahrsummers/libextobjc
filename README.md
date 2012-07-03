@@ -19,6 +19,7 @@ libextobjc currently includes the following features:
  * **Algebraic data types** generated completely at compile-time, defined using EXTADT.
  * EXTBlockTarget, which extends the target-action mechanism with support for blocks.
  * EXTTuple, for multiple return values and assignment.
+ * EXTPassthrough, to automatically implement methods that simply invoke the same method on another object.
  * Better variadic arguments, with support for packaging the arguments up as an array, using EXTVarargs.
  * Aspect-oriented programming, using EXTAspect.
  * Block-based coroutines, using EXTCoroutine.
