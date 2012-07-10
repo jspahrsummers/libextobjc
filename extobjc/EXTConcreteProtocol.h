@@ -52,6 +52,10 @@
     return YES;
 }
 
+// this will not actually get added to conforming classes, since they are
+// required to have their own implementation
+- (void)someRequiredMethod {}
+
 @end
 
  * @endcode
