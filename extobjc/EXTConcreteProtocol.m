@@ -1,10 +1,11 @@
-/*
- *  EXTConcreteProtocol.m
- *  extobjc
- *
- *  Created by Justin Spahr-Summers on 2010-11-10.
- *  Released into the public domain.
- */
+//
+//  EXTConcreteProtocol.m
+//  extobjc
+//
+//  Created by Justin Spahr-Summers on 2010-11-10.
+//  Copyright (C) 2012 Justin Spahr-Summers.
+//  Released under the MIT license.
+//
 
 #import "EXTConcreteProtocol.h"
 #import "EXTRuntimeExtensions.h"

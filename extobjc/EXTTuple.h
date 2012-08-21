@@ -1,10 +1,11 @@
-/*
- *  EXTTuple.h
- *  extobjc
- *
- *  Created by Justin Spahr-Summers on 18.06.12.
- *  Released into the public domain.
- */
+//
+//  EXTTuple.h
+//  extobjc
+//
+//  Created by Justin Spahr-Summers on 18.06.12.
+//  Copyright (C) 2012 Justin Spahr-Summers.
+//  Released under the MIT license.
+//
 
 #import "metamacros.h"
 

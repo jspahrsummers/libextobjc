@@ -3,7 +3,8 @@
 //  extobjc
 //
 //  Created by Justin Spahr-Summers on 2012-07-03.
-//  Released into the public domain.
+//  Copyright (C) 2012 Justin Spahr-Summers.
+//  Released under the MIT license.
 //
 
 #import "EXTPassthroughTest.h"

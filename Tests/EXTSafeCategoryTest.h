@@ -3,7 +3,8 @@
 //  extobjc
 //
 //  Created by Justin Spahr-Summers on 2010-11-13.
-//  Released into the public domain.
+//  Copyright (C) 2012 Justin Spahr-Summers.
+//  Released under the MIT license.
 //
 
 #import <SenTestingKit/SenTestingKit.h>

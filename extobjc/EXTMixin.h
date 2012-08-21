@@ -1,10 +1,11 @@
-/*
- *  EXTMixin.h
- *  extobjc
- *
- *  Created by Justin Spahr-Summers on 2010-11-10.
- *  Released into the public domain.
- */
+//
+//  EXTMixin.h
+//  extobjc
+//
+//  Created by Justin Spahr-Summers on 2010-11-10.
+//  Copyright (C) 2012 Justin Spahr-Summers.
+//  Released under the MIT license.
+//
 
 #import <objc/runtime.h>
 #import <stdlib.h>
