@@ -34,6 +34,8 @@
 			return; \
 		} \
 		\
+		NSCAssert(!attributes->weak, @"@synthesizeAssociation does not support weak properties (%@.%s)", cls, # PROPERTY); \
+		\
 		void *uniqueKey = &uniqueKey; \
 		\
 		objc_AssociationPolicy policy = OBJC_ASSOCIATION_ASSIGN; \
