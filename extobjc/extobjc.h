@@ -27,6 +27,7 @@
 #import "EXTSafeCategory.h"
 #import "EXTScope.h"
 #import "EXTSelectorChecking.h"
+#import "EXTSynthesize.h"
 #import "EXTSwizzle.h"
 #import "EXTTuple.h"
 #import "EXTVarargs.h"
