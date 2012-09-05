@@ -30,8 +30,11 @@
         stringLength += strlen(argType);
     }
 
-    char *encoding = calloc(stringLength + 1, 1);
-    strcpy(encoding, [self methodReturnType]);
+	// start counting the NUL byte for strlcpy()
+	stringLength++;
+
+    char *encoding = calloc(stringLength, 1);
+    strlcpy(encoding, [self methodReturnType], stringLength);
 
     for (NSUInteger i = 0;i < argumentCount + 1;++i) {
         NSUInteger realIndex = i;
@@ -46,8 +49,8 @@
         if (!argType)
             argType = [self getArgumentTypeAtIndex:realIndex];
 
-        // LIVE ON THE EDGE!
-        strcpy(encoding + strlen(encoding), argType);
+		size_t currentLength = strlen(encoding);
+        strlcpy(encoding + currentLength, argType, stringLength - currentLength);
     }
     
     NSMethodSignature *newSignature = [NSMethodSignature signatureWithObjCTypes:encoding];
@@ -65,14 +68,16 @@
         stringLength += strlen(argType);
     }
 
-    char *encoding = calloc(stringLength + 1, 1);
-    strcpy(encoding, [self methodReturnType]);
+	stringLength++;
+
+    char *encoding = calloc(stringLength, 1);
+    strlcpy(encoding, [self methodReturnType], stringLength);
 
     for (NSUInteger i = 0;i < argumentCount;++i) {
         const char *argType = [self getArgumentTypeAtIndex:i];
 
-        // LIVE ON THE EDGE!
-        strcpy(encoding + strlen(encoding), argType);
+		size_t currentLength = strlen(encoding);
+        strlcpy(encoding + currentLength, argType, stringLength - currentLength);
     }
 
     // create an unused NSData object to autorelease the allocated string
