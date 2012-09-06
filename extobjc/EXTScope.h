@@ -51,7 +51,7 @@
  * classes that do not support weak references.
  */
 #define unsafeify(...) \
-	try {} @finally {} \
+    try {} @finally {} \
     metamacro_foreach_cxt(ext_weakify_,, __unsafe_unretained, __VA_ARGS__)
 
 /**
