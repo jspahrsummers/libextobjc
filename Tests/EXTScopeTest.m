@@ -157,30 +157,43 @@
     STAssertEqualObjects(str, @"foobar", @"'bar' should've been appended to 'foo' at the end of a called method that threw an exception");
 }
 
-- (void)testWeakifyStrongify {
-    NSString *foo = @"foo";
-    NSString *bar = @"bar";
+- (void)testWeakifyUnsafeifyStrongify {
+	void (^verifyMemoryManagement)(void);
 
-    void *fooPtr = &foo;
-    void *barPtr = &bar;
+	@autoreleasepool {
+		NSString *foo __attribute__((objc_precise_lifetime)) = [@"foo" mutableCopy];
+		NSString *bar __attribute__((objc_precise_lifetime)) = [@"bar" mutableCopy];
 
-    @weakify(foo, bar);
+		void *fooPtr = &foo;
+		void *barPtr = &bar;
 
-    BOOL (^matchesFooOrBar)(NSString *) = ^ BOOL (NSString *str){
-        @strongify(bar, foo);
+		@weakify(foo);
+		@unsafeify(bar);
 
-        STAssertEqualObjects(foo, @"foo", @"");
-        STAssertEqualObjects(bar, @"bar", @"");
+		BOOL (^matchesFooOrBar)(NSString *) = ^ BOOL (NSString *str){
+			@strongify(bar, foo);
 
-        STAssertTrue(fooPtr != &foo, @"Address of 'foo' within block should be different from its address outside the block");
-        STAssertTrue(barPtr != &bar, @"Address of 'bar' within block should be different from its address outside the block");
+			STAssertEqualObjects(foo, @"foo", @"");
+			STAssertEqualObjects(bar, @"bar", @"");
 
-        return [foo isEqual:str] || [bar isEqual:str];
-    };
+			STAssertTrue(fooPtr != &foo, @"Address of 'foo' within block should be different from its address outside the block");
+			STAssertTrue(barPtr != &bar, @"Address of 'bar' within block should be different from its address outside the block");
 
-    STAssertTrue(matchesFooOrBar(@"foo"), @"");
-    STAssertTrue(matchesFooOrBar(@"bar"), @"");
-    STAssertFalse(matchesFooOrBar(@"buzz"), @"");
+			return [foo isEqual:str] || [bar isEqual:str];
+		};
+
+		STAssertTrue(matchesFooOrBar(@"foo"), @"");
+		STAssertTrue(matchesFooOrBar(@"bar"), @"");
+		STAssertFalse(matchesFooOrBar(@"buzz"), @"");
+
+		verifyMemoryManagement = [^{
+			// Can only strongify the weak reference without issue.
+			@strongify(foo);
+			STAssertNil(foo, @"");
+		} copy];
+	}
+
+	verifyMemoryManagement();
 }
 
 @end

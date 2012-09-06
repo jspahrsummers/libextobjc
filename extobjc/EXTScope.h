@@ -44,7 +44,15 @@
  */
 #define weakify(...) \
     try {} @finally {} \
-    metamacro_foreach(ext_weakify_,, __VA_ARGS__)
+    metamacro_foreach_cxt(ext_weakify_,, __weak, __VA_ARGS__)
+
+/**
+ * Like #weakify, but uses \c __unsafe_unretained instead, for targets or
+ * classes that do not support weak references.
+ */
+#define unsafeify(...) \
+	try {} @finally {} \
+    metamacro_foreach_cxt(ext_weakify_,, __unsafe_unretained, __VA_ARGS__)
 
 /**
  * Strongly references each of the variables provided as arguments, which must
@@ -81,8 +89,8 @@ typedef void (^ext_cleanupBlock_t)();
 
 void ext_executeCleanupBlock (__strong ext_cleanupBlock_t *block);
 
-#define ext_weakify_(INDEX, VAR) \
-    __weak __typeof__(VAR) metamacro_concat(VAR, _weak_) = (VAR);
+#define ext_weakify_(INDEX, CONTEXT, VAR) \
+    CONTEXT __typeof__(VAR) metamacro_concat(VAR, _weak_) = (VAR);
 
 #define ext_strongify_(INDEX, VAR) \
     __strong __typeof__(VAR) VAR = metamacro_concat(VAR, _weak_);
