@@ -109,13 +109,22 @@ static void ext_injectSpecialProtocols (void) {
         return protocolInjectionPriority(protoB) - protocolInjectionPriority(protoA);
     });
 
-    unsigned classCount = 0;
-    Class *allClasses = ext_copyClassList(&classCount);
-
-    if (!classCount || !allClasses) {
+    unsigned classCount = objc_getClassList(NULL, 0);
+    if (!classCount) {
         fprintf(stderr, "ERROR: No classes registered with the runtime\n");
         return;
     }
+
+	Class *allClasses = (Class *)malloc(sizeof(Class) * (classCount + 1));
+    if (!allClasses) {
+        fprintf(stderr, "ERROR: Could not allocate space for %u classes\n", classCount);
+        return;
+    }
+
+	// use this instead of ext_copyClassList() to avoid sending +initialize to
+	// classes that we don't plan to inject into (this avoids some SenTestingKit
+	// timing issues)
+	classCount = objc_getClassList(allClasses, classCount);
 
     /*
      * set up an autorelease pool in case any Cocoa classes get used during
