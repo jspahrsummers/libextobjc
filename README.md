@@ -51,4 +51,4 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 [libffi](https://github.com/jspahrsummers/libffi) is used for EXTAspect, but is not required for the other modules of the project. In order for the unit tests to build and pass, libffi must be retrieved using `git submodule update --init` after cloning the repository.
 
-The latest features in libextobjc must be compiled with Xcode 4.4 or later. There is an [Xcode 4.3 tag](https://github.com/jspahrsummers/libextobjc/tree/Xcode43) if you're using an older version; however, it is missing some of the newer features in the library.
+The latest features in libextobjc must be compiled with Xcode 4.4 or later for Mac OS X, and Xcode 4.5 or later for iOS. There is an [Xcode 4.3 tag](https://github.com/jspahrsummers/libextobjc/tree/Xcode43) if you're using an older version; however, it is missing some of the newer features in the library.
