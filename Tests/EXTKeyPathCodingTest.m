@@ -29,17 +29,26 @@
 
     NSString *path = @keypath(URL.port.stringValue);
     STAssertEqualObjects(path, @"port.stringValue", @"");
+
+    path = @keypath(URL.port, stringValue);
+    STAssertEqualObjects(path, @"stringValue", @"");
 }
 
 - (void)testClassKeyPath {
     NSString *path = @keypath(NSString.class.description);
     STAssertEqualObjects(path, @"class.description", @"");
+
+    path = @keypath(NSString.class, description);
+    STAssertEqualObjects(path, @"description", @"");
 }
 
 - (void)testMyClassKeyPath {
+    NSString *path = @keypath(MyClass.new, someUniqueProperty);
+    STAssertEqualObjects(path, @"someUniqueProperty", @"");
+
     MyClass *obj = [[MyClass alloc] init];
 
-    NSString *path = @keypath(obj.someUniqueProperty);
+    path = @keypath(obj.someUniqueProperty);
     STAssertEqualObjects(path, @"someUniqueProperty", @"");
 }
 
