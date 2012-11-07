@@ -403,7 +403,7 @@ BOOL ext_loadMultimethods (Class targetClass) {
 }
 
 - (NSUInteger)hash {
-    return (NSUInteger)self.selector;
+    return (NSUInteger)(void *)self.selector;
 }
 
 - (BOOL)isEqual:(EXTMultimethodAttributes *)attributes {

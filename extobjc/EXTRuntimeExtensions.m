@@ -732,7 +732,7 @@ NSMethodSignature *ext_globalMethodSignatureForSelector (SEL aSelector) {
     static const uintptr_t selectorCacheMask = (selectorCacheLength - 1);
     static void * volatile selectorCache[selectorCacheLength];
 
-    const char *cachedType = selectorCache[(uintptr_t)aSelector & selectorCacheMask];
+    const char *cachedType = selectorCache[(uintptr_t)(void *)aSelector & selectorCacheMask];
     if (cachedType) {
         return [NSMethodSignature signatureWithObjCTypes:cachedType];
     }
@@ -759,7 +759,7 @@ NSMethodSignature *ext_globalMethodSignatureForSelector (SEL aSelector) {
 
             if (method) {
                 const char *type = method_getTypeEncoding(method);
-                uintptr_t cacheLocation = ((uintptr_t)aSelector & selectorCacheMask);
+                uintptr_t cacheLocation = ((uintptr_t)(void *)aSelector & selectorCacheMask);
 
                 // this doesn't need to be a barrier, and we don't care whether
                 // it succeeds, since our only goal is to make things faster in
