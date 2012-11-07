@@ -481,7 +481,7 @@ ext_propertyAttributes *ext_copyPropertyAttributes (objc_property_t property) {
 
         if (className != next) {
             size_t classNameLength = next - className;
-            char trimmedName[classNameLength];
+            char trimmedName[classNameLength + 1];
 
             strncpy(trimmedName, className, classNameLength);
             trimmedName[classNameLength] = '\0';
