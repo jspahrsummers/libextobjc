@@ -1187,7 +1187,7 @@
 				HEADER_SEARCH_PATHS = libffi/ios/include;
 				INFOPLIST_FILE = "Tests/iOS-Info.plist";
 				OTHER_LDFLAGS = (
-					"-all_load",
+					"-ObjC",
 					"-framework",
 					Foundation,
 					"-framework",
@@ -1220,7 +1220,7 @@
 				HEADER_SEARCH_PATHS = libffi/ios/include;
 				INFOPLIST_FILE = "Tests/iOS-Info.plist";
 				OTHER_LDFLAGS = (
-					"-all_load",
+					"-ObjC",
 					"-framework",
 					Foundation,
 					"-framework",
