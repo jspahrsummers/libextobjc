@@ -57,10 +57,13 @@
  * may not even inherit from \c NSObject).
  */
 #define pcategoryimplementation(PROTOCOL, CATEGORY) \
+    interface NSObject (CATEGORY ## _ProtocolConformance) <PROTOCOL> \
+    @end \
+	\
     /*
      * create a class used to contain all the methods used in this category
      */ \
-    interface PROTOCOL ## _ ## CATEGORY ## _MethodContainer : NSObject {} \
+    @interface PROTOCOL ## _ ## CATEGORY ## _MethodContainer : NSObject {} \
     @end \
     \
     @implementation PROTOCOL ## _ ## CATEGORY ## _MethodContainer \
