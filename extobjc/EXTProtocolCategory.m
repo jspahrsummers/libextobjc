@@ -21,6 +21,8 @@
 
 BOOL ext_addProtocolCategory (Protocol *protocol, Class containerClass) {
     return ext_loadSpecialProtocol(protocol, ^(Class class){
+        if (class == containerClass) return;
+
         ext_injectMethodsFromClass(
             containerClass,
             class,
