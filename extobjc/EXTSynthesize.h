@@ -20,7 +20,7 @@
  * specified class (or a category upon it), and must be of object type.
  */
 #define synthesizeAssociation(CLASS, PROPERTY) \
-	dynamic PROPERTY; \
+	@dynamic PROPERTY; \
 	\
 	__attribute__((constructor)) \
 	static void ext_ ## CLASS ## _ ## PROPERTY ## _synthesize (void) { \
