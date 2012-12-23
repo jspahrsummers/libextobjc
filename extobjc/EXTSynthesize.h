@@ -22,6 +22,8 @@
 #define synthesizeAssociation(CLASS, PROPERTY) \
 	dynamic PROPERTY; \
 	\
+	void *ext_uniqueKey_ ## CLASS ## _ ## PROPERTY = &ext_uniqueKey_ ## CLASS ## _ ## PROPERTY; \
+	\
 	__attribute__((constructor)) \
 	static void ext_ ## CLASS ## _ ## PROPERTY ## _synthesize (void) { \
 		Class cls = objc_getClass(# CLASS); \
@@ -35,8 +37,6 @@
 		} \
 		\
 		NSCAssert(!attributes->weak, @"@synthesizeAssociation does not support weak properties (%@.%s)", cls, # PROPERTY); \
-		\
-		void *uniqueKey = &uniqueKey; \
 		\
 		objc_AssociationPolicy policy = OBJC_ASSOCIATION_ASSIGN; \
 		switch (attributes->memoryManagementPolicy) { \
@@ -56,11 +56,11 @@
 		} \
 		\
 		id getter = ^(id self){ \
-			return objc_getAssociatedObject(self, uniqueKey); \
+			return objc_getAssociatedObject(self, ext_uniqueKey_ ## CLASS ## _ ## PROPERTY); \
 		}; \
 		\
 		id setter = ^(id self, id value){ \
-			objc_setAssociatedObject(self, uniqueKey, value, policy); \
+			objc_setAssociatedObject(self, ext_uniqueKey_ ## CLASS ## _ ## PROPERTY, value, policy); \
 		}; \
 		\
 		if (!ext_addBlockMethod(cls, attributes->getter, getter, "@@:")) { \
