@@ -101,4 +101,20 @@
 	STAssertEqualObjects(owner.testAtomicCopyProperty, @"foobar", @"");
 }
 
+- (void)testMultiplePropertiesUsage {
+	NSObject *owner = [[NSObject alloc] init];
+
+	id value1 = [@"foobar" mutableCopy];
+	id value2 = [@"bardoo" mutableCopy];
+
+	owner.testNonatomicRetainProperty = value1;
+	STAssertEqualObjects(owner.testNonatomicRetainProperty, value1, @"");
+
+	owner.testAtomicRetainProperty = value2;
+	STAssertEqualObjects(owner.testAtomicRetainProperty, value2, @"");
+
+	STAssertEqualObjects(owner.testNonatomicRetainProperty, value1, @"");
+	STAssertEqualObjects(owner.testAtomicRetainProperty, value2, @"");
+}
+
 @end
