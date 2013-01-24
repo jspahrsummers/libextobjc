@@ -82,7 +82,10 @@
  */
 #define strongify(...) \
     try {} @finally {} \
-    metamacro_foreach(ext_strongify_,, __VA_ARGS__)
+    _Pragma("clang diagnostic push") \
+    _Pragma("clang diagnostic ignored \"-Wshadow\"") \
+    metamacro_foreach(ext_strongify_,, __VA_ARGS__) \
+    _Pragma("clang diagnostic pop")
 
 /*** implementation details follow ***/
 typedef void (^ext_cleanupBlock_t)();
