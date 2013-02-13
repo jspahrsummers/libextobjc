@@ -17,7 +17,7 @@
  * @code
 
 NSString *UTF8StringPath = @keypath(str.lowercaseString.UTF8String);
-NSString *versionPath = @keypath(NSObject.class, version);
+NSString *versionPath = @keypath(NSObject.new, version);
 
  * @endcode
  *
