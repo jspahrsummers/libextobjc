@@ -10,7 +10,11 @@
 
 // used to test refactoring also updating @keypath() uses
 @interface MyClass : NSObject
+
++ (BOOL)classProperty;
+
 @property (nonatomic, assign) NSUInteger someUniqueProperty;
+
 @end
 
 @implementation EXTKeyPathCodingTest
@@ -42,7 +46,7 @@
     STAssertEqualObjects(path, @"description", @"");
 }
 
-- (void)testMyClassKeyPath {
+- (void)testMyClassInstanceKeyPath {
     NSString *path = @keypath(MyClass.new, someUniqueProperty);
     STAssertEqualObjects(path, @"someUniqueProperty", @"");
 
@@ -52,8 +56,18 @@
     STAssertEqualObjects(path, @"someUniqueProperty", @"");
 }
 
+- (void)testMyClassClassKeyPath {
+    NSString *path = @keypath(MyClass, classProperty);
+    STAssertEqualObjects(path, @"classProperty", @"");
+}
+
 @end
 
 @implementation MyClass
 @synthesize someUniqueProperty;
+
++ (BOOL)classProperty {
+	return NO;
+}
+
 @end
