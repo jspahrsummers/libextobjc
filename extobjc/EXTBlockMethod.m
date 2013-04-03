@@ -148,7 +148,7 @@ void ext_replaceBlockMethod (Class aClass, SEL name, id block, const char *types
     objc_setAssociatedObject(aClass, name, block, OBJC_ASSOCIATION_COPY);
 }
 
-void ext_synthesizeBlockProperty (const char * restrict type, ext_propertyMemoryManagementPolicy memoryManagementPolicy, BOOL atomic, __autoreleasing ext_blockGetter * restrict getter, __autoreleasing ext_blockSetter * restrict setter) {
+void ext_synthesizeBlockProperty (const char *type, ext_propertyMemoryManagementPolicy memoryManagementPolicy, BOOL atomic, __autoreleasing ext_blockGetter *getter, __autoreleasing ext_blockSetter *setter) {
     // skip attributes in the provided type encoding
     while (
         *type == 'r' ||

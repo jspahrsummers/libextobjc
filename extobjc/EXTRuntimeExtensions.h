@@ -18,7 +18,7 @@ typedef void (*ext_failedMethodCallback)(Class, Method);
 /**
  * Used with #ext_injectMethods to determine injection behavior.
  */
-typedef enum {
+typedef NS_OPTIONS(NSUInteger, ext_methodInjectionBehavior) {
     /**
      * Indicates that any existing methods on the destination class should be
      * overwritten.
@@ -54,7 +54,7 @@ typedef enum {
      * injection.
      */
     ext_methodInjectionIgnoreInitialize = 1U << 3
-} ext_methodInjectionBehavior;
+};
 
 /**
  * A mask for the overwriting behavior flags of #ext_methodInjectionBehavior.
