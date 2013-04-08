@@ -18,4 +18,10 @@
     STAssertEquals(@checkselector([NSURL class], URLWithString:), @selector(URLWithString:), @"");
 }
 
+- (void)testCheckSelectorsWithZeroArguments {
+    NSString *str = @"foobar";
+    STAssertEquals(@checkselector0(str, intValue), @selector(intValue), @"");
+    STAssertEquals(@checkselector0([NSURL class], class), @selector(class), @"");
+}
+
 @end
