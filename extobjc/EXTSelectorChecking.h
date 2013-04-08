@@ -38,7 +38,7 @@
 
 #define checkselector0(TARGET, SELECTOR) \
     (((void)(NO && ((void)[TARGET SELECTOR], NO)), \
-        ext_checkselector_selector_iter(, SELECTOR))).ext_toSelector
+        # SELECTOR )).ext_toSelector
 
 /*** implementation details follow ***/
 #define ext_checkselector_message_iter(INDEX, SELPART) \
