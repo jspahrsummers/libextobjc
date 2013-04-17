@@ -16,6 +16,7 @@
  *
  * @code
 
+NSString *str = nil; 
 NSString *UTF8StringPath = @keypath(str.lowercaseString.UTF8String);
 // => @"lowercaseString.UTF8String"
 
