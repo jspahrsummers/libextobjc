@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		876EE9D6170B13C000AB73BB /* EXTObjectiveCppCompileTest.mm in Sources */ = {isa = PBXBuildFile; fileRef = 876EE9D5170B13C000AB73BB /* EXTObjectiveCppCompileTest.mm */; };
+		876EE9D7170B13C000AB73BB /* EXTObjectiveCppCompileTest.mm in Sources */ = {isa = PBXBuildFile; fileRef = 876EE9D5170B13C000AB73BB /* EXTObjectiveCppCompileTest.mm */; };
 		D002DAF813656CDF005348A5 /* EXTNilTest.m in Sources */ = {isa = PBXBuildFile; fileRef = D002DAF713656CDF005348A5 /* EXTNilTest.m */; };
 		D002DAF913656CDF005348A5 /* EXTNilTest.m in Sources */ = {isa = PBXBuildFile; fileRef = D002DAF713656CDF005348A5 /* EXTNilTest.m */; };
 		D003EEEF15924CF000410411 /* EXTVarargsTest.m in Sources */ = {isa = PBXBuildFile; fileRef = D003EEEE15924CF000410411 /* EXTVarargsTest.m */; };
@@ -211,6 +213,8 @@
 
 /* Begin PBXFileReference section */
 		0867D69BFE84028FC02AAC07 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
+		876EE9D4170B13C000AB73BB /* EXTObjectiveCppCompileTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXTObjectiveCppCompileTest.h; sourceTree = "<group>"; };
+		876EE9D5170B13C000AB73BB /* EXTObjectiveCppCompileTest.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = EXTObjectiveCppCompileTest.mm; sourceTree = "<group>"; };
 		D002DAF613656CDF005348A5 /* EXTNilTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXTNilTest.h; sourceTree = "<group>"; };
 		D002DAF713656CDF005348A5 /* EXTNilTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXTNilTest.m; sourceTree = "<group>"; };
 		D003EEED15924CF000410411 /* EXTVarargsTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXTVarargsTest.h; sourceTree = "<group>"; };
@@ -605,6 +609,8 @@
 				D0FE94031596668400F3AE1C /* EXTMultimethodTest.m */,
 				D002DAF613656CDF005348A5 /* EXTNilTest.h */,
 				D002DAF713656CDF005348A5 /* EXTNilTest.m */,
+				876EE9D4170B13C000AB73BB /* EXTObjectiveCppCompileTest.h */,
+				876EE9D5170B13C000AB73BB /* EXTObjectiveCppCompileTest.mm */,
 				D0D1F93215A396F7002E2387 /* EXTPassthroughTest.h */,
 				D0D1F93315A396F7002E2387 /* EXTPassthroughTest.m */,
 				D033765B131E53DB0039ACFD /* EXTPrivateMethodTest.h */,
@@ -945,6 +951,7 @@
 				D0E6A0F4159BB46D00FB92FC /* EXTAnnotationTest.m in Sources */,
 				D0D1F93415A396F7002E2387 /* EXTPassthroughTest.m in Sources */,
 				D0FBB1DB15F6897D002281B9 /* EXTSynthesizeTest.m in Sources */,
+				876EE9D6170B13C000AB73BB /* EXTObjectiveCppCompileTest.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -975,6 +982,7 @@
 				D0E6A0F5159BB46D00FB92FC /* EXTAnnotationTest.m in Sources */,
 				D0D1F93515A396F7002E2387 /* EXTPassthroughTest.m in Sources */,
 				D0FBB1DC15F6897D002281B9 /* EXTSynthesizeTest.m in Sources */,
+				876EE9D7170B13C000AB73BB /* EXTObjectiveCppCompileTest.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

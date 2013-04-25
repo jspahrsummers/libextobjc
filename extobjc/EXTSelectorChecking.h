@@ -24,8 +24,10 @@
 
  * @endcode
  *
- * @bug This macro currently does not work with zero-argument selectors or
- * selectors with variadic arguments.
+ * For zero-argument selectors, use \@checkselector0 instead.
+ *
+ * @bug This macro currently does not work with selectors with variadic
+ * arguments.
  *
  * @bug This macro will not work if the method on TARGET designated by the
  * selector must accept a struct or union argument.
@@ -33,6 +35,10 @@
 #define checkselector(TARGET, ...) \
     (((void)(NO && ((void)[TARGET metamacro_foreach(ext_checkselector_message_iter,, __VA_ARGS__)], NO)), \
         metamacro_foreach(ext_checkselector_selector_iter,, __VA_ARGS__))).ext_toSelector
+
+#define checkselector0(TARGET, SELECTOR) \
+    (((void)(NO && ((void)[TARGET SELECTOR], NO)), \
+        # SELECTOR)).ext_toSelector
 
 /*** implementation details follow ***/
 #define ext_checkselector_message_iter(INDEX, SELPART) \
