@@ -46,6 +46,20 @@
     STAssertEqualObjects(path, @"description", @"");
 }
 
+- (void)testClassInstanceKeyPath {
+    NSString *path = @keypathClassInstance(NSString, hash);
+    STAssertEqualObjects(path, @"hash", @"");
+    
+    path = @keypathClassInstance(NSError, domain, hash);
+    STAssertEqualObjects(path, @"hash", @"");
+    
+    path = @keypathClassInstance(NSError, domain.hash);
+    STAssertEqualObjects(path, @"domain.hash", @"");
+    
+    path = @keypathClassInstance(MyClass, someUniqueProperty);
+    STAssertEqualObjects(path, @"someUniqueProperty", @"");
+}
+
 - (void)testMyClassInstanceKeyPath {
     NSString *path = @keypath(MyClass.new, someUniqueProperty);
     STAssertEqualObjects(path, @"someUniqueProperty", @"");
