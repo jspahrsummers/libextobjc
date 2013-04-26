@@ -46,3 +46,5 @@ file for more information.
 # Requirements
 
 [libffi](https://github.com/jspahrsummers/libffi) is used for EXTAspect, but is not required for the other modules of the project. In order for the unit tests to build and pass, libffi must be retrieved using `git submodule update --init` after cloning the repository.
+
+libextobjc must be built with ARC enabled, and many of its macros require ARC in the calling files as well. MRC usage is not supported.
