@@ -68,6 +68,15 @@
     }
 
     STAssertEquals(executed, 2U, @"onExit blocks should be executed even when goto is used");
+    
+    str = [@"foo" mutableCopy];
+    {
+        @onExit {
+            [str appendString:@"baz"];
+        };
+        [str appendString:@"bar"];
+        STAssertEqualObjects(str, @"foobar", @"onExit block should not be executed before the scope ends");
+    }
 
     str = [@"foo" mutableCopy];
     [self nestedAppend:str];
