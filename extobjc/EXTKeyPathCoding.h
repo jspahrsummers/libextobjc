@@ -43,3 +43,10 @@ NSString *lowercaseStringPath = @keypath(NSString.new, lowercaseString);
 
 #define keypath2(OBJ, PATH) \
     (((void)(NO && ((void)OBJ.PATH, NO)), # PATH))
+
+#define relationship(...) \
+metamacro_if_eq(2, metamacro_argcount(__VA_ARGS__))(relationship2(__VA_ARGS__))(relationship4(__VA_ARGS__))
+
+#define relationship2(PATH, RELATIONSHIP_PATH) [NSString stringWithFormat:@"%s.%s",keypath(PATH), keypath(RELATIONSHIP_PATH)]
+
+#define relationship4(OBJ, PATH, RELATIONSHIP, RELATIONSHIP_PATH) [NSString stringWithFormat:@"%s.%s",keypath2(OBJ, PATH), keypath2(RELATIONSHIP, RELATIONSHIP_PATH)]
