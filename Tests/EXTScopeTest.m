@@ -8,6 +8,28 @@
 //
 
 #import "EXTScopeTest.h"
+#import <objc/runtime.h>
+
+static const void *DeallocBlockHelperKey;
+
+@interface DeallocBlockHelper : NSObject
+@property (nonatomic, copy) void (^block)(void);
++ (void)watchDeallocOnTarget:(id)target withBlock:(void(^)(void))block;
+@end
+
+@implementation DeallocBlockHelper
+
++ (void)watchDeallocOnTarget:(id)target withBlock:(void (^)(void))block {
+	DeallocBlockHelper *helper = [[self alloc] init];
+	helper.block = block;
+	objc_setAssociatedObject(target, &DeallocBlockHelperKey, helper, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+
+- (void)dealloc {
+	if (_block != nil) _block();
+}
+
+@end
 
 @interface EXTScopeTest ()
 - (void)nestedAppend:(NSMutableString *)str;
@@ -203,6 +225,46 @@
     }
 
     verifyMemoryManagement();
+}
+
+- (void)testGarbageGuard {
+    __block BOOL blockWasExecuted = NO;
+    __block BOOL fooDidThrow = NO;
+    __block BOOL barDidThrow = NO;
+    
+    @autoreleasepool {
+        NSString *foo __attribute__((objc_precise_lifetime)) = [@"foo" mutableCopy];
+        @weakify(foo);
+        [DeallocBlockHelper watchDeallocOnTarget:foo withBlock:^{
+            @try {
+                @strongify(foo);
+                (void)foo;
+            }
+            @catch (NSException *exception) {
+                fooDidThrow = YES;
+                STAssertEqualObjects([exception name], @"EXTScopeTestException", @"unexpected exception %@ thrown");
+            }
+            blockWasExecuted = YES;
+        }];
+        
+        NSString *bar __attribute__((objc_precise_lifetime)) = [@"bar" mutableCopy];
+        @unsafeify(bar);
+        [DeallocBlockHelper watchDeallocOnTarget:foo withBlock:^{
+            @try {
+                @strongify(bar);
+                (void)bar;
+            }
+            @catch (NSException *exception) {
+                barDidThrow = YES;
+                STAssertEqualObjects([exception name], @"EXTScopeTestException", @"unexpected exception %@ thrown");
+            }
+            blockWasExecuted = YES;
+        }];
+    }
+
+    STAssertTrue(blockWasExecuted, @"DeallocBlockHelper's block was not executed");
+    STAssertTrue(fooDidThrow, @"Strongifying a garbage weak reference did not throw an exception");
+    STAssertTrue(barDidThrow, @"Strongifying a garbage unsafe reference did not throw an exception");
 }
 
 @end
