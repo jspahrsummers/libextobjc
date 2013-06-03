@@ -91,9 +91,13 @@
 typedef void (^ext_cleanupBlock_t)();
 
 void ext_executeCleanupBlock (__strong ext_cleanupBlock_t *block);
+void ext_addGarbageGuard (__strong NSObject *target);
+void ext_checkGarbageGuard (__unsafe_unretained NSObject *target);
 
 #define ext_weakify_(INDEX, CONTEXT, VAR) \
+    ext_addGarbageGuard(VAR);\
     CONTEXT __typeof__(VAR) metamacro_concat(VAR, _weak_) = (VAR);
 
 #define ext_strongify_(INDEX, VAR) \
+    ext_checkGarbageGuard(metamacro_concat(VAR, _weak_));\
     __strong __typeof__(VAR) VAR = metamacro_concat(VAR, _weak_);
