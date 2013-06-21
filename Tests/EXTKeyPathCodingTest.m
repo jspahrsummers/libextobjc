@@ -14,6 +14,7 @@
 + (BOOL)classProperty;
 
 @property (nonatomic, assign) NSUInteger someUniqueProperty;
+@property (nonatomic, copy) NSArray *collection;
 
 @end
 
@@ -59,6 +60,17 @@
 - (void)testMyClassClassKeyPath {
     NSString *path = @keypath(MyClass, classProperty);
     STAssertEqualObjects(path, @"classProperty", @"");
+}
+
+- (void)testCollectionInstanceKeyPath {
+	MyClass *obj = [[MyClass alloc] init];
+	NSString *path = @collectionKeypath(obj.collection, MyClass.new, someUniqueProperty);
+	STAssertEqualObjects(path, @"collection.someUniqueProperty", @"");
+}
+
+- (void)testCollectionClassKeyPath {
+	NSString *path = @collectionKeypath(MyClass.new, collection, MyClass.new, someUniqueProperty);
+	STAssertEqualObjects(path, @"collection.someUniqueProperty", @"");
 }
 
 @end
