@@ -9,9 +9,9 @@ build/
 *.xcworkspace
 xcuserdata
  
+.DS_Store
 .svn
 CVS
  
-.DS_Store
 *~.nib
 *.swp

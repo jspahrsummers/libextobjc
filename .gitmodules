@@ -4,3 +4,4 @@
 [submodule "libffi"]
 	path = libffi
 	url = git://github.com/jspahrsummers/libffi.git
+        ignore = dirty

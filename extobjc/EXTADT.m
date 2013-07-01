@@ -13,6 +13,7 @@ const char *ext_trimADTJunkFromTypeEncoding (const char *encoding) {
     // we need to skip past two unions in the type string
     const char *next;
 
+    //my add yzy,diff
     for (int i = 0; i < 2; ++i) {
         next = strstr(encoding, "(?=");
         if (!next)
