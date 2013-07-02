@@ -356,7 +356,7 @@ BOOL ext_loadMultimethods (Class targetClass) {
 
 @implementation EXTMultimethodAttributes
 
-- (id)initWithName:(const char *)name implementation:(IMP)implementation parameterCount:(NSUInteger)parameterCount parameterClasses:(const Class *)parameterClasses; {
+- (id)initWithName:(const char *)name implementation:(IMP)implementation parameterCount:(NSUInteger)parameterCount parameterClasses:(const Class *)parameterClasses {
     self = [super init];
     if (!self)
         return nil;
