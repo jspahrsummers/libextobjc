@@ -24,7 +24,7 @@
 
 #pragma mark Lifecycle
 
-+ (id)maybeWithError:(NSError *)error; {
++ (id)maybeWithError:(NSError *)error {
     // NSProxy does not implement -init
     EXTMaybe *maybe = [EXTMaybe alloc];
     maybe->m_error = error;
@@ -34,7 +34,7 @@
 
 #pragma mark Unwrapping
 
-+ (id)validObjectWithMaybe:(id)maybe orElse:(id (^)(NSError *))block; {
++ (id)validObjectWithMaybe:(id)maybe orElse:(id (^)(NSError *))block {
     BOOL isError = [maybe isKindOfClass:[NSError class]];
     BOOL invalid = isError || !maybe || [maybe isEqual:[NSNull null]];
 
