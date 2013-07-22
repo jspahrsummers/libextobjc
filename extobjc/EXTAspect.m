@@ -435,14 +435,16 @@ static void ext_injectAspect (Class containerClass, Class class) {
 
                     // hide this method from future searches
                     methodList[i] = NULL;
-                    break;
                 } else if (hasSettersAdvice && selector == attributes->setter) {
                     setter = method;
                     
                     // hide this method from future searches
                     methodList[i] = NULL;
-                    break;
                 }
+
+                // stop as soon as we have what we need
+                if ((getter || !hasGettersAdvice) && (setter || ! hasSettersAdvice))
+                    break;
             }
 
             if (getter || setter) {

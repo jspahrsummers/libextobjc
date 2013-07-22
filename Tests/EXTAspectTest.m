@@ -9,7 +9,11 @@
 
 #import "EXTAspectTest.h"
 
-@interface AspectTestClass : NSObject <TestAspect, OtherTestAspect>
+@interface AspectTestClass : NSObject <TestAspect, OtherTestAspect> {
+@public
+    int m_getterAdviceCallCount;
+    int m_setterAdviceCallCount;
+}
 @property (copy) NSString *name;
 
 - (void)testMethod:(int)value;
@@ -17,6 +21,16 @@
 
 @implementation AspectTestClass
 @synthesize name = m_name;
+
+- (void) incGetterAdviceCallCount
+{
+    m_getterAdviceCallCount++;
+}
+
+- (void) incSetterAdviceCallCount
+{
+    m_setterAdviceCallCount++;
+}
 
 - (void)testMethod:(int)value; {
     NSParameterAssert(value == 42);
@@ -47,7 +61,14 @@
 }
 
 - (void)adviseSetters:(void (^)(void))body property:(NSString *)property {
-    NSLog(@"about to change %@ on %@", property, [(id)self name]);
+    NSLog(@"about to change %@", property);
+    [(id)self incSetterAdviceCallCount];
+    body();
+}
+
+- (void)adviseGetters:(void (^)(void))body property:(NSString *)property {
+    NSLog(@"about to fetch %@", property);
+    [(id)self incGetterAdviceCallCount];
     body();
 }
 @end
@@ -65,9 +86,13 @@
     AspectTestClass *obj = [[AspectTestClass alloc] init];
     STAssertNotNil(obj, @"");
 
+    STAssertNil(obj.name, @"");
     obj.name = @"MyObject";
+    STAssertEqualObjects([obj name], @"MyObject", @"");
     [obj testMethod:42];
 
+    STAssertEquals(obj->m_getterAdviceCallCount, 2, @"");
+    STAssertEquals(obj->m_setterAdviceCallCount, 1, @"");
     STAssertTrue([obj testOtherMethod], @"");
     STAssertEqualsWithAccuracy([AspectTestClass testClassMethodWithString:@"foobar" length:6], 3.14, 0.01, @"");
 }
