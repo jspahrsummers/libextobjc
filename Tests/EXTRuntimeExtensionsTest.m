@@ -9,8 +9,18 @@
 
 #import "EXTRuntimeExtensionsTest.h"
 
-@interface RuntimeTestClass : NSObject {
-}
+#pragma mark - RuntimeTestProtocol
+
+@protocol RuntimeTestProtocol <NSObject>
+
+@optional
+- (void)methodUsingString:(NSString *)s;
+
+@end
+
+#pragma mark - RuntimeTestClass
+
+@interface RuntimeTestClass : NSObject <RuntimeTestProtocol>
 
 @property (nonatomic, assign, getter = isNormalBool, readonly) BOOL normalBool;
 @property (nonatomic, strong, getter = whoopsWhatArray, setter = setThatArray:) NSArray *array;
@@ -34,6 +44,8 @@
 
 @dynamic untypedObject;
 @end
+
+#pragma mark - Tests
 
 @implementation EXTRuntimeExtensionsTest
 
@@ -181,6 +193,12 @@
     STAssertEqualObjects(attributes->objectClass, [NSObject class], @"");
 
     free(attributes);
+}
+
+- (void)testGlobalMethodSignatureForSelector {
+    STAssertNotNil(objc_getProtocol("RuntimeTestProtocol"), @"test protocol should be loaded");
+    NSMethodSignature *ms = ext_globalMethodSignatureForSelector(@selector(methodUsingString:));
+    STAssertNotNil(ms, @"unimplemented optional protocol method should have a method signature");
 }
 
 @end
