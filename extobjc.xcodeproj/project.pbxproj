@@ -17,8 +17,6 @@
 		D005F04415950509007A8A1C /* EXTADT.h in Headers */ = {isa = PBXBuildFile; fileRef = D005F01815950509007A8A1C /* EXTADT.h */; };
 		D005F04515950509007A8A1C /* EXTAspect.h in Headers */ = {isa = PBXBuildFile; fileRef = D005F01915950509007A8A1C /* EXTAspect.h */; };
 		D005F04615950509007A8A1C /* EXTAspect.h in Headers */ = {isa = PBXBuildFile; fileRef = D005F01915950509007A8A1C /* EXTAspect.h */; };
-		D005F04715950509007A8A1C /* EXTAspect.m in Sources */ = {isa = PBXBuildFile; fileRef = D005F01A15950509007A8A1C /* EXTAspect.m */; };
-		D005F04815950509007A8A1C /* EXTAspect.m in Sources */ = {isa = PBXBuildFile; fileRef = D005F01A15950509007A8A1C /* EXTAspect.m */; };
 		D005F04915950509007A8A1C /* EXTBlockMethod.h in Headers */ = {isa = PBXBuildFile; fileRef = D005F01B15950509007A8A1C /* EXTBlockMethod.h */; };
 		D005F04A15950509007A8A1C /* EXTBlockMethod.h in Headers */ = {isa = PBXBuildFile; fileRef = D005F01B15950509007A8A1C /* EXTBlockMethod.h */; };
 		D005F04B15950509007A8A1C /* EXTBlockMethod.m in Sources */ = {isa = PBXBuildFile; fileRef = D005F01C15950509007A8A1C /* EXTBlockMethod.m */; };
@@ -103,8 +101,6 @@
 		D033765E131E53DB0039ACFD /* EXTPrivateMethodTest.m in Sources */ = {isa = PBXBuildFile; fileRef = D033765C131E53DB0039ACFD /* EXTPrivateMethodTest.m */; };
 		D0337667131E54960039ACFD /* EXTFinalMethodTest.m in Sources */ = {isa = PBXBuildFile; fileRef = D0337666131E54960039ACFD /* EXTFinalMethodTest.m */; };
 		D0337668131E54960039ACFD /* EXTFinalMethodTest.m in Sources */ = {isa = PBXBuildFile; fileRef = D0337666131E54960039ACFD /* EXTFinalMethodTest.m */; };
-		D035A5BB148022B9006C1001 /* EXTAspectTest.m in Sources */ = {isa = PBXBuildFile; fileRef = D035A5BA148022B9006C1001 /* EXTAspectTest.m */; };
-		D035A5BC148022B9006C1001 /* EXTAspectTest.m in Sources */ = {isa = PBXBuildFile; fileRef = D035A5BA148022B9006C1001 /* EXTAspectTest.m */; };
 		D03EC9A3138A25F100559080 /* EXTCoroutineTest.m in Sources */ = {isa = PBXBuildFile; fileRef = D03EC9A2138A25F100559080 /* EXTCoroutineTest.m */; };
 		D03EC9A4138A25F100559080 /* EXTCoroutineTest.m in Sources */ = {isa = PBXBuildFile; fileRef = D03EC9A2138A25F100559080 /* EXTCoroutineTest.m */; };
 		D05F5BF71335E43F00A34927 /* EXTBlockMethodTest.m in Sources */ = {isa = PBXBuildFile; fileRef = D05F5BF61335E43F00A34927 /* EXTBlockMethodTest.m */; };
@@ -900,7 +896,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D005F04815950509007A8A1C /* EXTAspect.m in Sources */,
 				D005F04C15950509007A8A1C /* EXTBlockMethod.m in Sources */,
 				D005F05015950509007A8A1C /* EXTBlockTarget.m in Sources */,
 				D005F05415950509007A8A1C /* EXTConcreteProtocol.m in Sources */,
@@ -940,7 +935,6 @@
 				D002DAF813656CDF005348A5 /* EXTNilTest.m in Sources */,
 				D0B9B0B513727EF800EC1224 /* EXTScopeTest.m in Sources */,
 				D03EC9A3138A25F100559080 /* EXTCoroutineTest.m in Sources */,
-				D035A5BB148022B9006C1001 /* EXTAspectTest.m in Sources */,
 				D0737D9414CB9438005BF183 /* EXTMaybeTest.m in Sources */,
 				D0CD1BE7158F2A2A0039C845 /* EXTTupleTest.m in Sources */,
 				D088C7BE159121A300C70CE2 /* EXTKeyPathCodingTest.m in Sources */,
@@ -971,7 +965,6 @@
 				D002DAF913656CDF005348A5 /* EXTNilTest.m in Sources */,
 				D0B9B0B613727EF800EC1224 /* EXTScopeTest.m in Sources */,
 				D03EC9A4138A25F100559080 /* EXTCoroutineTest.m in Sources */,
-				D035A5BC148022B9006C1001 /* EXTAspectTest.m in Sources */,
 				D0737D9514CB9438005BF183 /* EXTMaybeTest.m in Sources */,
 				D0CD1BE8158F2A2A0039C845 /* EXTTupleTest.m in Sources */,
 				D088C7BF159121A300C70CE2 /* EXTKeyPathCodingTest.m in Sources */,
@@ -990,7 +983,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D005F04715950509007A8A1C /* EXTAspect.m in Sources */,
 				D005F04B15950509007A8A1C /* EXTBlockMethod.m in Sources */,
 				D005F04F15950509007A8A1C /* EXTBlockTarget.m in Sources */,
 				D005F05315950509007A8A1C /* EXTConcreteProtocol.m in Sources */,
@@ -1045,7 +1037,10 @@
 			baseConfigurationReference = D0919C5E146F99B900D680C9 /* Mac-StaticLibrary.xcconfig */;
 			buildSettings = {
 				GCC_PREFIX_HEADER = extobjc/extobjc_Prefix.pch;
-				HEADER_SEARCH_PATHS = libffi/osx/include;
+				HEADER_SEARCH_PATHS = (
+					"libffi/osx/include/**",
+					"usr/lib/include/**",
+				);
 				INSTALL_PATH = /usr/local/lib;
 				PRODUCT_NAME = extobjc_OSX;
 				SDKROOT = macosx;
@@ -1057,7 +1052,10 @@
 			baseConfigurationReference = D0919C5E146F99B900D680C9 /* Mac-StaticLibrary.xcconfig */;
 			buildSettings = {
 				GCC_PREFIX_HEADER = extobjc/extobjc_Prefix.pch;
-				HEADER_SEARCH_PATHS = libffi/osx/include;
+				HEADER_SEARCH_PATHS = (
+					"libffi/osx/include/**",
+					"usr/lib/include/**",
+				);
 				INSTALL_PATH = /usr/local/lib;
 				PRODUCT_NAME = extobjc_OSX;
 				SDKROOT = macosx;
