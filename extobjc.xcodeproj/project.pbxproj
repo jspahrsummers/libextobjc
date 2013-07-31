@@ -101,6 +101,7 @@
 
 /* Begin PBXFileReference section */
 		0867D69BFE84028FC02AAC07 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
+		6FE5121317AFD14F00454E89 /* EXTRuntimeTestProtocol.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXTRuntimeTestProtocol.h; sourceTree = "<group>"; };
 		876EE9D4170B13C000AB73BB /* EXTObjectiveCppCompileTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXTObjectiveCppCompileTest.h; sourceTree = "<group>"; };
 		876EE9D5170B13C000AB73BB /* EXTObjectiveCppCompileTest.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = EXTObjectiveCppCompileTest.mm; sourceTree = "<group>"; };
 		D002DAF613656CDF005348A5 /* EXTNilTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXTNilTest.h; sourceTree = "<group>"; };
@@ -400,6 +401,7 @@
 				D09FB2F9159A41D100A5F6A4 /* EXTSelectorCheckingTest.m */,
 				D0FBB1D915F6897D002281B9 /* EXTSynthesizeTest.h */,
 				D0FBB1DA15F6897D002281B9 /* EXTSynthesizeTest.m */,
+				6FE5121317AFD14F00454E89 /* EXTRuntimeTestProtocol.h */,
 				D0CFB610128A8EEE006DC377 /* iOS-Info.plist */,
 				D0A8B2DD128A495D004AACE0 /* OSX-Info.plist */,
 			);
