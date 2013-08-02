@@ -20,7 +20,10 @@ libextobjc currently includes the following features:
  * **EXTNil, which is like `NSNull`, but behaves much more closely to actual `nil`** (i.e., doesn't crash when sent unrecognized messages).
  * **Lots of extensions** and additional functionality built on top of `<objc/runtime.h>`, including extremely customizable method injection, reflection upon object properties, and various functions to extend class hierarchy checks and method lookups.
 
-Check out the headers for more information.
+The [experimental](https://github.com/jspahrsummers/libextobjc/tree/experimental)
+branch contains additional features that may be interesting, but are not
+considered stable or safe for production use. Check out the headers for more
+information.
 
 # License
 
