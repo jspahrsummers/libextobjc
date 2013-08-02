@@ -478,7 +478,6 @@
 				D0A8B2D7128A495D004AACE0 /* Resources */,
 				D0A8B2D8128A495D004AACE0 /* Sources */,
 				D0A8B2D9128A495D004AACE0 /* Frameworks */,
-				D0A8B2DA128A495D004AACE0 /* Run Script (libextobjc tests) */,
 			);
 			buildRules = (
 			);
@@ -497,7 +496,6 @@
 				D0CFB60A128A8EEE006DC377 /* Resources */,
 				D0CFB60B128A8EEE006DC377 /* Sources */,
 				D0CFB60C128A8EEE006DC377 /* Frameworks */,
-				D0CFB60D128A8EEE006DC377 /* Run Script (libextobjc tests) */,
 			);
 			buildRules = (
 			);
@@ -573,37 +571,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
-
-/* Begin PBXShellScriptBuildPhase section */
-		D0A8B2DA128A495D004AACE0 /* Run Script (libextobjc tests) */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "Run Script (libextobjc tests)";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "# Run the unit tests in this test bundle.\n\"${SYSTEM_DEVELOPER_DIR}/Tools/RunUnitTests\"\n";
-		};
-		D0CFB60D128A8EEE006DC377 /* Run Script (libextobjc tests) */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "Run Script (libextobjc tests)";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "# Run the unit tests in this test bundle.\n\"${SYSTEM_DEVELOPER_DIR}/Tools/RunUnitTests\"\n";
-		};
-/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		D0A8B026128A4261004AACE0 /* Sources */ = {
