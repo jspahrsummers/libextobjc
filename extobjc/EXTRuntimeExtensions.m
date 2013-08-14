@@ -19,6 +19,12 @@
 typedef NSMethodSignature *(*methodSignatureForSelectorIMP)(id, SEL, SEL);
 typedef void (^ext_specialProtocolInjectionBlock)(Class);
 
+// a `const char *` equivalent to system struct objc_method_description
+typedef struct {
+    SEL name;
+    const char *types;
+} ext_methodDescription;
+
 // contains the information needed to reference a full special protocol
 typedef struct {
     // the actual protocol declaration (@protocol block)
@@ -726,34 +732,31 @@ BOOL ext_getPropertyAccessorsForClass (objc_property_t property, Class aClass, M
 }
 
 NSMethodSignature *ext_globalMethodSignatureForSelector (SEL aSelector) {
-    if (aSelector == NULL)
-        return nil;
-
-    typedef struct objc_method_description MethodDescription;
+    NSCParameterAssert(aSelector != NULL);
 
     // set up a small & simple cache/hash to avoid repeatedly scouring every
     // class & protocol in the runtime.
     static const size_t selectorCacheLength = 1 << 8;
     static const uintptr_t selectorCacheMask = (selectorCacheLength - 1);
-    static MethodDescription volatile methodDescriptionCache[selectorCacheLength];
+    static ext_methodDescription volatile methodDescriptionCache[selectorCacheLength];
 
     // reads and writes need to be atomic, but will be ridiculously fast,
     // so we can stay in userland for locks, and keep the speed.
     static OSSpinLock lock = OS_SPINLOCK_INIT;
 
     uintptr_t hash = (uintptr_t)((void *)aSelector) & selectorCacheMask;
-    MethodDescription methodDesc;
+    ext_methodDescription methodDesc;
 
     OSSpinLockLock(&lock);
     methodDesc = methodDescriptionCache[hash];
     OSSpinLockUnlock(&lock);
 
     // cache hit? check the selector to insure we aren't colliding
-    if (methodDesc.name && methodDesc.name == aSelector) {
+    if (methodDesc.name == aSelector) {
         return [NSMethodSignature signatureWithObjCTypes:methodDesc.types];
     }
 
-    methodDesc = (MethodDescription){.name = NULL, .types = NULL};
+    methodDesc = (ext_methodDescription){.name = NULL, .types = NULL};
 
     uint classCount = 0;
     Class *classes = ext_copyClassList(&classCount);
@@ -770,7 +773,7 @@ NSMethodSignature *ext_globalMethodSignatureForSelector (SEL aSelector) {
                     method = class_getClassMethod(cls, aSelector);
 
                 if (method) {
-                    methodDesc = (MethodDescription){.name = aSelector, .types = (char *)method_getTypeEncoding(method)};
+                    methodDesc = (ext_methodDescription){.name = aSelector, .types = method_getTypeEncoding(method)};
                     break;
                 }
             }
@@ -783,14 +786,15 @@ NSMethodSignature *ext_globalMethodSignatureForSelector (SEL aSelector) {
         uint protocolCount = 0;
         Protocol * __unsafe_unretained *protocols = objc_copyProtocolList(&protocolCount);
         if (protocols) {
-            @autoreleasepool {
-                for (uint i = 0;i < protocolCount;++i) {
-                    methodDesc = protocol_getMethodDescription(protocols[i], aSelector, NO, YES);
-                    if (!methodDesc.name)
-                        methodDesc = protocol_getMethodDescription(protocols[i], aSelector, NO, NO);
+            struct objc_method_description objcMethodDesc;
+            for (uint i = 0;i < protocolCount;++i) {
+                objcMethodDesc = protocol_getMethodDescription(protocols[i], aSelector, NO, YES);
+                if (!objcMethodDesc.name)
+                    objcMethodDesc = protocol_getMethodDescription(protocols[i], aSelector, NO, NO);
 
-                    if (methodDesc.name)
-                        break;
+                if (objcMethodDesc.name) {
+                    methodDesc = (ext_methodDescription){.name = objcMethodDesc.name, .types = objcMethodDesc.types};
+                    break;
                 }
             }
             free(protocols);
@@ -798,14 +802,14 @@ NSMethodSignature *ext_globalMethodSignatureForSelector (SEL aSelector) {
     }
 
     if (methodDesc.name) {
-        // write to cache
-        uintptr_t hash = (uintptr_t)(void *)aSelector & selectorCacheMask;
-        OSSpinLockLock(&lock);
-        methodDescriptionCache[hash] = methodDesc;
-        OSSpinLockUnlock(&lock);
+        // if not locked, cache this value, but don't wait around
+        if (OSSpinLockTry(&lock)) {
+            methodDescriptionCache[hash] = methodDesc;
+            OSSpinLockUnlock(&lock);
+        }
 
-        // NB: on OS X, there's a system problem with the type encoding for -[NSDecimalNumber* -initWithDecimal:]
-        // which causes this to fail. Doubt it's worth trying to catch here.
+        // NB: there are some esoteric system type encodings that cause -signatureWithObjCTypes: to fail,
+        // e.g on OS X 10.8, -[NSDecimalNumber* -initWithDecimal:]. Doubt it's worth trying to catch here.
         return [NSMethodSignature signatureWithObjCTypes:methodDesc.types];
     } else {
         return nil;
