@@ -8,6 +8,7 @@
 //
 
 #import "EXTNilTest.h"
+#import "EXTRuntimeTestProtocol.h"
 
 @implementation EXTNilTest
 
@@ -38,6 +39,15 @@
 
     NSDictionary *values = [obj dictionaryWithValuesForKeys:@[@"bar"]];
     STAssertNil(values, @"");
+}
+
+- (void)testProtocol {
+    id test = nil;
+    STAssertNoThrow([test optionalInstanceMethod], @"nil handles optional instance methods");
+    STAssertNoThrow([test optionalClassMethod], @"nil handles optional class methods");
+    test = [EXTNil null];
+    STAssertNoThrow([test optionalInstanceMethod], @"EXTNil handles optional instance methods");
+    STAssertNoThrow([test optionalClassMethod], @"EXTNil handles optional class methods");
 }
 
 @end
