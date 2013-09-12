@@ -28,7 +28,8 @@ information.
 # Adding to your project
 
 If you want to add libextobjc as a dependency to an **application**, add the
-repository as a git submodule, then include the source files you care about.
+repository as a [submodule](http://git-scm.com/book/en/Git-Tools-Submodules),
+then include the source files you care about in your Xcode project.
 
 If you want to add libextobjc as a dependency to a **framework or library**,
 prefer [subtree merging](http://git-scm.com/book/en/Git-Tools-Subtree-Merging),
@@ -44,8 +45,8 @@ $ git read-tree --prefix=External/ -u libextobjc/master
 $ git reset
 ```
 
-Rename any symbols or change whatever you want, then `git add` the specific
-files that you want in your library.
+Rename any symbols or change whatever you want, `git add` the specific files
+that you want in your library, and then add them to your Xcode project.
 
 To bring in upstream changes later:
 
