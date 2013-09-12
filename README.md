@@ -25,6 +25,38 @@ branch contains additional features that may be interesting, but are not
 considered stable or safe for production use. Check out the headers for more
 information.
 
+# Adding to your project
+
+If you want to add libextobjc as a dependency to an **application**, add the
+repository as a git submodule, then include the source files you care about.
+
+If you want to add libextobjc as a dependency to a **framework or library**,
+prefer [subtree merging](http://git-scm.com/book/en/Git-Tools-Subtree-Merging),
+which will allow you to rename symbols to avoid conflicts, and make any tweaks
+you need to for your library.
+
+To create a libextobjc subtree:
+
+```
+$ git remote add libextobjc https://github.com/jspahrsummers/libextobjc.git
+$ git fetch libextobjc
+$ git read-tree --prefix=External/ -u libextobjc/master
+$ git reset
+```
+
+Rename any symbols or change whatever you want, then `git add` the specific
+files that you want in your library.
+
+To bring in upstream changes later:
+
+```
+$ git fetch -p libextobjc
+$ git merge -Xsubtree=External/ libextobjc/master
+$ git reset
+```
+
+Then, again, just add the changes you want.
+
 # License
 
 Released under the MIT License. See the
