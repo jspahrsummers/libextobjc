@@ -25,6 +25,12 @@ branch contains additional features that may be interesting, but are not
 considered stable or safe for production use. Check out the headers for more
 information.
 
+# Running tests
+
+To execute libextobjc's tests, first run `git submodule update --init --recursive`
+to bring in the [xcconfigs](https://github.com/jspahrsummers/xcconfigs) submodule,
+then open the project file and choose the desired test target.
+
 # Adding to your project
 
 If you want to add libextobjc as a dependency to an **application**, add the
