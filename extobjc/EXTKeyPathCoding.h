@@ -42,7 +42,7 @@ NSString *lowercaseStringPath = @keypath(NSString.new, lowercaseString);
     (((void)(NO && ((void)PATH, NO)), strchr(# PATH, '.') + 1))
 
 #define keypath2(OBJ, PATH) \
-    (((void)(NO && ((void)OBJ.PATH, NO)), # PATH))
+    "" ? @ # PATH : (__typeof__(^ NSString * {(void)OBJ . PATH; return nil; }())) nil
 
 /**
  * \@collectionKeypath allows compile-time verification of key paths across collections NSArray/NSSet etc. Given a real object
