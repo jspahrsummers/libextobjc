@@ -10,9 +10,9 @@
 #import "metamacros.h"
 
 #if DEBUG
-#define keywordify autoreleasepool {}
+#define ext_keywordify autoreleasepool {}
 #else
-#define keywordify try {} @catch (...) {}
+#define ext_keywordify try {} @catch (...) {}
 #endif
 
 /**
@@ -35,7 +35,7 @@
  * a useless construct in such a case anyways.
  */
 #define onExit \
-    keywordify \
+    ext_keywordify \
     __strong ext_cleanupBlock_t metamacro_concat(ext_exitBlock_, __LINE__) __attribute__((cleanup(ext_executeCleanupBlock), unused)) = ^
 
 /**
@@ -49,7 +49,7 @@
  * See #strongify for an example of usage.
  */
 #define weakify(...) \
-    keywordify \
+    ext_keywordify \
     metamacro_foreach_cxt(ext_weakify_,, __weak, __VA_ARGS__)
 
 /**
@@ -57,7 +57,7 @@
  * classes that do not support weak references.
  */
 #define unsafeify(...) \
-    keywordify \
+    ext_keywordify \
     metamacro_foreach_cxt(ext_weakify_,, __unsafe_unretained, __VA_ARGS__)
 
 /**
@@ -87,7 +87,7 @@
  * @endcode
  */
 #define strongify(...) \
-    keywordify \
+    ext_keywordify \
     _Pragma("clang diagnostic push") \
     _Pragma("clang diagnostic ignored \"-Wshadow\"") \
     metamacro_foreach(ext_strongify_,, __VA_ARGS__) \
