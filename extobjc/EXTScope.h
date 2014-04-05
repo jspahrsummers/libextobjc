@@ -9,6 +9,12 @@
 
 #import "metamacros.h"
 
+#if DEBUG
+#define keywordify autoreleasepool {}
+#else
+#define keywordify try {} @catch (...) {}
+#endif
+
 /**
  * \@onExit defines some code to be executed when the current scope exits. The
  * code must be enclosed in braces and terminated with a semicolon, and will be
@@ -29,7 +35,7 @@
  * a useless construct in such a case anyways.
  */
 #define onExit \
-    autoreleasepool {} \
+    keywordify \
     __strong ext_cleanupBlock_t metamacro_concat(ext_exitBlock_, __LINE__) __attribute__((cleanup(ext_executeCleanupBlock), unused)) = ^
 
 /**
@@ -43,7 +49,7 @@
  * See #strongify for an example of usage.
  */
 #define weakify(...) \
-    autoreleasepool {} \
+    keywordify \
     metamacro_foreach_cxt(ext_weakify_,, __weak, __VA_ARGS__)
 
 /**
@@ -51,7 +57,7 @@
  * classes that do not support weak references.
  */
 #define unsafeify(...) \
-    autoreleasepool {} \
+    keywordify \
     metamacro_foreach_cxt(ext_weakify_,, __unsafe_unretained, __VA_ARGS__)
 
 /**
@@ -81,7 +87,7 @@
  * @endcode
  */
 #define strongify(...) \
-    autoreleasepool {} \
+    keywordify \
     _Pragma("clang diagnostic push") \
     _Pragma("clang diagnostic ignored \"-Wshadow\"") \
     metamacro_foreach(ext_strongify_,, __VA_ARGS__) \
