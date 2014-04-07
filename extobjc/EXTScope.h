@@ -9,12 +9,6 @@
 
 #import "metamacros.h"
 
-#if DEBUG
-#define ext_keywordify autoreleasepool {}
-#else
-#define ext_keywordify try {} @catch (...) {}
-#endif
-
 /**
  * \@onExit defines some code to be executed when the current scope exits. The
  * code must be enclosed in braces and terminated with a semicolon, and will be
@@ -103,3 +97,20 @@ void ext_executeCleanupBlock (__strong ext_cleanupBlock_t *block);
 
 #define ext_strongify_(INDEX, VAR) \
     __strong __typeof__(VAR) VAR = metamacro_concat(VAR, _weak_);
+
+// Details about the use of backing keyword:
+//
+// The use of @try/@catch/@finally can cause the compiler to suppress
+// return-type warnings.
+// The use of @autoreleasepool {} is not optimized away by the compiler,
+// resulting in superfluous creation of autorelease pools.
+//
+// Since neither option is perfect, and with no other alternatives, the
+// compromise is to use @autorelease in DEBUG builds to maintain compiler
+// analysis, and to use @try/@catch otherwise to avoid insertion of unnecessary
+// autorelease pools.
+#if DEBUG
+#define ext_keywordify autoreleasepool {}
+#else
+#define ext_keywordify try {} @catch (...) {}
+#endif
