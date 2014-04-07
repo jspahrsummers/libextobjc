@@ -98,7 +98,7 @@ void ext_executeCleanupBlock (__strong ext_cleanupBlock_t *block);
 #define ext_strongify_(INDEX, VAR) \
     __strong __typeof__(VAR) VAR = metamacro_concat(VAR, _weak_);
 
-// Details about the use of backing keyword:
+// Details about the choice of backing keyword:
 //
 // The use of @try/@catch/@finally can cause the compiler to suppress
 // return-type warnings.
