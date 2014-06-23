@@ -23,7 +23,7 @@
 
 @implementation EXTKeypathWeakWarningTest
 
-- (void)testWarningIsNotEmited {
+- (void)testWarningIsNotEmitted {
     __unused NSString *keypath = @keypath(EXTClassWithWeakProperty.new, property);
     __unused NSString *keypath2 = @keypath(EXTClassWithWeakProperty.new, property);
 }
