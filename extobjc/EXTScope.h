@@ -101,7 +101,7 @@ void ext_executeCleanupBlock (__strong ext_cleanupBlock_t *block);
 // Details about the choice of backing keyword:
 //
 // Use a string comparison that will (hopefully) be suppressed by the compiler.
-#define rac_keywordify \
+#define ext_keywordify \
     _Pragma("clang diagnostic push") \
     _Pragma("clang diagnostic ignored \"-Wunused-comparison\"") \
     "" == nil; \
