@@ -21,7 +21,7 @@
 #define synthesizeAssociation(CLASS, PROPERTY) \
 	dynamic PROPERTY; \
 	\
-	void *ext_uniqueKey_ ## CLASS ## _ ## PROPERTY = &ext_uniqueKey_ ## CLASS ## _ ## PROPERTY; \
+	static void *ext_uniqueKey_ ## CLASS ## _ ## PROPERTY = &ext_uniqueKey_ ## CLASS ## _ ## PROPERTY; \
 	\
 	__attribute__((constructor)) \
 	static void ext_ ## CLASS ## _ ## PROPERTY ## _synthesize (void) { \
