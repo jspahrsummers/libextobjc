@@ -8,6 +8,7 @@
 //
 
 #import <objc/runtime.h>
+#import <Foundation/Foundation.h>
 
 /**
  * A callback indicating that the given method failed to be added to the given
