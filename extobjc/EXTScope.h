@@ -44,7 +44,10 @@
  */
 #define weakify(...) \
     ext_keywordify \
-    metamacro_foreach_cxt(ext_weakify_,, __weak, __VA_ARGS__)
+    _Pragma("clang diagnostic push") \
+    _Pragma("clang diagnostic ignored \"-Wshadow\"") \
+    metamacro_foreach_cxt(ext_weakify_,, __weak, __VA_ARGS__) \
+    _Pragma("clang diagnostic pop")
 
 /**
  * Like #weakify, but uses \c __unsafe_unretained instead, for targets or
@@ -52,7 +55,10 @@
  */
 #define unsafeify(...) \
     ext_keywordify \
-    metamacro_foreach_cxt(ext_weakify_,, __unsafe_unretained, __VA_ARGS__)
+    _Pragma("clang diagnostic push") \
+    _Pragma("clang diagnostic ignored \"-Wshadow\"") \
+    metamacro_foreach_cxt(ext_weakify_,, __unsafe_unretained, __VA_ARGS__) \
+    _Pragma("clang diagnostic pop")
 
 /**
  * Strongly references each of the variables provided as arguments, which must
