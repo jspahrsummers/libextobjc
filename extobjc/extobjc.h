@@ -15,6 +15,7 @@
 #import "EXTScope.h"
 #import "EXTSelectorChecking.h"
 #import "EXTSynthesize.h"
+#import "NSObject+EXT.h"
 #import "NSInvocation+EXT.h"
 #import "NSMethodSignature+EXT.h"
 

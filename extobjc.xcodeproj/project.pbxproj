@@ -7,6 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		25F4B9D11C23FFF0003BC0A7 /* NSObject+EXT.h in Headers */ = {isa = PBXBuildFile; fileRef = 25F4B9CF1C23FFF0003BC0A7 /* NSObject+EXT.h */; };
+		25F4B9D21C23FFF0003BC0A7 /* NSObject+EXT.h in Headers */ = {isa = PBXBuildFile; fileRef = 25F4B9CF1C23FFF0003BC0A7 /* NSObject+EXT.h */; };
+		25F4B9D31C23FFF0003BC0A7 /* NSObject+EXT.m in Sources */ = {isa = PBXBuildFile; fileRef = 25F4B9D01C23FFF0003BC0A7 /* NSObject+EXT.m */; };
+		25F4B9D41C23FFF0003BC0A7 /* NSObject+EXT.m in Sources */ = {isa = PBXBuildFile; fileRef = 25F4B9D01C23FFF0003BC0A7 /* NSObject+EXT.m */; };
 		876EE9D6170B13C000AB73BB /* EXTObjectiveCppCompileTest.mm in Sources */ = {isa = PBXBuildFile; fileRef = 876EE9D5170B13C000AB73BB /* EXTObjectiveCppCompileTest.mm */; };
 		876EE9D7170B13C000AB73BB /* EXTObjectiveCppCompileTest.mm in Sources */ = {isa = PBXBuildFile; fileRef = 876EE9D5170B13C000AB73BB /* EXTObjectiveCppCompileTest.mm */; };
 		D002DAF813656CDF005348A5 /* EXTNilTest.m in Sources */ = {isa = PBXBuildFile; fileRef = D002DAF713656CDF005348A5 /* EXTNilTest.m */; };
@@ -102,6 +106,8 @@
 
 /* Begin PBXFileReference section */
 		0867D69BFE84028FC02AAC07 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
+		25F4B9CF1C23FFF0003BC0A7 /* NSObject+EXT.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSObject+EXT.h"; sourceTree = "<group>"; };
+		25F4B9D01C23FFF0003BC0A7 /* NSObject+EXT.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSObject+EXT.m"; sourceTree = "<group>"; };
 		6FE5121317AFD14F00454E89 /* EXTRuntimeTestProtocol.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXTRuntimeTestProtocol.h; sourceTree = "<group>"; };
 		876EE9D4170B13C000AB73BB /* EXTObjectiveCppCompileTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXTObjectiveCppCompileTest.h; sourceTree = "<group>"; };
 		876EE9D5170B13C000AB73BB /* EXTObjectiveCppCompileTest.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = EXTObjectiveCppCompileTest.mm; sourceTree = "<group>"; };
@@ -282,6 +288,8 @@
 		D005F09A15950511007A8A1C /* Extensions */ = {
 			isa = PBXGroup;
 			children = (
+				25F4B9CF1C23FFF0003BC0A7 /* NSObject+EXT.h */,
+				25F4B9D01C23FFF0003BC0A7 /* NSObject+EXT.m */,
 				D005F03F15950509007A8A1C /* NSInvocation+EXT.h */,
 				D005F04015950509007A8A1C /* NSInvocation+EXT.m */,
 				D005F04115950509007A8A1C /* NSMethodSignature+EXT.h */,
@@ -427,6 +435,7 @@
 				D005F06C15950509007A8A1C /* EXTNil.h in Headers */,
 				D005F07015950509007A8A1C /* extobjc_Prefix.pch in Headers */,
 				D005F07215950509007A8A1C /* extobjc.h in Headers */,
+				25F4B9D21C23FFF0003BC0A7 /* NSObject+EXT.h in Headers */,
 				D005F07C15950509007A8A1C /* EXTRuntimeExtensions.h in Headers */,
 				D005F08015950509007A8A1C /* EXTSafeCategory.h in Headers */,
 				D005F08415950509007A8A1C /* EXTScope.h in Headers */,
@@ -448,6 +457,7 @@
 				D005F06B15950509007A8A1C /* EXTNil.h in Headers */,
 				D005F06F15950509007A8A1C /* extobjc_Prefix.pch in Headers */,
 				D005F07115950509007A8A1C /* extobjc.h in Headers */,
+				25F4B9D11C23FFF0003BC0A7 /* NSObject+EXT.h in Headers */,
 				D005F07B15950509007A8A1C /* EXTRuntimeExtensions.h in Headers */,
 				D005F07F15950509007A8A1C /* EXTSafeCategory.h in Headers */,
 				D005F08315950509007A8A1C /* EXTScope.h in Headers */,
@@ -591,6 +601,7 @@
 				D005F08615950509007A8A1C /* EXTScope.m in Sources */,
 				D005F09415950509007A8A1C /* NSInvocation+EXT.m in Sources */,
 				D005F09815950509007A8A1C /* NSMethodSignature+EXT.m in Sources */,
+				25F4B9D41C23FFF0003BC0A7 /* NSObject+EXT.m in Sources */,
 				D0EF9C0015992F080066DFBC /* EXTADT.m in Sources */,
 				D09FB2FE159A459700A5F6A4 /* EXTSelectorChecking.m in Sources */,
 			);
@@ -644,6 +655,7 @@
 				D005F08515950509007A8A1C /* EXTScope.m in Sources */,
 				D005F09315950509007A8A1C /* NSInvocation+EXT.m in Sources */,
 				D005F09715950509007A8A1C /* NSMethodSignature+EXT.m in Sources */,
+				25F4B9D31C23FFF0003BC0A7 /* NSObject+EXT.m in Sources */,
 				D0EF9BFF15992F080066DFBC /* EXTADT.m in Sources */,
 				D09FB2FD159A459700A5F6A4 /* EXTSelectorChecking.m in Sources */,
 			);
