@@ -28,6 +28,10 @@ static id singleton = nil;
     return self;
 }
 
+- (instancetype)self {
+    return nil;
+}
+
 #pragma mark NSCopying
 
 - (id)copyWithZone:(NSZone *)zone {
