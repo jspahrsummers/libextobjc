@@ -35,4 +35,9 @@
  */
 + (id)null;
 
+/**
+ * Always return nil
+ */
+- (instancetype)self;
+
 @end
