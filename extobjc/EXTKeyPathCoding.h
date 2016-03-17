@@ -43,7 +43,7 @@ NSString *lowercaseStringPath = @keypath(NSString.new, lowercaseString);
 
 #define keypath1(PATH) \
     (((void)(NO && ((void)PATH, NO)), \
-    ({ char *kp = strchr(# PATH, '.'); NSCAssert(kp, @"Provided key path is invalid."); kp + 1; })))
+    ({ char *__extobjckeypath__ = strchr(# PATH, '.'); NSCAssert(__extobjckeypath__, @"Provided key path is invalid."); __extobjckeypath__ + 1; })))
 
 #define keypath2(OBJ, PATH) \
     (((void)(NO && ((void)OBJ.PATH, NO)), # PATH))
