@@ -6,9 +6,9 @@
 //
 //
 
-#import <SenTestingKit/SenTestingKit.h>
+#import <XCTest/XCTest.h>
 #import "EXTADT.h"
 
-@interface EXTADTTest : SenTestCase
+@interface EXTADTTest : XCTestCase
 
 @end

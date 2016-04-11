@@ -7,9 +7,9 @@
 //  Released under the MIT license.
 //
 
-#import <SenTestingKit/SenTestingKit.h>
+#import <XCTest/XCTest.h>
 #import "EXTSelectorChecking.h"
 
-@interface EXTSelectorCheckingTest : SenTestCase
+@interface EXTSelectorCheckingTest : XCTestCase
 
 @end

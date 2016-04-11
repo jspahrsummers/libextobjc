@@ -25,7 +25,7 @@
         };
     }
 
-    STAssertEqualObjects(str, @"foobar", @"'bar' should've been appended to 'foo' at the end of the previous scope");
+    XCTAssertEqualObjects(str, @"foobar", @"'bar' should've been appended to 'foo' at the end of the previous scope");
 
     __block unsigned executed = 0;
 
@@ -35,7 +35,7 @@
         };
     }
 
-    STAssertEquals(executed, 6U, @"onExit blocks should be executed on loop iterations");
+    XCTAssertEqual(executed, 6U, @"onExit blocks should be executed on loop iterations");
 
     executed = 0;
     for (unsigned i = 1;i <= 4;++i) {
@@ -50,7 +50,7 @@
             continue;
     }
 
-    STAssertEquals(executed, 10U, @"onExit blocks should be executed even when break or continue is used");
+    XCTAssertEqual(executed, 10U, @"onExit blocks should be executed even when break or continue is used");
 
     executed = 0;
     {
@@ -67,7 +67,7 @@
             ++executed;
     }
 
-    STAssertEquals(executed, 2U, @"onExit blocks should be executed even when goto is used");
+    XCTAssertEqual(executed, 2U, @"onExit blocks should be executed even when goto is used");
     
     str = [@"foo" mutableCopy];
     {
@@ -75,13 +75,13 @@
             [str appendString:@"baz"];
         };
         [str appendString:@"bar"];
-        STAssertEqualObjects(str, @"foobar", @"onExit block should not be executed before the scope ends");
+        XCTAssertEqualObjects(str, @"foobar", @"onExit block should not be executed before the scope ends");
     }
 
     str = [@"foo" mutableCopy];
     [self nestedAppend:str];
 
-    STAssertEqualObjects(str, @"foobar", @"'bar' should've been appended to 'foo' at the end of a called method that exited early");
+    XCTAssertEqualObjects(str, @"foobar", @"'bar' should've been appended to 'foo' at the end of a called method that exited early");
 }
 
 - (void)nestedAppend:(NSMutableString *)str {
@@ -111,31 +111,31 @@
 
     {
         @onExit {
-            STAssertEquals(lastBlockEntered, 2U, @"lexical ordering of @onExit blocks is not correct!");
+            XCTAssertEqual(lastBlockEntered, 2U, @"lexical ordering of @onExit blocks is not correct!");
 
             lastBlockEntered = 1;
         };
 
         @onExit {
-            STAssertEquals(lastBlockEntered, 3U, @"lexical ordering of @onExit blocks is not correct!");
+            XCTAssertEqual(lastBlockEntered, 3U, @"lexical ordering of @onExit blocks is not correct!");
 
             lastBlockEntered = 2;
         };
 
         @onExit {
-            STAssertEquals(lastBlockEntered, 4U, @"lexical ordering of @onExit blocks is not correct!");
+            XCTAssertEqual(lastBlockEntered, 4U, @"lexical ordering of @onExit blocks is not correct!");
 
             lastBlockEntered = 3;
         };
 
         @onExit {
-            STAssertEquals(lastBlockEntered, 0U, @"lexical ordering of @onExit blocks is not correct!");
+            XCTAssertEqual(lastBlockEntered, 0U, @"lexical ordering of @onExit blocks is not correct!");
 
             lastBlockEntered = 4;
         };
     }
 
-    STAssertEquals(lastBlockEntered, 1U, @"lexical ordering of @onExit blocks is not correct, or cleanup blocks did not execute at all!");
+    XCTAssertEqual(lastBlockEntered, 1U, @"lexical ordering of @onExit blocks is not correct, or cleanup blocks did not execute at all!");
 }
 
 - (void)testExceptionCleanup {
@@ -148,22 +148,22 @@
 
         [NSException raise:@"EXTScopeTestException" format:@"test exception for @onExit cleanup in @try"];
     } @catch (NSException *exception) {
-        STAssertEqualObjects([exception name], @"EXTScopeTestException", @"unexpected exception %@ thrown");
+        XCTAssertEqualObjects([exception name], @"EXTScopeTestException", @"unexpected exception %@ thrown", exception);
     } @finally {
-        STAssertTrue(cleanupBlockRun, @"@onExit block was not run when an exception was thrown");
+        XCTAssertTrue(cleanupBlockRun, @"@onExit block was not run when an exception was thrown");
     }
 
-    STAssertTrue(cleanupBlockRun, @"@onExit block was not run when an exception was thrown");
+    XCTAssertTrue(cleanupBlockRun, @"@onExit block was not run when an exception was thrown");
 
     NSMutableString *str = [@"foo" mutableCopy];
 
     @try {
         [self nestedThrowingAppend:str];
     } @catch (NSException *exception) {
-        STAssertEqualObjects([exception name], @"EXTScopeTestException", @"unexpected exception %@ thrown");
+        XCTAssertEqualObjects([exception name], @"EXTScopeTestException", @"unexpected exception %@ thrown", exception);
     }
 
-    STAssertEqualObjects(str, @"foobar", @"'bar' should've been appended to 'foo' at the end of a called method that threw an exception");
+    XCTAssertEqualObjects(str, @"foobar", @"'bar' should've been appended to 'foo' at the end of a called method that threw an exception");
 }
 
 - (void)testWeakifyUnsafeifyStrongify {
@@ -182,23 +182,23 @@
         BOOL (^matchesFooOrBar)(NSString *) = ^ BOOL (NSString *str){
             @strongify(bar, foo);
 
-            STAssertEqualObjects(foo, @"foo", @"");
-            STAssertEqualObjects(bar, @"bar", @"");
+            XCTAssertEqualObjects(foo, @"foo", @"");
+            XCTAssertEqualObjects(bar, @"bar", @"");
 
-            STAssertTrue(fooPtr != &foo, @"Address of 'foo' within block should be different from its address outside the block");
-            STAssertTrue(barPtr != &bar, @"Address of 'bar' within block should be different from its address outside the block");
+            XCTAssertTrue(fooPtr != &foo, @"Address of 'foo' within block should be different from its address outside the block");
+            XCTAssertTrue(barPtr != &bar, @"Address of 'bar' within block should be different from its address outside the block");
 
             return [foo isEqual:str] || [bar isEqual:str];
         };
 
-        STAssertTrue(matchesFooOrBar(@"foo"), @"");
-        STAssertTrue(matchesFooOrBar(@"bar"), @"");
-        STAssertFalse(matchesFooOrBar(@"buzz"), @"");
+        XCTAssertTrue(matchesFooOrBar(@"foo"), @"");
+        XCTAssertTrue(matchesFooOrBar(@"bar"), @"");
+        XCTAssertFalse(matchesFooOrBar(@"buzz"), @"");
 
         verifyMemoryManagement = [^{
             // Can only strongify the weak reference without issue.
             @strongify(foo);
-            STAssertNil(foo, @"");
+            XCTAssertNil(foo, @"");
         } copy];
     }
 

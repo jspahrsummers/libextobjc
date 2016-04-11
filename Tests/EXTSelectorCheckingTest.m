@@ -13,15 +13,15 @@
 
 - (void)testCheckedSelectors {
     NSString *str = @"foobar";
-    STAssertEquals(@checkselector(str, compare:, options:), @selector(compare:options:), @"");
+    XCTAssertEqual(@checkselector(str, compare:, options:), @selector(compare:options:), @"");
 
-    STAssertEquals(@checkselector([NSURL class], URLWithString:), @selector(URLWithString:), @"");
+    XCTAssertEqual(@checkselector([NSURL class], URLWithString:), @selector(URLWithString:), @"");
 }
 
 - (void)testCheckSelectorsWithZeroArguments {
     NSString *str = @"foobar";
-    STAssertEquals(@checkselector0(str, intValue), @selector(intValue), @"");
-    STAssertEquals(@checkselector0([NSURL class], class), @selector(class), @"");
+    XCTAssertEqual(@checkselector0(str, intValue), @selector(intValue), @"");
+    XCTAssertEqual(@checkselector0([NSURL class], class), @selector(class), @"");
 }
 
 @end
