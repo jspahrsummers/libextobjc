@@ -21,20 +21,20 @@
         }
     });
 
-    STAssertEquals(myCoroutine(), 0, @"expected first coroutine call to yield 0");
-    STAssertEquals(myCoroutine(), 1, @"expected second coroutine call to yield 1");
-    STAssertEquals(myCoroutine(), 2, @"expected third coroutine call to yield 2");
-    STAssertEquals(myCoroutine(), 0, @"expected restarted coroutine call to yield 0");
-    STAssertEquals(myCoroutine(), 1, @"expected second coroutine call to yield 1");
+    XCTAssertEqual(myCoroutine(), 0, @"expected first coroutine call to yield 0");
+    XCTAssertEqual(myCoroutine(), 1, @"expected second coroutine call to yield 1");
+    XCTAssertEqual(myCoroutine(), 2, @"expected third coroutine call to yield 2");
+    XCTAssertEqual(myCoroutine(), 0, @"expected restarted coroutine call to yield 0");
+    XCTAssertEqual(myCoroutine(), 1, @"expected second coroutine call to yield 1");
 
     myCoroutine = coroutine(void)({
         yield 5;
         yield 18;
     });
 
-    STAssertEquals(myCoroutine(), 5, @"expected first coroutine call to yield 5");
-    STAssertEquals(myCoroutine(), 18, @"expected second coroutine call to yield 18");
-    STAssertEquals(myCoroutine(), 5, @"expected restarted coroutine call to yield 5");
+    XCTAssertEqual(myCoroutine(), 5, @"expected first coroutine call to yield 5");
+    XCTAssertEqual(myCoroutine(), 18, @"expected second coroutine call to yield 18");
+    XCTAssertEqual(myCoroutine(), 5, @"expected restarted coroutine call to yield 5");
 }
 
 @end

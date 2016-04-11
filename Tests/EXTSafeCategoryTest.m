@@ -41,10 +41,10 @@
 @implementation EXTSafeCategoryTest
 - (void)testSafeCategory {
     NSObject *obj = [[NSObject alloc] init];
-    STAssertNotNil(obj, @"could not allocate object of safe category'd class");
-    STAssertTrue([obj respondsToSelector:@selector(description)], @"category'd object should respond to pre-existing method selector");
-    STAssertTrue([obj respondsToSelector:@selector(customDescription)], @"category'd object should respond to added method selector");
-    STAssertFalse([[obj description] isEqualToString:@"NSObject(TestExtensions)"], @"expected -description method to be original implementation, not overriden");
-    STAssertEqualObjects([obj customDescription], @"NSObject(TestExtensions)", @"expected -customDescription method to be implemented, and return custom value");
+    XCTAssertNotNil(obj, @"could not allocate object of safe category'd class");
+    XCTAssertTrue([obj respondsToSelector:@selector(description)], @"category'd object should respond to pre-existing method selector");
+    XCTAssertTrue([obj respondsToSelector:@selector(customDescription)], @"category'd object should respond to added method selector");
+    XCTAssertFalse([[obj description] isEqualToString:@"NSObject(TestExtensions)"], @"expected -description method to be original implementation, not overriden");
+    XCTAssertEqualObjects([obj customDescription], @"NSObject(TestExtensions)", @"expected -customDescription method to be implemented, and return custom value");
 }
 @end

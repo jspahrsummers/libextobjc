@@ -7,7 +7,7 @@
 //  Released under the MIT license.
 //
 
-#import <SenTestingKit/SenTestingKit.h>
+#import <XCTest/XCTest.h>
 #import <Foundation/Foundation.h>
 #import "EXTConcreteProtocol.h"
 
@@ -22,7 +22,7 @@
 - (void)additionalMethod;
 @end
 
-@interface EXTConcreteProtocolTest : SenTestCase {
+@interface EXTConcreteProtocolTest : XCTestCase {
 
 }
 

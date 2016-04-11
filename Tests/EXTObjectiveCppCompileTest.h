@@ -6,9 +6,9 @@
 //  Released under the MIT license.
 //
 
-#import <SenTestingKit/SenTestingKit.h>
+#import <XCTest/XCTest.h>
 #import "extobjc.h"
 
-@interface EXTObjectiveCppCompileTest : SenTestCase
+@interface EXTObjectiveCppCompileTest : XCTestCase
 
 @end

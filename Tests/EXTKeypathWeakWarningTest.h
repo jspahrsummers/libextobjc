@@ -6,9 +6,9 @@
 //
 //
 
-#import <SenTestingKit/SenTestingKit.h>
+#import <XCTest/XCTest.h>
 #import "EXTKeyPathCoding.h"
 
-@interface EXTKeypathWeakWarningTest : SenTestCase
+@interface EXTKeypathWeakWarningTest : XCTestCase
 
 @end

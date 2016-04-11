@@ -7,11 +7,11 @@
 //  Released under the MIT license.
 //
 
-#import <SenTestingKit/SenTestingKit.h>
+#import <XCTest/XCTest.h>
 #import <Foundation/Foundation.h>
 #import "EXTRuntimeExtensions.h"
 
-@interface EXTRuntimeExtensionsTest : SenTestCase {
+@interface EXTRuntimeExtensionsTest : XCTestCase {
     
 }
 

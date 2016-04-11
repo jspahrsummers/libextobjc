@@ -22,55 +22,55 @@
 
 - (void)testSingleKey {
     NSURL *URL = [NSURL URLWithString:@"http://www.google.com:8080/search?q=foo"];
-    STAssertNotNil(URL, @"");
+    XCTAssertNotNil(URL, @"");
 
     NSString *path = @keypath(URL.port);
-    STAssertEqualObjects(path, @"port", @"");
+    XCTAssertEqualObjects(path, @"port", @"");
 }
 
 - (void)testKeyPath {
     NSURL *URL = [NSURL URLWithString:@"http://www.google.com:8080/search?q=foo"];
-    STAssertNotNil(URL, @"");
+    XCTAssertNotNil(URL, @"");
 
     NSString *path = @keypath(URL.port.stringValue);
-    STAssertEqualObjects(path, @"port.stringValue", @"");
+    XCTAssertEqualObjects(path, @"port.stringValue", @"");
 
     path = @keypath(URL.port, stringValue);
-    STAssertEqualObjects(path, @"stringValue", @"");
+    XCTAssertEqualObjects(path, @"stringValue", @"");
 }
 
 - (void)testClassKeyPath {
     NSString *path = @keypath(NSString.class.description);
-    STAssertEqualObjects(path, @"class.description", @"");
+    XCTAssertEqualObjects(path, @"class.description", @"");
 
     path = @keypath(NSString.class, description);
-    STAssertEqualObjects(path, @"description", @"");
+    XCTAssertEqualObjects(path, @"description", @"");
 }
 
 - (void)testMyClassInstanceKeyPath {
     NSString *path = @keypath(MyClass.new, someUniqueProperty);
-    STAssertEqualObjects(path, @"someUniqueProperty", @"");
+    XCTAssertEqualObjects(path, @"someUniqueProperty", @"");
 
     MyClass *obj = [[MyClass alloc] init];
 
     path = @keypath(obj.someUniqueProperty);
-    STAssertEqualObjects(path, @"someUniqueProperty", @"");
+    XCTAssertEqualObjects(path, @"someUniqueProperty", @"");
 }
 
 - (void)testMyClassClassKeyPath {
     NSString *path = @keypath(MyClass, classProperty);
-    STAssertEqualObjects(path, @"classProperty", @"");
+    XCTAssertEqualObjects(path, @"classProperty", @"");
 }
 
 - (void)testCollectionInstanceKeyPath {
 	MyClass *obj = [[MyClass alloc] init];
 	NSString *path = @collectionKeypath(obj.collection, MyClass.new, someUniqueProperty);
-	STAssertEqualObjects(path, @"collection.someUniqueProperty", @"");
+	XCTAssertEqualObjects(path, @"collection.someUniqueProperty", @"");
 }
 
 - (void)testCollectionClassKeyPath {
 	NSString *path = @collectionKeypath(MyClass.new, collection, MyClass.new, someUniqueProperty);
-	STAssertEqualObjects(path, @"collection.someUniqueProperty", @"");
+	XCTAssertEqualObjects(path, @"collection.someUniqueProperty", @"");
 }
 
 @end
