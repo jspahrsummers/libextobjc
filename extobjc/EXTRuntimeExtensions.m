@@ -463,10 +463,17 @@ ext_propertyAttributes *ext_copyPropertyAttributes (objc_property_t property) {
         return NULL;
     }
 
-    // allocate enough space for the structure and the type string (plus a NUL)
-    ext_propertyAttributes *attributes = calloc(1, sizeof(ext_propertyAttributes) + typeLength + 1);
+    // allocate enough space for the structure (plus a NUL)
+    ext_propertyAttributes *attributes = calloc(1, sizeof(ext_propertyAttributes) + 1);
     if (!attributes) {
         fprintf(stderr, "ERROR: Could not allocate ext_propertyAttributes structure for attribute string \"%s\" for property %s\n", attrString, property_getName(property));
+        return NULL;
+    }
+
+    // allocate enough space for the type string (plus a NUL)
+    attributes->type = calloc(1, typeLength + 1);
+    if (attributes->type == NULL) {
+        fprintf(stderr, "ERROR: Could not allocate property attributes type string for attribute string  \"%s\" for property %s\n", attrString, property_getName(property));
         return NULL;
     }
 
