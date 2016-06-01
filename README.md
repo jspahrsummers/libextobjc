@@ -2,8 +2,6 @@ The Extended Objective-C library extends the dynamism of the Objective-C program
 
 libextobjc is meant to be very modular – most of its classes and modules can be used with no more than one or two dependencies.
 
-Please feel free to open issues for feature requests or ideas for language extensions (even if you have no idea how they'd work)!
-
 # Features
 
 libextobjc currently includes the following features:
