@@ -90,7 +90,13 @@
 /*** implementation details follow ***/
 typedef void (^ext_cleanupBlock_t)();
 
-void ext_executeCleanupBlock (__strong ext_cleanupBlock_t *block);
+#if defined(__cplusplus)
+extern "C" {
+#endif
+    void ext_executeCleanupBlock (__strong ext_cleanupBlock_t *block);
+#if defined(__cplusplus)
+}
+#endif
 
 #define ext_weakify_(INDEX, CONTEXT, VAR) \
     CONTEXT __typeof__(VAR) metamacro_concat(VAR, _weak_) = (VAR);
