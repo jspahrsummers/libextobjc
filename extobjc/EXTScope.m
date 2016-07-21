@@ -9,12 +9,6 @@
 
 #import "EXTScope.h"
 
-#if defined(__cplusplus)
-extern "C" {
-#endif
-    void ext_executeCleanupBlock (__strong ext_cleanupBlock_t *block) {
-        (*block)();
-    }
-#if defined(__cplusplus)
+void ext_executeCleanupBlock (__strong ext_cleanupBlock_t *block) {
+    (*block)();
 }
-#endif
