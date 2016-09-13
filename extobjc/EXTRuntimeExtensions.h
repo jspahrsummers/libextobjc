@@ -111,11 +111,15 @@ typedef struct {
      */
     BOOL dynamic;
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wpadded"
+    
     /**
      * The memory management policy for this property. This will always be
      * #ext_propertyMemoryManagementPolicyAssign if #readonly is \c YES.
      */
     ext_propertyMemoryManagementPolicy memoryManagementPolicy;
+
 
     /**
      * The selector for the getter of this property. This will reflect any
@@ -133,6 +137,8 @@ typedef struct {
      * \e would be, if the property were writable.
      */
     SEL setter;
+    
+#pragma clang diagnostic pop
 
     /**
      * The backing instance variable for this property, or \c NULL if \c
