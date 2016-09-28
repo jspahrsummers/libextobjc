@@ -42,7 +42,8 @@ NSString *lowercaseStringPath = @keypath(NSString.new, lowercaseString);
     _Pragma("clang diagnostic pop") \
 
 #define keypath1(PATH) \
-    (((void)(NO && ((void)PATH, NO)), strchr(# PATH, '.') + 1))
+    (((void)(NO && ((void)PATH, NO)), \
+    ({ char *__extobjckeypath__ = strchr(# PATH, '.'); NSCAssert(__extobjckeypath__, @"Provided key path is invalid."); __extobjckeypath__ + 1; })))
 
 #define keypath2(OBJ, PATH) \
     (((void)(NO && ((void)OBJ.PATH, NO)), # PATH))
