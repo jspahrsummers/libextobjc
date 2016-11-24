@@ -95,6 +95,41 @@ static BOOL SubProtocolInitialized = NO;
 @implementation TestClass5
 @end
 
+// Classes for deeper test of preservation of inheritance
+@interface BaseA : NSObject
+@end
+@implementation BaseA
+- (int)callMeMaybe {return 1;}
+@end
+
+@protocol CallMeMaybeType <NSObject>
+@concrete
+- (int)callMeMaybe;
+@end
+@concreteprotocol(CallMeMaybeType)
+- (int)callMeMaybe {return 20;}
+@end
+
+@interface AOverride : BaseA <CallMeMaybeType>
+@end
+@implementation AOverride
+- (int)callMeMaybe {return 300;}
+@end
+
+@interface ASuper : BaseA <CallMeMaybeType>
+- (int)otherCallMe;
+@end
+@implementation ASuper
+- (int)otherCallMe {
+    return [super callMeMaybe];
+}
+@end
+
+@interface AConcrete : BaseA <CallMeMaybeType>
+@end
+@implementation AConcrete
+@end
+
 /*** logic test code ***/
 @implementation EXTConcreteProtocolTest
 - (void)tearDown {
@@ -148,6 +183,21 @@ static BOOL SubProtocolInitialized = NO;
     XCTAssertEqualObjects([obj getSomeString], @"SubProtocol", @"TestClass5 should be using SubProtocol implementation of getSomeString");
 
     XCTAssertEqual([TestClass5 meaningfulNumber], (NSUInteger)0, @"TestClass5 should not be using protocol implementation of meaningfulNumber");
+}
+
+- (void)testInheritanceChain
+{
+    AOverride *aOverride = [[AOverride alloc] init];
+    STAssertNotNil(aOverride, @"could not allocate concreteprotocol'd class");
+    STAssertEquals([aOverride callMeMaybe], (NSInteger)300, @"aOverride should not be using protocol implementation of callMeMaybe");
+    
+    ASuper *aSuper = [[ASuper alloc] init];
+    STAssertNotNil(aSuper, @"could not allocate concreteprotocol'd class");
+    STAssertEquals([aSuper otherCallMe], (NSInteger)1, @"aSuper should not be using protocol implementation of callMeMaybe, but should be using superclass definition.");
+    
+    AConcrete *aConcrete = [[AConcrete alloc] init];
+    STAssertNotNil(aConcrete, @"could not allocate concreteprotocol'd class");
+    STAssertEquals([aConcrete callMeMaybe], (NSInteger)20, @"aConcrete should not be using protocol implementation of callMeMaybe, but should be using superclass definition.");
 }
 
 @end

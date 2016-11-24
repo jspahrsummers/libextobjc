@@ -33,9 +33,21 @@ static void ext_injectConcreteProtocol (Protocol *protocol, Class containerClass
         SEL selector = method_getName(method);
 
         // first, check to see if such an instance method already exists
-        // (on this class or on a superclass)
-        if (class_getInstanceMethod(class, selector)) {
-            // it does exist, so don't overwrite it
+        //   on the target class.
+        unsigned int methodCount = 0;
+        Method matchedMethod = NULL;
+        Method *methods = class_copyMethodList(class, &methodCount);
+        if(methods && (methodCount > 0)) {
+            for (unsigned int x = 0; x<methodCount; x++) {
+                Method targetClassMethod = methods[x];
+                if (selector == method_getName(targetClassMethod)) {
+                    matchedMethod = targetClassMethod;
+                    break;
+                }
+            }
+        }
+        if (matchedMethod) {
+            free(methods);
             continue;
         }
 
