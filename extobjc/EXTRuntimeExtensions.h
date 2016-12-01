@@ -161,7 +161,7 @@ typedef struct {
      * The type encoding for the value of this property. This is the type as it
      * would be returned by the \c \@encode() directive.
      */
-    char type[];
+    char *type;
 } ext_propertyAttributes;
 
 /**
