@@ -46,7 +46,7 @@ NSString *lowercaseStringPath = @keypath(NSString.new, lowercaseString);
     ({ char *__extobjckeypath__ = strchr(# PATH, '.'); NSCAssert(__extobjckeypath__, @"Provided key path is invalid."); __extobjckeypath__ + 1; })))
 
 #define keypath2(OBJ, PATH) \
-    (((void)(NO && ((void)OBJ.PATH, NO)), # PATH))
+    "" ? @ # PATH : (__typeof__(((__typeof__(OBJ))nil).PATH, @"")) nil
 
 /**
  * \@collectionKeypath allows compile-time verification of key paths across collections NSArray/NSSet etc. Given a real object
