@@ -55,6 +55,28 @@
     metamacro_foreach_cxt(ext_weakify_,, __unsafe_unretained, __VA_ARGS__)
 
 /**
+ * Like #weakify, but uses \c __block instead, for targets or
+ * classes that do not support weak references.
+ */
+#define blockify(...) \
+	try {} @finally {} \
+	metamacro_foreach_cxt(ext_weakify_,, __block, __VA_ARGS__)
+
+/**
+ * Conditionnaly replace weakify with blockify if ARC is disabled.
+ */
+#ifdef __has_feature
+	#define OBJC_ARC_ENABLED __has_feature(objc_arc)
+#else
+	#define OBJC_ARC_ENABLED 0
+#endif
+
+#if !OBJC_ARC_ENABLED
+	#undef weakify
+	#define weakify blockify
+#endif
+
+/**
  * Strongly references each of the variables provided as arguments, which must
  * have previously been passed to #weakify.
  *
