@@ -44,7 +44,7 @@
  * Inspired by P99: http://p99.gforge.inria.fr
  */
 #define metamacro_argcount(...) \
-        metamacro_at(20, __VA_ARGS__, 20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1)
+        metamacro_at(20, ##__VA_ARGS__, 20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0)
 
 /**
  * Identical to #metamacro_foreach_cxt, except that no CONTEXT argument is
