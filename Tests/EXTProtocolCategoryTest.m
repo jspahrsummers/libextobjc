@@ -30,14 +30,16 @@
         nil
     ];
 
-    STAssertNotNil(testObjects, @"could not allocate test array of NSCopying objects");
+    XCTAssertNotNil(testObjects, @"could not allocate test array of NSCopying objects");
     for (id obj in testObjects) {
-        STAssertTrue([[obj class] respondsToSelector:@selector(duplicateOf:)], @"class %@ conforming to NSCopying did not respond to category method selector", [obj class]);
+			
+        XCTAssertTrue([[obj class] respondsToSelector:@selector(duplicateOf:)], @"class %@ conforming to NSCopying did not respond to category method selector", [obj class]);
 
         id copiedObj = nil;
-        STAssertNoThrow((copiedObj = [[obj class] duplicateOf:obj]), @"could not invoke NSCopying category method on %@", obj);
-        STAssertEqualObjects(obj, copiedObj, @"NSCopying category method should've returned a copied object");
-        STAssertEqualObjects([obj copy], copiedObj, @"NSCopying category method should've returned a copied object");
+			
+			XCTAssertNoThrow((copiedObj = [[obj class] duplicateOf:obj]), @"could not invoke NSCopying category method on %@", obj);
+      XCTAssertEqualObjects(obj, copiedObj, @"NSCopying category method should've returned a copied object");
+      XCTAssertEqualObjects([obj copy], copiedObj, @"NSCopying category method should've returned a copied object");
     }
 }
 @end

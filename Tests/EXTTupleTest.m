@@ -17,9 +17,9 @@
 
 - (void)testTuples {
     EXTTuple2 t = [self tupleMethod];
-
-    STAssertEqualObjects(t.v0, @"foobar", @"");
-    STAssertEqualObjects(t.v1, @5, @"");
+	
+    XCTAssertEqualObjects(t.v0, @"foobar", @"");
+    XCTAssertEqualObjects(t.v1, @5, @"");
 }
 
 - (void)testMultipleAssignment {
@@ -28,8 +28,8 @@
 
     multivar(str, num) = unpack([self tupleMethod]);
 
-    STAssertEqualObjects(str, @"foobar", @"");
-    STAssertEqualObjects(num, @5, @"");
+    XCTAssertEqualObjects(str, @"foobar", @"");
+    XCTAssertEqualObjects(num, @5, @"");
 }
 
 - (void)testMultipleAssignmentRvalue {
@@ -38,9 +38,9 @@
 
     NSString *sameStr = multivar(str, num) = unpack([self tupleMethod]);
 
-    STAssertEqualObjects(str, @"foobar", @"");
-    STAssertEqualObjects(sameStr, str, @"");
-    STAssertEqualObjects(num, @5, @"");
+    XCTAssertEqualObjects(str, @"foobar", @"");
+    XCTAssertEqualObjects(sameStr, str, @"");
+    XCTAssertEqualObjects(num, @5, @"");
 }
 
 - (void)testUnpackingInlineTuple {
@@ -49,8 +49,8 @@
 
     multivar(str, num) = unpack(tuple(@"foo", @3));
 
-    STAssertEqualObjects(str, @"foo", @"");
-    STAssertEqualObjects(num, @3, @"");
+    XCTAssertEqualObjects(str, @"foo", @"");
+    XCTAssertEqualObjects(num, @3, @"");
 }
 
 @end

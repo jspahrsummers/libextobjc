@@ -7,10 +7,10 @@
 //  Released under the MIT license.
 //
 
-#import <SenTestingKit/SenTestingKit.h>
+#import <XCTest/XCTest.h>
 #import <Foundation/Foundation.h>
 #import "EXTTuple.h"
 
-@interface EXTTupleTest : SenTestCase
+@interface EXTTupleTest : XCTestCase
 
 @end

@@ -757,7 +757,7 @@ const char *ext_setterNameForProperty (const char *class_name, const char *prop_
 const char *ext_getterNameForProperty (const char *class_name, const char *prop_name) {
     objc_property_t prop = class_getProperty(objc_getClass(class_name), prop_name);
     
-    char *getter_name = property_copyAttributeValue(prop, "G");]
+    char *getter_name = property_copyAttributeValue(prop, "G");
     
     putBufferIntoAutoreleasePool(getter_name, 256);
     

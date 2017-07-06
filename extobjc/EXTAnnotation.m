@@ -27,7 +27,8 @@ BOOL ext_applyAnnotationAfterMarkerProperty (Class targetClass, id annotation, c
     // annotating
     for (unsigned i = 0; i < propertyCount - 1; ++i) {
         objc_property_t markerProperty = properties[i];
-        if (strcmp(property_getName(markerProperty), markerPropertyName) == 0) {
+			const char* propertyName = property_getName(markerProperty);
+        if (strcmp(propertyName, markerPropertyName) == 0) {
             objc_property_t realProperty = properties[i + 1];
             objc_setAssociatedObject(targetClass, realProperty, annotation, OBJC_ASSOCIATION_COPY);
             return YES;

@@ -74,46 +74,46 @@
 
 - (void)testInstanceMethod {
     MultimethodClass *obj = [[MultimethodClass alloc] init];
+	
+    XCTAssertEqualObjects([obj match:@5 with:nil], @"left number", @"");
+    XCTAssertEqualObjects([obj match:@5 with:@"buzz"], @"left number", @"");
+    XCTAssertEqualObjects([obj match:@5 with:[NSObject class]], @"left number", @"");
 
-    STAssertEqualObjects([obj match:@5 with:nil], @"left number", @"");
-    STAssertEqualObjects([obj match:@5 with:@"buzz"], @"left number", @"");
-    STAssertEqualObjects([obj match:@5 with:[NSObject class]], @"left number", @"");
+    XCTAssertEqualObjects([obj match:nil with:@10], @"right number", @"");
+    XCTAssertEqualObjects([obj match:@"foo" with:@10], @"right number", @"");
+    XCTAssertEqualObjects([obj match:[NSObject class] with:@10], @"right number", @"");
 
-    STAssertEqualObjects([obj match:nil with:@10], @"right number", @"");
-    STAssertEqualObjects([obj match:@"foo" with:@10], @"right number", @"");
-    STAssertEqualObjects([obj match:[NSObject class] with:@10], @"right number", @"");
+    XCTAssertEqualObjects([obj match:@"foo" with:@"bar"], @"foobar", @"");
+    XCTAssertNil([obj match:nil with:@"bar"], @"");
 
-    STAssertEqualObjects([obj match:@"foo" with:@"bar"], @"foobar", @"");
-    STAssertNil([obj match:nil with:@"bar"], @"");
-
-    STAssertEqualObjects([obj match:nil with:nil], @"unknown", @"");
-    STAssertEqualObjects([obj match:[NSObject new] with:nil], @"unknown", @"");
-    STAssertEqualObjects([obj match:nil with:[NSObject new]], @"unknown", @"");
-    STAssertEqualObjects([obj match:@"fuzz" with:[NSObject new]], @"unknown", @"");
-    STAssertEqualObjects([obj match:[NSObject class] with:[NSObject new]], @"unknown", @"");
+    XCTAssertEqualObjects([obj match:nil with:nil], @"unknown", @"");
+    XCTAssertEqualObjects([obj match:[NSObject new] with:nil], @"unknown", @"");
+    XCTAssertEqualObjects([obj match:nil with:[NSObject new]], @"unknown", @"");
+    XCTAssertEqualObjects([obj match:@"fuzz" with:[NSObject new]], @"unknown", @"");
+    XCTAssertEqualObjects([obj match:[NSObject class] with:[NSObject new]], @"unknown", @"");
 }
 
 - (void)testClassMethod {
-    STAssertEqualObjects([MultimethodClass match:nil], @"unknown", @"");
-    STAssertEqualObjects([MultimethodClass match:[NSObject new]], @"unknown", @"");
-    STAssertEqualObjects([MultimethodClass match:[NSValue valueWithPointer:NULL]], @"value", @"");
-    STAssertEqualObjects([MultimethodClass match:@3.14], @"3.14", @"");
-    STAssertEqualObjects([MultimethodClass match:[NSString class]], @"NSString", @"");
+    XCTAssertEqualObjects([MultimethodClass match:nil], @"unknown", @"");
+    XCTAssertEqualObjects([MultimethodClass match:[NSObject new]], @"unknown", @"");
+    XCTAssertEqualObjects([MultimethodClass match:[NSValue valueWithPointer:NULL]], @"value", @"");
+    XCTAssertEqualObjects([MultimethodClass match:@3.14], @"3.14", @"");
+    XCTAssertEqualObjects([MultimethodClass match:[NSString class]], @"NSString", @"");
 
     double value = 3.14;
-    STAssertEqualObjects([MultimethodClass match:[NSValue valueWithBytes:&value objCType:@encode(double)]], @"value", @"");
+    XCTAssertEqualObjects([MultimethodClass match:[NSValue valueWithBytes:&value objCType:@encode(double)]], @"value", @"");
 }
 
 - (void)testMultimethodInheritance {
-    STAssertEqualObjects([MultimethodSubclass match:nil], @"unknown", @"");
-    STAssertEqualObjects([MultimethodSubclass match:[NSObject class]], @"NSObject", @"");
-    STAssertEqualObjects([MultimethodSubclass match:@"foobar"], @"foobar", @"");
+    XCTAssertEqualObjects([MultimethodSubclass match:nil], @"unknown", @"");
+    XCTAssertEqualObjects([MultimethodSubclass match:[NSObject class]], @"NSObject", @"");
+    XCTAssertEqualObjects([MultimethodSubclass match:@"foobar"], @"foobar", @"");
 
     MultimethodSubclass *obj = [[MultimethodSubclass alloc] init];
 
-    STAssertEqualObjects([obj match:@5 with:nil], @"left number", @"");
-    STAssertEqualObjects([obj match:nil with:@10], @"right number", @"");
-    STAssertEqualObjects([obj match:@5 with:@10], @"both numbers", @"");
+    XCTAssertEqualObjects([obj match:@5 with:nil], @"left number", @"");
+    XCTAssertEqualObjects([obj match:nil with:@10], @"right number", @"");
+    XCTAssertEqualObjects([obj match:@5 with:@10], @"both numbers", @"");
 }
 
 @end

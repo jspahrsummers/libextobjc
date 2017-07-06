@@ -7,9 +7,9 @@
 //  Released under the MIT license.
 //
 
-#import <SenTestingKit/SenTestingKit.h>
+#import <XCTest/XCTest.h>
 #import "EXTMultimethod.h"
 
-@interface EXTMultimethodTest : SenTestCase
+@interface EXTMultimethodTest : XCTestCase
 
 @end

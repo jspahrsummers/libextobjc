@@ -7,9 +7,9 @@
 //  Released under the MIT license.
 //
 
-#import <SenTestingKit/SenTestingKit.h>
+#import <XCTest/XCTest.h>
 #import "EXTAnnotation.h"
 
-@interface EXTAnnotationTest : SenTestCase
+@interface EXTAnnotationTest : XCTestCase
 
 @end

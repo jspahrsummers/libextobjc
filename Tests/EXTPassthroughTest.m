@@ -46,55 +46,57 @@
 
 - (void)testPassthroughMethods {
     OuterClass *outer = [[OuterClass alloc] init];
-    STAssertNotNil(outer, @"");
+    XCTAssertNotNil(outer, @"");
     
     [outer renamedMethod];
-    STAssertEquals([outer methodWithString:@"foo"], 3, @"");
-    STAssertEquals([outer methodWithString:@"foobar" number:@5], 11, @"");
+	
+    XCTAssertEqual([outer methodWithString:@"foo"], 3, @"");
+    XCTAssertEqual([outer methodWithString:@"foobar" number:@5], 11, @"");
 }
 
 - (void)testPassthroughPropertyCustomAccessors {
     OuterClass *outer = [[OuterClass alloc] init];
-    STAssertNotNil(outer, @"");
-    STAssertFalse(outer.flakyCrust, @"");
-    STAssertFalse(outer.inner.flakyCrust, @"");
+    XCTAssertNotNil(outer, @"");
+    XCTAssertFalse(outer.flakyCrust, @"");
+    XCTAssertFalse(outer.inner.flakyCrust, @"");
     
     outer.flakyCrust = YES;
-    STAssertTrue(outer.flakyCrust, @"");
-    STAssertTrue(outer.inner.flakyCrust, @"");
+    XCTAssertTrue(outer.flakyCrust, @"");
+    XCTAssertTrue(outer.inner.flakyCrust, @"");
 }
 
 - (void)testPassthroughPropertySameBaseNameDifferentAccessors {
     OuterClass *outer = [[OuterClass alloc] init];
-    STAssertNotNil(outer, @"");
-    STAssertFalse(outer.aLaMode, @"");
-    STAssertFalse(outer.inner.aLaMode, @"");
+    XCTAssertNotNil(outer, @"");
+    XCTAssertFalse(outer.aLaMode, @"");
+    XCTAssertFalse(outer.inner.aLaMode, @"");
     
     outer.aLaMode = YES;
-    STAssertTrue(outer.aLaMode, @"");
-    STAssertTrue(outer.inner.aLaMode, @"");
+    XCTAssertTrue(outer.aLaMode, @"");
+    XCTAssertTrue(outer.inner.aLaMode, @"");
 }
 
 - (void)testPassthroughPropertyDifferentNames {
     OuterClass *outer = [[OuterClass alloc] init];
-    STAssertNotNil(outer, @"");
-    STAssertEqualObjects(nil, outer.fruitType, @"");
-    STAssertEqualObjects(nil, outer.inner.filling, @"");
+    XCTAssertNotNil(outer, @"");
+    XCTAssertEqualObjects(nil, outer.fruitType, @"");
+    XCTAssertEqualObjects(nil, outer.inner.filling, @"");
     
     outer.fruitType = @"Pear";
-    STAssertEqualObjects(@"Pear", outer.fruitType, @"");
-    STAssertEqualObjects(@"Pear", outer.inner.filling, @"");
+    XCTAssertEqualObjects(@"Pear", outer.fruitType, @"");
+    XCTAssertEqualObjects(@"Pear", outer.inner.filling, @"");
 }
 
 - (void)testPassthroughPropertySameNames {
     OuterClass *outer = [[OuterClass alloc] init];
-    STAssertNotNil(outer, @"");
-    STAssertEquals(0.0, outer.bakingTime, @"");
-    STAssertEquals(0.0, outer.inner.bakingTime, @"");
+    XCTAssertNotNil(outer, @"");
+    XCTAssertEqual(0.0, outer.bakingTime, @"");
+    XCTAssertEqual(0.0, outer.inner.bakingTime, @"");
     
     outer.bakingTime = 75.0;
-    STAssertEqualsWithAccuracy(75.0, outer.bakingTime, 0.5, @"");
-    STAssertEqualsWithAccuracy(75.0, outer.inner.bakingTime, 0.5, @"");
+	
+    XCTAssertEqualWithAccuracy(75.0, outer.bakingTime, 0.5, @"");
+    XCTAssertEqualWithAccuracy(75.0, outer.inner.bakingTime, 0.5, @"");
 }
 
 

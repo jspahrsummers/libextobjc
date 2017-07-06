@@ -33,11 +33,13 @@
 @implementation EXTBlockMethodTest
 - (void)testAddingMethod {
     id block = ^(id self, int val){
-        STAssertTrue([self isKindOfClass:[BlockTestClass class]], @"expected self to be an instance of BlockTestClass or one of its subclasses");
+			
+        XCTAssertTrue([self isKindOfClass:[BlockTestClass class]], @"expected self to be an instance of BlockTestClass or one of its subclasses");
         return val * 2;
     };
 
-    STAssertNotNil(block, @"could not get block method");
+	
+    XCTAssertNotNil(block, @"could not get block method");
 
     BOOL success = ext_addBlockMethod(
         [BlockTestClass class],
@@ -50,41 +52,45 @@
         "i@:i"
     );
 
-    STAssertTrue(success, @"could not add new block method to BlockTestClass");
+	
+    XCTAssertTrue(success, @"could not add new block method to BlockTestClass");
 
     {
         BlockTestClass *obj = [[BlockTestClass alloc] init];
-        STAssertNotNil(obj, @"could not allocate BlockTestClass instance");
+			
+        XCTAssertNotNil(obj, @"could not allocate BlockTestClass instance");
 
         int expected = 84;
 
         int result;
-        STAssertNoThrow(result = [obj multiplyByTwo:42], @"expected -multiplyByTwo: method to be available");
-        STAssertEquals(expected, result, @"expected -multiplyByTwo: method to be implemented using block implementation");
+			
+        XCTAssertNoThrow(result = [obj multiplyByTwo:42], @"expected -multiplyByTwo: method to be available");
+        XCTAssertEqual(expected, result, @"expected -multiplyByTwo: method to be implemented using block implementation");
     }
 
     {
         BlockTestSubclass *obj = [[BlockTestSubclass alloc] init];
-        STAssertNotNil(obj, @"could not allocate BlockTestSubclass instance");
+        XCTAssertNotNil(obj, @"could not allocate BlockTestSubclass instance");
 
         int expected = 84;
 
         int result;
-        STAssertNoThrow(result = [obj multiplyByTwo:42], @"expected -multiplyByTwo: method to be available");
-        STAssertEquals(expected, result, @"expected -multiplyByTwo: method to be implemented using block implementation");
+			
+        XCTAssertNoThrow(result = [obj multiplyByTwo:42], @"expected -multiplyByTwo: method to be available");
+        XCTAssertEqual(expected, result, @"expected -multiplyByTwo: method to be implemented using block implementation");
     }
 }
 
 - (void)testReplacingMethod {
     BlockTestClass *obj = [[BlockTestClass alloc] init];
-    STAssertNotNil(obj, @"could not allocate BlockTestClass instance");
+    XCTAssertNotNil(obj, @"could not allocate BlockTestClass instance");
 
-    STAssertEqualObjects([obj testDescription], @"method", @"expected -testDescription before replacement to be as defined in BlockTestClass");
+    XCTAssertEqualObjects([obj testDescription], @"method", @"expected -testDescription before replacement to be as defined in BlockTestClass");
 
     BlockTestSubclass *subobj = [[BlockTestSubclass alloc] init];
-    STAssertNotNil(subobj, @"could not allocate BlockTestSubclass instance");
+    XCTAssertNotNil(subobj, @"could not allocate BlockTestSubclass instance");
 
-    STAssertEqualObjects([subobj testDescription], @"method", @"expected -testDescription before replacement to be as defined in BlockTestClass");
+    XCTAssertEqualObjects([subobj testDescription], @"method", @"expected -testDescription before replacement to be as defined in BlockTestClass");
 
     __block BOOL testDescriptionCalled = NO;
 
@@ -95,7 +101,7 @@
         } else if ([self isMemberOfClass:[BlockTestSubclass class]]) {
             return @"subclass";
         } else {
-            STFail(@"expected self to be an instance of BlockTestClass or BlockTestSubclass");
+            XCTFail(@"expected self to be an instance of BlockTestClass or BlockTestSubclass");
             return nil;
         }
     };
@@ -110,10 +116,13 @@
         method_getTypeEncoding(class_getInstanceMethod(cls, name))
     );
 
-    STAssertFalse(testDescriptionCalled, @"expected -testDescription replacement to not yet be invoked");
-    STAssertEqualObjects([obj testDescription], @"block", @"expected -testDescription after replacement to be as defined in block");
-    STAssertTrue(testDescriptionCalled, @"expected -testDescription replacement to have been invoked and update context");
-
-    STAssertEqualObjects([subobj testDescription], @"subclass", @"expected -testDescription after replacement to be as defined in block");
+	
+    XCTAssertFalse(testDescriptionCalled, @"expected -testDescription replacement to not yet be invoked");
+	
+    XCTAssertEqualObjects([obj testDescription], @"block", @"expected -testDescription after replacement to be as defined in block");
+	
+    XCTAssertTrue(testDescriptionCalled, @"expected -testDescription replacement to have been invoked and update context");
+	
+		XCTAssertEqualObjects([subobj testDescription], @"subclass", @"expected -testDescription after replacement to be as defined in block");
 }
 @end

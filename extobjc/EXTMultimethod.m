@@ -57,7 +57,7 @@ static NSArray *ext_collectMultimethodImplementations (Class descendantClass, SE
     return implementations;
 }
 
-static EXTMultimethodAttributes *ext_bestMultimethod (NSArray *implementations, const id *args, size_t argCount) {
+static EXTMultimethodAttributes *ext_bestMultimethod (NSArray *implementations, const id __autoreleasing *args, size_t argCount) {
     NSMutableArray *possibilities = [NSMutableArray arrayWithCapacity:implementations.count];
 
     // only consider implementations that match the arguments given

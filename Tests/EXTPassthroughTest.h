@@ -7,9 +7,9 @@
 //  Released under the MIT license.
 //
 
-#import <SenTestingKit/SenTestingKit.h>
+#import <XCTest/XCTest.h>
 #import "EXTPassthrough.h"
 
-@interface EXTPassthroughTest : SenTestCase
+@interface EXTPassthroughTest : XCTestCase
 
 @end

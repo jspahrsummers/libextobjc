@@ -41,22 +41,24 @@
 @implementation EXTPrivateMethodTest
 
 - (void)testClassRespondsToPrivateMethods {
-    STAssertTrue([PrivateClass privateMethod], @"");
-
+	
+    XCTAssertTrue([PrivateClass privateMethod], @"");
     PrivateClass *obj = [PrivateClass new];
-    STAssertFalse(obj.private, @"");
-    STAssertFalse([obj privateMethod], NO, @"");
+	
+    XCTAssertFalse(obj.private, @"");
+    XCTAssertFalse([obj privateMethod], @"");
 
     obj.private = YES;
-    STAssertTrue(obj.private, @"");
-    STAssertTrue([obj privateMethod], @"");
+    XCTAssertTrue(obj.private, @"");
+    XCTAssertTrue([obj privateMethod], @"");
 }
 
 - (void)testConflictingMethodsStillUseOverrides {
     PrivateSubclass *obj = [PrivateSubclass new];
-    STAssertEqualObjects(obj.description, @"foobar", @"");
-    STAssertTrue([obj privateMethod], @"");
-    STAssertFalse(obj.private, @"");
+	
+    XCTAssertEqualObjects(obj.description, @"foobar", @"");
+    XCTAssertTrue([obj privateMethod], @"");
+    XCTAssertFalse(obj.private, @"");
 }
 
 @end
