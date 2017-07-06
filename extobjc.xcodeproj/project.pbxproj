@@ -763,6 +763,7 @@
 			baseConfigurationReference = D0919C58146F99B900D680C9 /* iOS-StaticLibrary.xcconfig */;
 			buildSettings = {
 				GCC_PREFIX_HEADER = extobjc/extobjc_Prefix.pch;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				PRODUCT_NAME = extobjc_iOS;
 			};
 			name = Debug;
@@ -772,6 +773,7 @@
 			baseConfigurationReference = D0919C58146F99B900D680C9 /* iOS-StaticLibrary.xcconfig */;
 			buildSettings = {
 				GCC_PREFIX_HEADER = extobjc/extobjc_Prefix.pch;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				PRODUCT_NAME = extobjc_iOS;
 			};
 			name = Release;
