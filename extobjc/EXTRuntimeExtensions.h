@@ -284,6 +284,26 @@ Method ext_getImmediateInstanceMethod (Class aClass, SEL aSelector);
 BOOL ext_getPropertyAccessorsForClass (objc_property_t property, Class aClass, Method *getter, Method *setter);
 
 /**
+ * Returns the name of the setter for \a property on the given class, whether 
+ * the name was specified as part of the property's declaration or
+ * automatically generated.
+ *
+ * @note An autorelease pool must in place when this function is called, and 
+ * the returned string will be invalid when that pool is drained.
+ */
+const char *ext_setterNameForProperty (const char *class_name, const char *prop_name);
+
+/**
+ * Returns the name of the getter for \a property on the given class, whether
+ * the name was specified as part of the property's declaration or
+ * automatically generated.
+ *
+ * @note An autorelease pool must in place when this function is called, and 
+ * the returned string will be invalid when that pool is drained.
+ */
+const char *ext_getterNameForProperty (const char *class_name, const char *prop_name);
+
+/**
  * For all classes registered with the runtime, invokes \c
  * methodSignatureForSelector: and \c instanceMethodSignatureForSelector: to
  * determine a method signature for \a aSelector. If one or more valid

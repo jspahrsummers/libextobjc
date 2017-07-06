@@ -7,6 +7,7 @@
 //  Released under the MIT license.
 //
 
+#import "EXTBlockMethod.h"
 #import "EXTRuntimeExtensions.h"
 #import <objc/runtime.h>
 
@@ -62,11 +63,11 @@
 			objc_setAssociatedObject(self, ext_uniqueKey_ ## CLASS ## _ ## PROPERTY, value, policy); \
 		}; \
 		\
-		if (!class_addMethod(cls, attributes->getter, imp_implementationWithBlock(getter), "@@:")) { \
+		if (!ext_addBlockMethod(cls, attributes->getter, getter, "@@:")) { \
 			NSCAssert(NO, @"Could not add getter %s for property %@.%s", sel_getName(attributes->getter), cls, # PROPERTY); \
 		} \
 		\
-		if (!class_addMethod(cls, attributes->setter, imp_implementationWithBlock(setter), "v@:@")) { \
+		if (!ext_addBlockMethod(cls, attributes->setter, setter, "v@:@")) { \
 			NSCAssert(NO, @"Could not add setter %s for property %@.%s", sel_getName(attributes->setter), cls, # PROPERTY); \
 		} \
 		\
