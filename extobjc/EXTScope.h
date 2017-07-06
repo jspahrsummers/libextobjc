@@ -88,7 +88,7 @@
     _Pragma("clang diagnostic pop")
 
 /*** implementation details follow ***/
-typedef void (^ext_cleanupBlock_t)();
+typedef void (^ext_cleanupBlock_t)(void);
 
 #if defined(__cplusplus)
 extern "C" {
