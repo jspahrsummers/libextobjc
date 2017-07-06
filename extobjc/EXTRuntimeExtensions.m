@@ -731,6 +731,39 @@ BOOL ext_getPropertyAccessorsForClass (objc_property_t property, Class aClass, M
     return YES;
 }
 
+/**
+ * Wraps the bytes in \a buf of \a length with an autoreleased NSData instance.
+ */
+static NSData * putBufferIntoAutoreleasePool (void *buf, size_t length) {
+    return [NSData dataWithBytesNoCopy:buf length:length freeWhenDone:YES];
+}
+
+const char *ext_setterNameForProperty (const char *class_name, const char *prop_name) {
+    objc_property_t prop = class_getProperty(objc_getClass(class_name), prop_name);
+    
+    char *setter_name = property_copyAttributeValue(prop, "S");
+    
+    // Construct the standard setter name
+    if (!setter_name) {
+        setter_name = calloc(256, sizeof(char));
+        snprintf(setter_name, 256, "set%c%s:", toupper(prop_name[0]), prop_name+1);
+    }
+    
+    putBufferIntoAutoreleasePool(setter_name, 256);
+    
+    return setter_name;
+}
+
+const char *ext_getterNameForProperty (const char *class_name, const char *prop_name) {
+    objc_property_t prop = class_getProperty(objc_getClass(class_name), prop_name);
+    
+    char *getter_name = property_copyAttributeValue(prop, "G");
+    
+    putBufferIntoAutoreleasePool(getter_name, 256);
+    
+    return getter_name ?: prop_name;
+}
+
 NSMethodSignature *ext_globalMethodSignatureForSelector (SEL aSelector) {
     NSCParameterAssert(aSelector != NULL);
 
@@ -742,14 +775,20 @@ NSMethodSignature *ext_globalMethodSignatureForSelector (SEL aSelector) {
 
     // reads and writes need to be atomic, but will be ridiculously fast,
     // so we can stay in userland for locks, and keep the speed.
-    static OSSpinLock lock = OS_SPINLOCK_INIT;
+	
+  //  static OSSpinLock lock = OS_SPINLOCK_INIT;
+	static dispatch_semaphore_t semaphore = nil;
+	static dispatch_once_t onceToken;
+	dispatch_once(&onceToken, ^{
+		semaphore = dispatch_semaphore_create(1);
+	});
 
     uintptr_t hash = (uintptr_t)((void *)aSelector) & selectorCacheMask;
     ext_methodDescription methodDesc;
-
-    OSSpinLockLock(&lock);
+	
+	dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
     methodDesc = methodDescriptionCache[hash];
-    OSSpinLockUnlock(&lock);
+	dispatch_semaphore_signal(semaphore);
 
     // cache hit? check the selector to insure we aren't colliding
     if (methodDesc.name == aSelector) {
@@ -803,9 +842,10 @@ NSMethodSignature *ext_globalMethodSignatureForSelector (SEL aSelector) {
 
     if (methodDesc.name) {
         // if not locked, cache this value, but don't wait around
-        if (OSSpinLockTry(&lock)) {
-            methodDescriptionCache[hash] = methodDesc;
-            OSSpinLockUnlock(&lock);
+        if (dispatch_semaphore_wait(semaphore, DISPATCH_TIME_NOW) == 0)
+				{
+          methodDescriptionCache[hash] = methodDesc;
+					dispatch_semaphore_signal(semaphore);
         }
 
         // NB: there are some esoteric system type encodings that cause -signatureWithObjCTypes: to fail,
