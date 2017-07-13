@@ -804,8 +804,7 @@ NSMethodSignature *ext_globalMethodSignatureForSelector (SEL aSelector) {
 
     if (methodDesc.name) {
         // if not locked, cache this value, but don't wait around
-        if (os_unfair_lock_trylock(&lock))
-				{
+        if (os_unfair_lock_trylock(&lock)){
           methodDescriptionCache[hash] = methodDesc;
           os_unfair_lock_unlock(&lock);
         }
