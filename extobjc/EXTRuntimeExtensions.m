@@ -744,13 +744,13 @@ NSMethodSignature *ext_globalMethodSignatureForSelector (SEL aSelector) {
     // reads and writes need to be atomic, but will be ridiculously fast,
     // so we can stay in userland for locks, and keep the speed.
 	
-  uintptr_t hash = (uintptr_t)((void *)aSelector) & selectorCacheMask;
-  ext_methodDescription methodDesc;
-	
-	static os_unfair_lock lock = OS_UNFAIR_LOCK_INIT;
-	os_unfair_lock_lock(&lock);
-	methodDesc = methodDescriptionCache[hash];
-	os_unfair_lock_unlock(&lock);
+    uintptr_t hash = (uintptr_t)((void *)aSelector) & selectorCacheMask;
+    ext_methodDescription methodDesc;
+  
+    static os_unfair_lock lock = OS_UNFAIR_LOCK_INIT;
+    os_unfair_lock_lock(&lock);
+    methodDesc = methodDescriptionCache[hash];
+    os_unfair_lock_unlock(&lock);
 
     // cache hit? check the selector to insure we aren't colliding
     if (methodDesc.name == aSelector) {
@@ -807,7 +807,7 @@ NSMethodSignature *ext_globalMethodSignatureForSelector (SEL aSelector) {
         if (os_unfair_lock_trylock(&lock))
 				{
           methodDescriptionCache[hash] = methodDesc;
-					os_unfair_lock_unlock(&lock);
+          os_unfair_lock_unlock(&lock);
         }
 
         // NB: there are some esoteric system type encodings that cause -signatureWithObjCTypes: to fail,
