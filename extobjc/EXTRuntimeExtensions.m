@@ -744,11 +744,10 @@ NSMethodSignature *ext_globalMethodSignatureForSelector (SEL aSelector) {
     // reads and writes need to be atomic, but will be ridiculously fast,
     // so we can stay in userland for locks, and keep the speed.
 	
-  //  static OSSpinLock lock = OS_SPINLOCK_INIT;
-	static os_unfair_lock lock = OS_UNFAIR_LOCK_INIT;
-	uintptr_t hash = (uintptr_t)((void *)aSelector) & selectorCacheMask;
+  uintptr_t hash = (uintptr_t)((void *)aSelector) & selectorCacheMask;
   ext_methodDescription methodDesc;
 	
+	static os_unfair_lock lock = OS_UNFAIR_LOCK_INIT;
 	os_unfair_lock_lock(&lock);
 	methodDesc = methodDescriptionCache[hash];
 	os_unfair_lock_unlock(&lock);
