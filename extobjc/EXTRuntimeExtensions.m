@@ -11,6 +11,7 @@
 #import <ctype.h>
 #import <libkern/OSAtomic.h>
 #import <objc/message.h>
+#import <os/lock.h>
 #import <pthread.h>
 #import <stdio.h>
 #import <stdlib.h>
@@ -744,18 +745,13 @@ NSMethodSignature *ext_globalMethodSignatureForSelector (SEL aSelector) {
     // so we can stay in userland for locks, and keep the speed.
 	
   //  static OSSpinLock lock = OS_SPINLOCK_INIT;
-	static dispatch_semaphore_t semaphore = nil;
-	static dispatch_once_t onceToken;
-	dispatch_once(&onceToken, ^{
-		semaphore = dispatch_semaphore_create(1);
-	});
-
-    uintptr_t hash = (uintptr_t)((void *)aSelector) & selectorCacheMask;
-    ext_methodDescription methodDesc;
+	static os_unfair_lock lock = OS_UNFAIR_LOCK_INIT;
+	uintptr_t hash = (uintptr_t)((void *)aSelector) & selectorCacheMask;
+  ext_methodDescription methodDesc;
 	
-	dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
-    methodDesc = methodDescriptionCache[hash];
-	dispatch_semaphore_signal(semaphore);
+	os_unfair_lock_lock(&lock);
+	methodDesc = methodDescriptionCache[hash];
+	os_unfair_lock_unlock(&lock);
 
     // cache hit? check the selector to insure we aren't colliding
     if (methodDesc.name == aSelector) {
@@ -809,10 +805,10 @@ NSMethodSignature *ext_globalMethodSignatureForSelector (SEL aSelector) {
 
     if (methodDesc.name) {
         // if not locked, cache this value, but don't wait around
-        if (dispatch_semaphore_wait(semaphore, DISPATCH_TIME_NOW) == 0)
+        if (os_unfair_lock_trylock(&lock))
 				{
           methodDescriptionCache[hash] = methodDesc;
-					dispatch_semaphore_signal(semaphore);
+					os_unfair_lock_unlock(&lock);
         }
 
         // NB: there are some esoteric system type encodings that cause -signatureWithObjCTypes: to fail,
