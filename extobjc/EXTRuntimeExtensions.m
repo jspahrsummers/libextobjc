@@ -11,6 +11,7 @@
 #import <ctype.h>
 #import <libkern/OSAtomic.h>
 #import <objc/message.h>
+#import <os/lock.h>
 #import <pthread.h>
 #import <stdio.h>
 #import <stdlib.h>
@@ -740,16 +741,16 @@ NSMethodSignature *ext_globalMethodSignatureForSelector (SEL aSelector) {
     static const uintptr_t selectorCacheMask = (selectorCacheLength - 1);
     static ext_methodDescription volatile methodDescriptionCache[selectorCacheLength];
 
-    // reads and writes need to be atomic, but will be ridiculously fast,
-    // so we can stay in userland for locks, and keep the speed.
-    static OSSpinLock lock = OS_SPINLOCK_INIT;
-
     uintptr_t hash = (uintptr_t)((void *)aSelector) & selectorCacheMask;
     ext_methodDescription methodDesc;
-
-    OSSpinLockLock(&lock);
+  
+    // reads and writes need to be atomic, but will be ridiculously fast,
+    // so we can stay in userland for locks, and keep the speed.
+    static os_unfair_lock lock = OS_UNFAIR_LOCK_INIT;
+    
+    os_unfair_lock_lock(&lock);
     methodDesc = methodDescriptionCache[hash];
-    OSSpinLockUnlock(&lock);
+    os_unfair_lock_unlock(&lock);
 
     // cache hit? check the selector to insure we aren't colliding
     if (methodDesc.name == aSelector) {
@@ -803,9 +804,9 @@ NSMethodSignature *ext_globalMethodSignatureForSelector (SEL aSelector) {
 
     if (methodDesc.name) {
         // if not locked, cache this value, but don't wait around
-        if (OSSpinLockTry(&lock)) {
+        if (os_unfair_lock_trylock(&lock)) {
             methodDescriptionCache[hash] = methodDesc;
-            OSSpinLockUnlock(&lock);
+            os_unfair_lock_unlock(&lock);
         }
 
         // NB: there are some esoteric system type encodings that cause -signatureWithObjCTypes: to fail,
