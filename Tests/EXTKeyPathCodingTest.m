@@ -24,7 +24,7 @@
     NSURL *URL = [NSURL URLWithString:@"http://www.google.com:8080/search?q=foo"];
     XCTAssertNotNil(URL, @"");
 
-    NSString *path = @keypath(URL.port);
+    NSString * _Nonnull path = @keypath(URL.port);
     XCTAssertEqualObjects(path, @"port", @"");
 }
 
@@ -32,7 +32,7 @@
     NSURL *URL = [NSURL URLWithString:@"http://www.google.com:8080/search?q=foo"];
     XCTAssertNotNil(URL, @"");
 
-    NSString *path = @keypath(URL.port.stringValue);
+    NSString * _Nonnull path = @keypath(URL.port.stringValue);
     XCTAssertEqualObjects(path, @"port.stringValue", @"");
 
     path = @keypath(URL.port, stringValue);
@@ -40,7 +40,7 @@
 }
 
 - (void)testClassKeyPath {
-    NSString *path = @keypath(NSString.class.description);
+    NSString * _Nonnull path = @keypath(NSString.class.description);
     XCTAssertEqualObjects(path, @"class.description", @"");
 
     path = @keypath(NSString.class, description);
@@ -48,7 +48,7 @@
 }
 
 - (void)testMyClassInstanceKeyPath {
-    NSString *path = @keypath(MyClass.new, someUniqueProperty);
+    NSString * _Nonnull path = @keypath(MyClass.new, someUniqueProperty);
     XCTAssertEqualObjects(path, @"someUniqueProperty", @"");
 
     MyClass *obj = [[MyClass alloc] init];
@@ -58,18 +58,18 @@
 }
 
 - (void)testMyClassClassKeyPath {
-    NSString *path = @keypath(MyClass, classProperty);
+    NSString * _Nonnull path = @keypath(MyClass, classProperty);
     XCTAssertEqualObjects(path, @"classProperty", @"");
 }
 
 - (void)testCollectionInstanceKeyPath {
 	MyClass *obj = [[MyClass alloc] init];
-	NSString *path = @collectionKeypath(obj.collection, MyClass.new, someUniqueProperty);
+	NSString * _Nonnull path = @collectionKeypath(obj.collection, MyClass.new, someUniqueProperty);
 	XCTAssertEqualObjects(path, @"collection.someUniqueProperty", @"");
 }
 
 - (void)testCollectionClassKeyPath {
-	NSString *path = @collectionKeypath(MyClass.new, collection, MyClass.new, someUniqueProperty);
+	NSString * _Nonnull path = @collectionKeypath(MyClass.new, collection, MyClass.new, someUniqueProperty);
 	XCTAssertEqualObjects(path, @"collection.someUniqueProperty", @"");
 }
 
