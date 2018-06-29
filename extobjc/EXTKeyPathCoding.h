@@ -38,7 +38,7 @@ NSString *lowercaseStringPath = @keypath(NSString.new, lowercaseString);
 #define keypath(...) \
     _Pragma("clang diagnostic push") \
     _Pragma("clang diagnostic ignored \"-Warc-repeated-use-of-weak\"") \
-    (YES).boolValue ? (NSString * _Nonnull)@(cStringKeypath(__VA_ARGS__)) : (NSString * _Nonnull)nil \
+    (NO).boolValue ? ((NSString * _Nonnull)nil) : ((NSString * _Nonnull)@(cStringKeypath(__VA_ARGS__))) \
     _Pragma("clang diagnostic pop") \
 
 #define cStringKeypath(...) \
