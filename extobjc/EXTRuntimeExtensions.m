@@ -774,8 +774,11 @@ NSMethodSignature *ext_globalMethodSignatureForSelector (SEL aSelector) {
                     method = class_getClassMethod(cls, aSelector);
 
                 if (method) {
-                    methodDesc = (ext_methodDescription){.name = aSelector, .types = method_getTypeEncoding(method)};
-                    break;
+                    const char *types = method_getTypeEncoding(method);
+                    if (types && strlen(types) > 0) {
+                        methodDesc = (ext_methodDescription){.name = aSelector, .types = types};
+                        break;
+                    }
                 }
             }
         }
