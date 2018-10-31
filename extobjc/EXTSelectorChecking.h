@@ -33,8 +33,11 @@
  * selector must accept a struct or union argument.
  */
 #define checkselector(TARGET, ...) \
+    _Pragma("clang diagnostic push") \
+    _Pragma("clang diagnostic ignored \"-Wnonnull\"") \
     (((void)(NO && ((void)[TARGET metamacro_foreach(ext_checkselector_message_iter,, __VA_ARGS__)], NO)), \
-        metamacro_foreach(ext_checkselector_selector_iter,, __VA_ARGS__))).ext_toSelector
+        metamacro_foreach(ext_checkselector_selector_iter,, __VA_ARGS__))).ext_toSelector \
+    _Pragma("clang diagnostic pop")
 
 #define checkselector0(TARGET, SELECTOR) \
     (((void)(NO && ((void)[TARGET SELECTOR], NO)), \
